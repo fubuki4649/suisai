@@ -3,7 +3,8 @@ import React, {useState} from "react";
 import clsx from 'clsx';
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
-import PhotoCard from "./viewing_area/PhotoCard.tsx";
+import ThumbnailCard from "./viewing_area/ThumbnailCard.tsx";
+import ThumbnailContainer from "./viewing_area/ThumbnailContainer.tsx";
 
 
 function App() {
@@ -12,22 +13,11 @@ function App() {
   return (
     <HeroUIProvider>
       <main className={clsx(darkMode && "dark text-foreground", "h-screen flex flex-col")}>
-
         <Header />
-
         <div className="flex flex-row flex-grow">
-
-
           <Sidebar />
-
-          <div style={{background: "red"}}>
-
-            <PhotoCard />
-          </div>
-
+          <ThumbnailContainer />
         </div>
-
-
       </main>
     </HeroUIProvider>
   )
