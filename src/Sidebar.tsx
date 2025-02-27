@@ -21,18 +21,18 @@ function Sidebar() {
 
   return (
 
-    <div className={"flex flex-col bg-background p-4 space-y-2"}>
+    <div className="flex flex-col bg-background p-4 space-y-2">
 
       {sidebarItemsPlaceholder.map(item => (
-        <Button color="default" variant="light">
+        <Button className="px-6" color="default" variant="light">
           {item}
         </Button>
       ))}
 
-      <Spacer className={"h-1"}/>
+      <Spacer className="h-1"/>
       <Button color="default" variant="ghost" endContent={<PlusIcon className={"size-6"}/>}>
-        <Spacer className={"w-0"}/>
-        <p className={"font-semibold"}>Add Album</p>
+        <Spacer className="w-0"/>
+        <p className="font-semibold">Add Album</p>
       </Button>
 
     </div>
