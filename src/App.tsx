@@ -3,8 +3,8 @@ import React, {useState} from "react";
 import clsx from 'clsx';
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
-import ThumbnailCard from "./viewing_area/ThumbnailCard.tsx";
 import ThumbnailContainer from "./viewing_area/ThumbnailContainer.tsx";
+import ImageDetailCard from "./viewing_area/ImageDetailCard.tsx";
 
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
         <div className="flex flex-row flex-grow">
           <Sidebar />
           <ThumbnailContainer />
+          <ImageDetailCard />
         </div>
       </main>
     </HeroUIProvider>
