@@ -3,8 +3,8 @@ import React, {useState} from "react";
 import clsx from 'clsx';
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
-import ThumbnailContainer from "./viewing_area/ThumbnailContainer.tsx";
-import ImageDetailCard from "./viewing_area/ImageDetailCard.tsx";
+import ThumbnailContainer from "./thumbnail_view/ThumbnailContainer.tsx";
+import ImageDetailCard from "./thumbnail_view/ImageDetailCard.tsx";
 
 
 function App() {
