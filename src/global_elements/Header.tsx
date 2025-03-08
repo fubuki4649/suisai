@@ -16,6 +16,7 @@ import {
   Divider,
 } from "@heroui/react";
 import {cn} from "@heroui/react";
+import {HeaderProps} from "./ViewModel.ts";
 
 
 const menuItems = [
@@ -29,12 +30,12 @@ const menuItems = [
   "Contact Us",
 ];
 
-export default function Header(props: NavbarProps) {
+export default function Header(props: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
     <Navbar
-      {...props}
+      {...props.navbarProps}
       classNames={{
         base: cn("border-default-100", {
           "bg-default-200/50 dark:bg-default-100/50": isMenuOpen,
@@ -90,6 +91,7 @@ export default function Header(props: NavbarProps) {
             Login
           </Button>
           <Button
+            onPress={props.darkModeHandler}
             className="bg-foreground font-medium text-background"
             color="secondary"
             endContent={<img src="/vite.svg" className="logo" alt="Vite logo" />}
