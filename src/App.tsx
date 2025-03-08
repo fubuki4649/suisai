@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
 import ThumbnailContainer from "./thumbnail_view/ThumbnailContainer.tsx";
-import ImageDetailCard from "./thumbnail_view/ImageDetailCard.tsx";
 
 
 function App() {
@@ -12,12 +11,11 @@ function App() {
 
   return (
     <HeroUIProvider>
-      <main className={clsx(darkMode && "dark text-foreground", "h-screen flex flex-col")}>
+      <main className={clsx(darkMode && "dark text-foreground", "h-screen flex flex-col bg-default")}>
         <Header />
         <div className="flex flex-row flex-grow">
           <Sidebar />
           <ThumbnailContainer />
-          <ImageDetailCard />
         </div>
       </main>
     </HeroUIProvider>

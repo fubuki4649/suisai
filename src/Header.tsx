@@ -96,7 +96,7 @@ export default function Header(props: NavbarProps) {
             radius="full"
             variant="flat"
           >
-            Get Started
+            Dark Mode
           </Button>
         </NavbarItem>
       </NavbarContent>
