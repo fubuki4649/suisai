@@ -23,11 +23,6 @@ function ThumbnailCard(props: ThumbnailCardProps) {
         src={props.contentUrl}
         width={270}
       />
-      {/*<CardFooter >*/}
-      {/*  <h1>*/}
-      {/*    {props.id}*/}
-      {/*  </h1>*/}
-      {/*</CardFooter>*/}
     </Card>
   )
 }

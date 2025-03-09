@@ -9,10 +9,14 @@ function ThumbnailContainer() {
   const [selectedCardID, setSelectedCardId] = useState<string | null>(null);
 
   const onCardSelect = (cardId: string) => {
-    setSelectedCardId(cardId);
-
-    setCards(cards =>
-      cards.map(card => (card.isSelected = (card.id === cardId), card))
+    console.log("onCardSelect", cardId);
+    setSelectedCardId(prev => (prev == cardId) ? null : cardId);
+    
+    setCards(cards => {
+        return cards.map(card => {
+          return {...card, isSelected: (card.id === cardId && !card.isSelected)}
+        })
+      }
     )
   }
 
