@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import Header from "./global_elements/Header.tsx";
 import Sidebar from "./global_elements/Sidebar.tsx";
 import ThumbnailContainer from "./thumbnail_view/ThumbnailContainer.tsx";
+import {getAlbums} from "./model/endpoints.ts";
 
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
       <main className={clsx(darkMode && "dark text-foreground", "h-screen flex flex-col bg-default")}>
         <Header darkModeHandler={() => setDarkMode(!darkMode)} />
         <div className="flex flex-row flex-grow">
-          <Sidebar />
+          <Sidebar albums={getAlbums()}/>
           <ThumbnailContainer />
         </div>
       </main>

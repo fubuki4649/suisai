@@ -1,30 +1,24 @@
 import {Button, Spacer} from "@heroui/react";
-import React from "react";
+import React, {useState} from "react";
 import {PlusIcon} from "@heroicons/react/24/solid";
+import {Album} from "../model/objects.ts";
 
 
-function Sidebar() {
+function Sidebar(props: {albums: Album[]}) {
 
-  const sidebarItemsPlaceholder = [
-    "YYZ Precovid",
-    "YYZ Postcovid",
-    "YHM",
-    "Aruba",
-    "New York-JFK",
-    "New York",
-    "Fort Lauderdale-FLL",
-    "Miami-MIA",
-    "Miami",
-    "Kennedy Space Center",
-  ];
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
+
+  const onAlbumSelect = (album: Album) => {
+    setSelectedAlbum(album)
+  }
 
   return (
 
     <div className="flex flex-col bg-background p-4 space-y-2">
 
-      {sidebarItemsPlaceholder.map(item => (
-        <Button className="px-6" color="default" variant="light">
-          {item}
+      {props.albums.map(album => (
+        <Button onPress={() => onAlbumSelect(album)} className="px-6" color="default" variant={selectedAlbum?.albumId == album.albumId ? "flat" : "light"}>
+          {album.albumName}
         </Button>
       ))}
 
