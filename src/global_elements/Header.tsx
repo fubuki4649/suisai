@@ -1,7 +1,5 @@
 "use client";
 
-import type {NavbarProps} from "@heroui/react";
-
 import React from "react";
 import {
   Navbar,

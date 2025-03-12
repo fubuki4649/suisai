@@ -4,12 +4,10 @@ import {PlusIcon} from "@heroicons/react/24/solid";
 import {Album} from "../model/objects.ts";
 
 
-function Sidebar(props: {albums: Album[]}) {
-
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
+function Sidebar(props: {albums: Album[], selectedAlbum: (Album | null), setSelectedAlbum: (album: Album) => void}) {
 
   const onAlbumSelect = (album: Album) => {
-    setSelectedAlbum(album)
+    props.setSelectedAlbum(album)
   }
 
   return (
@@ -17,7 +15,7 @@ function Sidebar(props: {albums: Album[]}) {
     <div className="flex flex-col bg-background p-4 space-y-2">
 
       {props.albums.map(album => (
-        <Button onPress={() => onAlbumSelect(album)} className="px-6" color="default" variant={selectedAlbum?.albumId == album.albumId ? "flat" : "light"}>
+        <Button onPress={() => onAlbumSelect(album)} className="px-6" color="default" variant={props.selectedAlbum?.albumId == album.albumId ? "flat" : "light"}>
           {album.albumName}
         </Button>
       ))}

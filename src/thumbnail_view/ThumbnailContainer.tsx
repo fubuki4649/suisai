@@ -2,9 +2,10 @@ import React, {useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
+import {Album} from "../model/objects.ts";
 
 
-function ThumbnailContainer() {
+function ThumbnailContainer(props: {album: (Album | null)}) {
 
   const [selectedCardID, setSelectedCardId] = useState<string | null>(null);
 
