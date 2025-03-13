@@ -1,5 +1,5 @@
 import {Button, Spacer} from "@heroui/react";
-import React, {useState} from "react";
+import React from "react";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Album} from "../model/objects.ts";
 
