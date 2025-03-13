@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
-import {ThumbnailCardProps} from "./ViewModel.ts";
+import {DetailCardProps, ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
-import {Album} from "../model/objects.ts";
+import {Album, Photo} from "../model/objects.ts";
+import {getPhoto} from "../model/endpoints.ts";
 
 
 function ThumbnailContainer(props: {album: (Album | null)}) {
@@ -18,25 +19,41 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
     )
   }
 
-  const [cards, setCards] = useState<ThumbnailCardProps[]>([
-    {id: "juan", contentUrl: "https://cdn.jetphotos.com/full/5/40931_1587092365.jpg", isSelected: false, onClick: onCardSelect},
-    {id: "つ", contentUrl: "https://cdn.jetphotos.com/full/6/1042605_1741347047.jpg", isSelected: false, onClick: onCardSelect},
-    {id: "three", contentUrl: "https://cdn.jetphotos.com/full/6/92518_1541393083.jpg", isSelected: false, onClick: onCardSelect},
-    {id: "fo", contentUrl: "https://cdn.jetphotos.com/full/5/66513_1538107938.jpg", isSelected: false, onClick: onCardSelect}
-  ]);
+
+  const [cards, setCards] = useState<ThumbnailCardProps[]>([]);
+
+  useEffect(() => {
+    setCards((props.album?.photos ?? []).map(id => {
+      const photo = getPhoto(id)
+      return {
+        id: photo.fileId,
+        previewUrl: photo.thumbnailUrl,
+        isSelected: false,
+        onClick: onCardSelect,
+        properties: {...photo}
+      }
+    }))
+    setSelectedCardId(null)
+  }, [props.album]);
 
 
   return (
     <>
-      <ul className="flex flex-wrap flex-grow content-start gap-6 p-6 grid-cols-auto">
-        {cards.map((card) => (
-          <li key={card.id}>
-            <ThumbnailCard {...card} />
-          </li>
-        ))}
-      </ul>
+      { cards.length ?
+        <ul className="flex flex-wrap flex-grow content-start gap-6 p-6 grid-cols-auto">
+          {cards.map(card => (
+            <li key={card.id}>
+              <ThumbnailCard {...card} />
+            </li>
+          ))}
+        </ul>
+        :
+        <div className="flex flex-wrap flex-grow justify-center items-center">
+          <p className="text-default-600 text-xl">{props.album == null ? "No Album Selected" : "Album is Empty"}</p>
+        </div>
+      }
 
-      <ImageDetailCard/>
+      {selectedCardID && <ImageDetailCard/>}
     </>
   )
 }

@@ -20,7 +20,7 @@ function ThumbnailCard(props: ThumbnailCardProps) {
       <Image
         alt="Card background"
         className="rounded-xl"
-        src={props.contentUrl}
+        src={props.previewUrl}
         width={270}
       />
     </Card>
