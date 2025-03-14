@@ -9,8 +9,9 @@ export type ThumbnailCardProps = {
 export type DetailCardProps = {
   fileName: string,
   filePath: string,
-  sizeOnDisk: number,
-  photoTime: Date,
+  sizeOnDisk: string,
+  photoDate: Date,
+  photoTimezone: string,
   resolution: [number, number],
   mimeType: string,
   cameraModel: string,

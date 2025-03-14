@@ -1,4 +1,4 @@
-import {Card, CardFooter, Image} from "@heroui/react";
+import {Card, Image} from "@heroui/react";
 import React from "react";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import clsx from "clsx";

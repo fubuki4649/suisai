@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
-import {DetailCardProps, ThumbnailCardProps} from "./ViewModel.ts";
+import {ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
-import {Album, Photo} from "../model/objects.ts";
+import {Album} from "../model/objects.ts";
 import {getPhoto} from "../model/endpoints.ts";
 
 
@@ -53,7 +53,7 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
         </div>
       }
 
-      {selectedCardID && <ImageDetailCard/>}
+      {selectedCardID && <ImageDetailCard {...cards.find(card => card.id === selectedCardID)!.properties} />}
     </>
   )
 }
