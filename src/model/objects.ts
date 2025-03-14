@@ -3,8 +3,9 @@ export type Photo = {
   fileId: string;
   fileName: string,
   filePath: string,
-  sizeOnDisk: number,
-  photoTime: Date,
+  sizeOnDisk: string,
+  photoDate: Date,
+  photoTimezone: string,
   resolution: [number, number],
   mimeType: string,
   cameraModel: string,

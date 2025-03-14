@@ -30,20 +30,21 @@ export function getPhoto(photoID: string): Photo {
 
   return {
     thumbnailUrl: photoID,
-    aperture: 0,
-    cameraModel: "",
+    aperture: 11.0,
+    cameraModel: "fdsafsf",
     fileId: photoID,
-    fileName: "",
+    fileName: "fdsafdsf",
     filePath: photoID,
     focalLength: 0,
     iso: 0,
     lensModel: "",
     mimeType: "",
-    photoTime: new Date(),
-    resolution: [0, 0],
+    photoDate: new Date("2021-03-25"),
+    photoTimezone: "America/Toronto",
+    resolution: [6000, 4000],
     shutterCount: 0,
     shutterSpeed: "",
-    sizeOnDisk: 0
+    sizeOnDisk: "59 MB"
 
   }
 
