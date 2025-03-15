@@ -1,7 +1,6 @@
-import {Card, Image} from "@heroui/react";
+import {Card, cn, Image} from "@heroui/react";
 import React from "react";
 import {ThumbnailCardProps} from "./ViewModel.ts";
-import clsx from "clsx";
 
 
 function ThumbnailCard(props: ThumbnailCardProps) {
@@ -14,8 +13,8 @@ function ThumbnailCard(props: ThumbnailCardProps) {
     <Card
       isPressable
       onPress={handleClick}
-      shadow={clsx(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
-      className={clsx(props.isSelected && "border-2 border-secondary", "h-fit w-fit")}
+      shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
+      className={cn(props.isSelected && "border-2 border-secondary", "h-fit w-fit")}
     >
       <Image
         alt="Card background"
