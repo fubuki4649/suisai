@@ -1,7 +1,7 @@
 import {Button, Spacer} from "@heroui/react";
 import React from "react";
 import {PlusIcon} from "@heroicons/react/16/solid";
-import {Album} from "../model/objects.ts";
+import {Album} from "../model/models.ts";
 
 
 function Sidebar(props: {albums: Album[], selectedAlbum: (Album | null), setSelectedAlbum: (album: Album) => void}) {
