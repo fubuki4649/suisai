@@ -1,4 +1,4 @@
-import {Album, Photo} from "./objects.ts";
+import {Album, Photo} from "./models.ts";
 
 export function getAlbums(): Array<Album> {
 

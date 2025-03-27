@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
-import {Album} from "../model/objects.ts";
+import {Album} from "../model/models.ts";
 import {getPhoto} from "../model/endpoints.ts";
 
 
