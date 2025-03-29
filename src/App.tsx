@@ -1,5 +1,5 @@
 import {cn, HeroUIProvider} from "@heroui/react";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Header from "./global_elements/Header.tsx";
 import Sidebar from "./global_elements/Sidebar.tsx";
 import ThumbnailContainer from "./thumbnail_view/ThumbnailContainer.tsx";
@@ -9,8 +9,14 @@ import {Album} from "./model/models.ts";
 
 function App() {
 
-  const albums: Album[] = getAlbums()
+  useEffect(() => {
+    getAlbums().then((albums: Album[]) => {
+      console.log(albums);
+      setAlbums(albums);
+    })
+  }, []);
 
+  const [albums, setAlbums] = useState<Album[]>([]);
   const [darkMode, setDarkMode] = useState<boolean>(true)
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
 
