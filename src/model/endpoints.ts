@@ -43,7 +43,7 @@ export function getPhoto(photoID: string): Photo {
     thumbnailUrl: photoID,
     aperture: 11.0,
     cameraModel: "fdsafsf",
-    fileId: photoID,
+    photoId: photoID,
     fileName: "fdsafdsf",
     filePath: photoID,
     focalLength: 0,
