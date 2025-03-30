@@ -26,7 +26,7 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
     setCards((props.album?.photos ?? []).map(id => {
       const photo = getPhoto(id)
       return {
-        id: photo.fileId,
+        id: photo.photoId,
         previewUrl: photo.thumbnailUrl,
         isSelected: false,
         onClick: onCardSelect,
