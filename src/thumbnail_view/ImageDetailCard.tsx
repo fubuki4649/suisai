@@ -39,7 +39,7 @@ function ImageDetailCard(props: DetailCardProps) {
       </CardHeader>
       <CardBody className="p-4 flex-col gap-1 items-start">
         <p className="pb-1 text-tiny text-white/60 uppercase font-bold">File Properties</p>
-        <InfoField label={"Size on Disk"} data={props.sizeOnDisk} />
+        <InfoField label={"Size on Disk"} data={`${(props.sizeOnDisk / 1024).toFixed(2)} MB`} />
         <InfoField label={"Photo Date"} data={props.photoDate.toLocaleDateString('en-US', dateOptions).replace(',', '')} />
         <InfoField label={"Photo Time"} data={props.photoDate.toLocaleTimeString('en-US', timeOptions).replace(/\s([A-Z]+)$/, ' ($1)')} />
         <InfoField label={"Resolution"} data={props.resolution[0] + 'x' + props.resolution[1]} />
