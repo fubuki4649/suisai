@@ -1,15 +1,15 @@
 export type ThumbnailCardProps = {
-  id: string,
+  id: number,
   previewUrl: string,
   isSelected: boolean,
-  onClick: (id: string) => void,
+  onClick: (id: number) => void,
   properties: DetailCardProps,
 }
 
 export type DetailCardProps = {
   fileName: string,
   filePath: string,
-  sizeOnDisk: string,
+  sizeOnDisk: number,
   photoDate: Date,
   photoTimezone: string,
   resolution: [number, number],

@@ -3,14 +3,14 @@ import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
 import {Album} from "../model/models.ts";
-import {getPhoto} from "../model/endpoints.ts";
 
 
 function ThumbnailContainer(props: {album: (Album | null)}) {
 
-  const [selectedCardID, setSelectedCardId] = useState<string | null>(null);
+  const [selectedCardID, setSelectedCardId] = useState<number | null>(null);
 
-  const onCardSelect = (cardId: string) => {
+  // Handles thumbnail card selection: toggles the selected state for that card and updates the metadata panel
+  const onCardSelect = (cardId: number) => {
     setSelectedCardId(prev => (prev == cardId) ? null : cardId);
 
     setCards(cards => cards.map(card => {
@@ -22,15 +22,18 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
 
   const [cards, setCards] = useState<ThumbnailCardProps[]>([]);
 
+  // Update cards on album change/load
   useEffect(() => {
-    setCards((props.album?.photos ?? []).map(id => {
-      const photo = getPhoto(id)
+    setCards((props.album?.photos ?? []).map(photo => {
       return {
         id: photo.photoId,
         previewUrl: photo.thumbnailUrl,
         isSelected: false,
         onClick: onCardSelect,
-        properties: {...photo}
+        properties: {
+          ...photo,
+          photoDate: new Date(photo.photoDate)
+        }
       }
     }))
     setSelectedCardId(null)
@@ -53,7 +56,9 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
         </div>
       }
 
-      {selectedCardID && <ImageDetailCard {...cards.find(card => card.id === selectedCardID)!.properties} />}
+      <div className="flex flex-row">
+        {selectedCardID && <ImageDetailCard {...cards.find(card => card.id === selectedCardID)!.properties} />}
+      </div>
     </>
   )
 }

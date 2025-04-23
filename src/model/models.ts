@@ -1,10 +1,11 @@
 export type Photo = {
-  photoId: string;
+  photoId: number;
   thumbnailUrl: string;
+  hash: string;
   fileName: string,
   filePath: string,
-  sizeOnDisk: string,
-  photoDate: Date,
+  sizeOnDisk: number,
+  photoDate: string,
   photoTimezone: string,
   resolution: [number, number],
   mimeType: string,
@@ -18,7 +19,7 @@ export type Photo = {
 }
 
 export type Album = {
-  albumId: string,
+  albumId: number,
   albumName: string,
-  photos: string[],
+  photos: Photo[],
 }

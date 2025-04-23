@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import Header from "./global_elements/Header.tsx";
 import Sidebar from "./global_elements/Sidebar.tsx";
 import ThumbnailContainer from "./thumbnail_view/ThumbnailContainer.tsx";
-import {getAlbums} from "./model/endpoints.ts";
+import {getAlbums} from "./api/Album.ts";
 import {Album} from "./model/models.ts";
 
 
