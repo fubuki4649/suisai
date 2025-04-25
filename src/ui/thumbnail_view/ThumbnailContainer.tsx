@@ -2,11 +2,12 @@ import React, {useEffect, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import ImageDetailCard from "./ImageDetailCard.tsx";
-import {Album} from "../model/models.ts";
+import {useSelectedAlbum} from "../../models/GlobalContext.tsx";
 
 
-function ThumbnailContainer(props: {album: (Album | null)}) {
+function ThumbnailContainer() {
 
+  const [selectedAlbum] = useSelectedAlbum()
   const [selectedCardID, setSelectedCardId] = useState<number | null>(null);
 
   // Handles thumbnail card selection: toggles the selected state for that card and updates the metadata panel
@@ -24,7 +25,7 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
 
   // Update cards on album change/load
   useEffect(() => {
-    setCards((props.album?.photos ?? []).map(photo => {
+    setCards((selectedAlbum?.photos ?? []).map(photo => {
       return {
         id: photo.photoId,
         previewUrl: photo.thumbnailUrl,
@@ -37,7 +38,7 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
       }
     }))
     setSelectedCardId(null)
-  }, [props.album]);
+  }, [selectedAlbum]);
 
 
   return (
@@ -52,7 +53,7 @@ function ThumbnailContainer(props: {album: (Album | null)}) {
         </ul>
         :
         <div className="flex flex-wrap flex-grow justify-center items-center">
-          <p className="text-default-600 text-xl">{props.album == null ? "No Album Selected" : "Album is Empty"}</p>
+          <p className="text-default-600 text-xl">{selectedAlbum == null ? "No Album Selected" : "Album is Empty"}</p>
         </div>
       }
 

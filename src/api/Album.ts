@@ -1,4 +1,4 @@
-import {Album, Photo} from "../model/models.ts";
+import {Album, Photo} from "../models/model.ts";
 import axios from "axios";
 
 
