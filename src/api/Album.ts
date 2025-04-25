@@ -1,9 +1,11 @@
 import {Album, Photo} from "../models/model.ts";
 import axios from "axios";
+import {withAxiosErrorHandling} from "./AxiosErrorHandling.ts";
 
 
-export async function getAlbums(): Promise<Album[]> {
-  try {
+export async function getAlbums(onHttpError: (code: number) => void = () => {}): Promise<Album[]> {
+  return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
+
     const albums = (await axios.get<Album[]>("http://localhost:8000/api/album/all")).data;
     albums.unshift(
       {
@@ -14,9 +16,16 @@ export async function getAlbums(): Promise<Album[]> {
     );
 
     return albums;
-  }
-  catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
+
+  })();
+}
+
+
+export async function createAlbum(albumName: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
+  return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
+
+    await axios.post("http://localhost:8000/api/album/new", {albumName: albumName});
+    return;
+
+  })();
 }

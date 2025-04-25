@@ -1,4 +1,4 @@
-import {cn, HeroUIProvider} from "@heroui/react";
+import {cn, HeroUIProvider, ToastProvider} from "@heroui/react";
 import React, {useEffect} from "react";
 import Header from "./ui/global_elements/Header.tsx";
 import Sidebar from "./ui/global_elements/Sidebar.tsx";
@@ -23,6 +23,7 @@ function App() {
 
   return (
       <HeroUIProvider>
+        <ToastProvider  placement="bottom-center"/>
         <main className={cn(darkMode && "dark text-foreground", "h-screen flex flex-col bg-default")}>
           <Header />
           <div className="flex flex-row flex-grow">
