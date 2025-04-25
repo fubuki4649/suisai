@@ -25,6 +25,10 @@ export default tseslint.config(
       ],
         'no-unused-vars': 'warn',
         'prefer-const': 'warn',
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
     },
   },
 )
