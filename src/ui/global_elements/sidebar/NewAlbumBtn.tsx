@@ -1,14 +1,14 @@
-import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, PressEvent, Spacer} from "@heroui/react";
+import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, Spacer} from "@heroui/react";
 import {PlusIcon} from "@heroicons/react/16/solid";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode} from "../../models/GlobalContext.tsx";
-import {createAlbum, getAlbums} from "../../api/Album.ts";
-import {Album} from "../../models/model.ts";
+import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
+import {createAlbum, getAlbums} from "../../../api/Album.ts";
+import {Album} from "../../../models/model.ts";
 
 function NewAlbumBtn() {
 
   const [darkMode] = useDarkMode();
-  const [albums, setAlbums] = useAlbums();
+  const [, setAlbums] = useAlbums();
   const [newAlbumName, setNewAlbumName] = useState("");
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
 

@@ -1,8 +1,9 @@
 import {Button, Spacer} from "@heroui/react";
 import React from "react";
-import {Album} from "../../models/model.ts";
-import {useAlbums, useSelectedAlbum} from "../../models/GlobalContext.tsx";
+import {Album} from "../../../models/model.ts";
+import {useAlbums, useSelectedAlbum} from "../../../models/GlobalContext.tsx";
 import NewAlbumBtn from "./NewAlbumBtn.tsx";
+import RightClickButton from "./RightClickButton.tsx";
 
 
 function Sidebar() {
@@ -27,6 +28,8 @@ function Sidebar() {
 
       <Spacer className="h-1"/>
       <NewAlbumBtn />
+      <Spacer className="h-1"/>
+      <RightClickButton />
 
     </div>
   )

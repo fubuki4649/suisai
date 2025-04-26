@@ -1,7 +1,7 @@
 import {cn, HeroUIProvider, ToastProvider} from "@heroui/react";
 import React, {useEffect} from "react";
 import Header from "./ui/global_elements/Header.tsx";
-import Sidebar from "./ui/global_elements/Sidebar.tsx";
+import Sidebar from "./ui/global_elements/sidebar/Sidebar.tsx";
 import ThumbnailContainer from "./ui/thumbnail_view/ThumbnailContainer.tsx";
 import {useAlbums, useDarkMode} from "./models/GlobalContext.tsx";
 import {getAlbums} from "./api/Album.ts";
@@ -11,7 +11,7 @@ import {Album} from "./models/model.ts";
 function App() {
 
   const [darkMode] = useDarkMode();
-  const [albums, setAlbums] = useAlbums();
+  const [, setAlbums] = useAlbums();
 
   // Update cards on album change/load
   useEffect(() => {
