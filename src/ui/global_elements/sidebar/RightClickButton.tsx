@@ -1,10 +1,11 @@
 'use client';
 
-import {useRef, useState, useEffect, RefObject} from 'react';
+import {RefObject, useEffect, useRef, useState} from 'react';
 import {Button, cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@heroui/react";
 import {useDarkMode} from "../../../models/GlobalContext.tsx";
+import {RightClickButtonProps} from "./ViewModel.ts";
 
-export default function RightClickButton() {
+export default function RightClickButton(props: RightClickButtonProps) {
 
   const [darkMode] = useDarkMode();
 
@@ -19,8 +20,7 @@ export default function RightClickButton() {
       e.stopPropagation();
 
       const rect = buttonRef.current.getBoundingClientRect();
-      console.log(rect);
-      setMenuPosition({ x: rect.right, y: (rect.top + rect.bottom) / 2 });
+      setMenuPosition({ x: rect.right + 4, y: (rect.top + rect.bottom) / 2 });
       setIsOpen(true);
     }
   };
@@ -48,26 +48,25 @@ export default function RightClickButton() {
 
   return (
     <>
-      <Button fullWidth ref={buttonRef}>Right Click Me</Button>
+      <Button {...props.btnProps} fullWidth ref={buttonRef}>{props.btnProps.children}</Button>
 
       {isOpen && (
-        <div>
-          <Dropdown isOpen className={cn(darkMode && "dark text-foreground")} placement="right">
+        <div className="!m-0">
+          <Dropdown isOpen className={cn(darkMode && "dark text-foreground")} placement="right" showArrow backdrop="blur">
             <DropdownTrigger>
               {/* Invisible trigger */}
               <div className="absolute" style={{ top: menuPosition.y, left: menuPosition.x }} />
             </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Context Menu"
-              onAction={(key) => {
-                console.log("Selected action:", key);
-                setIsOpen(false);
-              }}
-              variant="faded"
-            >
-              <DropdownItem key="edit">Edit</DropdownItem>
-              <DropdownItem key="delete">Delete</DropdownItem>
-              <DropdownItem key="copy">Copy</DropdownItem>
+            <DropdownMenu aria-label="Context Menu" variant="flat">
+              <>
+                {
+                  props.rightClickItems.map(item => (
+                    <DropdownItem {...item} onPress={(e) => {
+                      setIsOpen(false); if (item.onPress) item.onPress(e);
+                    }}>{item.children}</DropdownItem>
+                  ))
+                }
+              </>
             </DropdownMenu>
           </Dropdown>
         </div>

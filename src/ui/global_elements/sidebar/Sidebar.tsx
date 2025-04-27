@@ -1,9 +1,12 @@
-import {Button, Spacer} from "@heroui/react";
-import React from "react";
+import {Spacer, useDisclosure} from "@heroui/react";
+import React, {useState} from "react";
 import {Album} from "../../../models/model.ts";
 import {useAlbums, useSelectedAlbum} from "../../../models/GlobalContext.tsx";
 import NewAlbumBtn from "./NewAlbumBtn.tsx";
 import RightClickButton from "./RightClickButton.tsx";
+import RenameAlbumModal from "./RenameAlbumModal.tsx";
+import {Disclosure} from "./ViewModel.ts";
+import DeleteAlbumModal from "./DeleteAlbumModal.tsx";
 
 
 function Sidebar() {
@@ -11,25 +14,55 @@ function Sidebar() {
   const [albums] = useAlbums();
   const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
 
+  // Stores state for the modal dialogues
+  const [rightClickAlbum, setRightClickAlbum] = useState<Album>(selectedAlbum ?? albums[0]);
 
   // Hook for selecting an album
   const onAlbumSelect = (album: Album) => {
     setSelectedAlbum(album)
   }
 
+  const renameAlbumDisclosure: Disclosure = useDisclosure();
+  const deleteAlbumDisclosure: Disclosure = useDisclosure();
+
   return (
-    <div className="flex flex-col bg-background p-4 space-y-2">
+    <div className="flex flex-col bg-background/50 p-4 space-y-2">
+
+      <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
+      <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
 
       {albums.map(album => (
-        <Button onPress={() => onAlbumSelect(album)} className="px-6" color="default" variant={selectedAlbum?.albumId == album.albumId ? "flat" : "light"}>
-          {album.albumName}
-        </Button>
+        <RightClickButton btnProps={{
+          className: "px-6",
+          children: album.albumName,
+          color: "default",
+          variant: selectedAlbum?.albumId == album.albumId ? "flat" : "light",
+          onPress: () => onAlbumSelect(album),
+        }}
+        rightClickItems={[
+          {
+            key: "rename",
+            children: "Rename",
+            onPress: () => {
+              setRightClickAlbum(album)
+              renameAlbumDisclosure.onOpen()
+            },
+          },
+          {
+            key: "delete",
+            className: "text-danger",
+            color: "danger",
+            children: "Delete",
+            onPress: () => {
+              setRightClickAlbum(album)
+              deleteAlbumDisclosure.onOpen()
+            },
+          }
+        ]}/>
       ))}
 
       <Spacer className="h-1"/>
       <NewAlbumBtn />
-      <Spacer className="h-1"/>
-      <RightClickButton />
 
     </div>
   )
