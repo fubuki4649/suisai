@@ -43,6 +43,7 @@ function Sidebar() {
           {
             key: "rename",
             children: "Rename",
+            isDisabled: album.albumId < 0,
             onPress: () => {
               setRightClickAlbum(album)
               renameAlbumDisclosure.onOpen()
@@ -53,6 +54,7 @@ function Sidebar() {
             className: "text-danger",
             color: "danger",
             children: "Delete",
+            isDisabled: album.albumId < 0,
             onPress: () => {
               setRightClickAlbum(album)
               deleteAlbumDisclosure.onOpen()
