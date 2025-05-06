@@ -1,16 +1,53 @@
-import {Button, cn, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spacer,} from "@heroui/react";
+import {
+  addToast,
+  Button,
+  cn,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Spacer,
+} from "@heroui/react";
 import React, {useState} from "react";
-import {useDarkMode} from "../../../models/GlobalContext.tsx";
+import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
 import {ModalProps} from "./ViewModel.ts";
+import {getAlbums, renameAlbum} from "../../../api/Album.ts";
+import {Album} from "../../../models/model.ts";
 
 export function RenameAlbumModal(props: ModalProps) {
 
   const [darkMode] = useDarkMode();
+  const [, setAlbums] = useAlbums();
 
   const {isOpen, onOpen, onOpenChange} = props.disclosure;
   const [newAlbumName, setNewAlbumName] = useState("");
 
-  console.log(props.album);
+  // Event handler for rename button
+  const onRenameAlbum = () => {
+    renameAlbum(props.album.albumId, newAlbumName, (code) => {
+      addToast({
+        title: "Error",
+        description: "Failed to rename album with code " + code,
+        color: "danger",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      })
+    }).then(() => {
+      addToast({
+        title: "Success",
+        description: "Album ID " + props.album.albumId + " successfully renamed to " + newAlbumName + "!",
+        color: "success",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      });
+      getAlbums().then((albums: Album[]) => {
+        console.log(albums);
+        setAlbums(albums);
+      });
+    })
+  }
 
 
   return (
@@ -59,7 +96,7 @@ export function RenameAlbumModal(props: ModalProps) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose} isDisabled={newAlbumName.trim().length == 0}>
+                <Button color="primary" onPress={() => {onRenameAlbum(); onClose();}} isDisabled={newAlbumName.trim().length == 0}>
                   Rename
                 </Button>
               </ModalFooter>

@@ -31,8 +31,8 @@ function Sidebar() {
       <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
       <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
 
-      {albums.map(album => (
-        <RightClickButton btnProps={{
+      {albums.sort((a, b) => a.albumId - b.albumId).map(album => (
+        <RightClickButton key={album.albumId} btnProps={{
           className: "px-6",
           children: album.albumName,
           color: "default",
