@@ -61,7 +61,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
               <>
                 {
                   props.rightClickItems.map(item => (
-                    <DropdownItem {...item} onPress={(e) => {
+                    <DropdownItem {...item} key={item.key} onPress={(e) => {
                       setIsOpen(false); if (item.onPress) item.onPress(e);
                     }}>{item.children}</DropdownItem>
                   ))

@@ -29,3 +29,23 @@ export async function createAlbum(albumName: string, onHttpError: (code: number)
 
   })();
 }
+
+
+export async function renameAlbum(albumId: number, albumName: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
+  return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
+
+    await axios.patch(`http://localhost:8000/api/album/${albumId}/rename`, {albumName: albumName});
+    return;
+
+  })();
+}
+
+
+export async function deleteAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<void> {
+  return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
+
+    await axios.delete(`http://localhost:8000/api/album/${albumId}/delete`);
+    return;
+
+  })();
+}

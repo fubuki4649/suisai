@@ -1,14 +1,53 @@
-import {Button, cn, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spacer,} from "@heroui/react";
+import {
+  addToast,
+  Button,
+  cn,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Spacer,
+} from "@heroui/react";
 import {ModalProps} from "./ViewModel.ts";
 import React, {useState} from "react";
-import {useDarkMode} from "../../../models/GlobalContext.tsx";
+import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
+import {deleteAlbum, getAlbums} from "../../../api/Album.ts";
+import {Album} from "../../../models/model.ts";
 
 export function DeleteAlbumModal(props: ModalProps) {
 
   const [darkMode] = useDarkMode();
+  const [, setAlbums] = useAlbums();
 
   const {isOpen, onOpen, onOpenChange} = props.disclosure;
   const [confirmText, setConfirmText] = useState("");
+
+  // Event handler for rename button
+  const onDeleteAlbum = () => {
+    deleteAlbum(props.album.albumId, (code) => {
+      addToast({
+        title: "Error",
+        description: "Failed to delete album with code " + code,
+        color: "danger",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      })
+    }).then(() => {
+      addToast({
+        title: "Success",
+        description: "Album ID " + props.album.albumId + " successfully deleted!",
+        color: "success",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      });
+      getAlbums().then((albums: Album[]) => {
+        console.log(albums);
+        setAlbums(albums);
+      });
+    })
+  }
 
   return (
     <>
@@ -57,7 +96,7 @@ export function DeleteAlbumModal(props: ModalProps) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose} isDisabled={confirmText != props.album.albumId.toString()}>
+                <Button color="primary" onPress={() => {onDeleteAlbum(); onClose();}} isDisabled={confirmText != props.album.albumId.toString()}>
                   Delete
                 </Button>
               </ModalFooter>
