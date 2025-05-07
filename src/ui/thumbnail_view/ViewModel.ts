@@ -1,8 +1,10 @@
+import {PressEvent} from "@heroui/react";
+
 export type ThumbnailCardProps = {
   id: number,
   previewUrl: string,
   isSelected: boolean,
-  onClick: (id: number) => void,
+  onClick: (id: number, e: PressEvent) => void,
   properties: DetailCardProps,
 }
 

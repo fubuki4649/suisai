@@ -3,6 +3,7 @@ import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 import ImageDetailCardStack from "./ImageDetailCardStack.tsx";
+import {PressEvent} from "@heroui/react";
 
 
 function ThumbnailContainer() {
@@ -15,16 +16,54 @@ function ThumbnailContainer() {
 
 
   // Handles thumbnail card selection: toggles the selected state for that card and updates the metadata panel
-  const onCardSelect = (cardId: number) => {
-    // Card already selected - deselect
-    if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
-      setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+  const onCardSelect = (cardId: number, e: PressEvent) => {
+
+    // Handle multi-select
+    if (e.ctrlKey || e.metaKey) {
+
+      // Perform a multi-deselect if the pressed card is already selected,
+      if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
+        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+      }
+      // Else perform a multi-select
+      else {
+        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+      }
+
     }
-    // Card not selected - select
+    // Handle continuous multi-select
+    else if (e.shiftKey) {
+
+      // TODO: Determine what the intended behaviour for continuous multi-select should be
+      // TODO: Behaves like a normal multi-select for now
+      // ---
+      // Perform a multi-deselect if the pressed card is already selected,
+      if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
+        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+      }
+      // Else perform a multi-select
+      else {
+        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+      }
+
+    }
+    // Handle normal select
     else {
-      const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
-      setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+
+      // Perform a single deselect if the pressed card is the only selected card,
+      if (selectedPhotosRef.current.some(photo => photo.photoId === cardId) && selectedPhotosRef.current.length === 1) {
+        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+      }
+      // Else perform a single select
+      else {
+        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        setSelectedPhotos(newlySelected ? [newlySelected] : selectedPhotosRef.current);
+      }
+
     }
+
   }
 
 
