@@ -5,10 +5,10 @@ export type ThumbnailCardProps = {
   previewUrl: string,
   isSelected: boolean,
   onClick: (id: number, e: PressEvent) => void,
-  properties: DetailCardProps,
+  properties: InspectorMetadataProps,
 }
 
-export type DetailCardProps = {
+export type InspectorMetadataProps = {
   fileName: string,
   filePath: string,
   sizeOnDisk: number,

@@ -1,11 +1,12 @@
-import {Button, Card, CardBody, CardHeader, Tooltip} from "@heroui/react";
+import {Button, Card, CardBody, CardHeader, cn, Tooltip} from "@heroui/react";
 import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
 import React from "react";
-import {useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import {useDarkMode, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 
 
-export default function ImageActionsCard() {
+export default function ActionsCard() {
 
+  const [darkMode] = useDarkMode();
   const [selectedPhotos] = useSelectedPhotos();
 
   return (
@@ -18,16 +19,16 @@ export default function ImageActionsCard() {
       </CardHeader>
       <CardBody className="p-4 !pt-0 flex-col">
         <div className="flex flex-row w-full gap-4 justify-evenly">
-          <Tooltip content="Select All">
+          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Select All">
             <Button isIconOnly className="p-1.5" aria-label="Select All" color="secondary" variant="light"><CheckCircleIcon /></Button>
           </Tooltip>
-          <Tooltip content="Unselect All">
+          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Unselect All">
             <Button isIconOnly className="p-1.5" aria-label="Unselect All" color="secondary" variant="light"><NoSymbolIcon /></Button>
           </Tooltip>
-          <Tooltip content="Move To Album">
+          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Move To Album">
             <Button isIconOnly className="p-1.5" aria-label="Move To Album" color="success" variant="flat"><TruckIcon /></Button>
           </Tooltip>
-          <Tooltip content="Delete Images" color="danger">
+          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Delete Images" color="danger">
             <Button isIconOnly className="p-2" aria-label="Delete" color="danger" variant="shadow"><TrashIcon /></Button>
           </Tooltip>
         </div>

@@ -10,7 +10,7 @@ function ThumbnailCard(props: ThumbnailCardProps) {
       isPressable
       onPress={(e: PressEvent) => props.onClick(props.id, e)}
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
-      className={cn(props.isSelected && "border-2 border-secondary", "h-fit w-fit")}
+      className={cn(props.isSelected && "border-2 border-secondary", props.isSelected && "m-[-2px]", "h-fit w-fit")}
     >
       <Image
         alt="Card background"

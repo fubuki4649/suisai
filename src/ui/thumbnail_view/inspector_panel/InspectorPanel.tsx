@@ -1,13 +1,11 @@
 import React from "react";
-import {useSelectedPhotos} from "../../models/GlobalContext.tsx";
-import {DetailCardProps} from "./ViewModel.ts";
-import ImageDetailCard from "./ImageDetailCard.tsx";
-import {Button, Card, CardBody, CardHeader, Tooltip} from "@heroui/react";
-import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
-import ImageActionsCard from "./ImageActionsCard.tsx";
+import {useSelectedPhotos} from "../../../models/GlobalContext.tsx";
+import {InspectorMetadataProps} from "../ViewModel.ts";
+import MetadataCard from "./MetadataCard.tsx";
+import ActionsCard from "./ActionsCard.tsx";
 
 
-export default function ImageDetailCardStack() {
+export default function InspectorPanel() {
 
   const [selectedPhotos] = useSelectedPhotos();
 
@@ -23,7 +21,7 @@ export default function ImageDetailCardStack() {
             const offset = index * 20; // vertical stacking offset
             const scale = 1 - index * 0.02; // slight scale-down effect
 
-            const cardProps: DetailCardProps = {
+            const cardProps: InspectorMetadataProps = {
               ...photo,
               photoDate: new Date(photo.photoDate)
             }
@@ -36,14 +34,14 @@ export default function ImageDetailCardStack() {
                      opacity: index === 0 ? 1 : 0.8,
                    }}
               >
-                <ImageDetailCard {...cardProps} />
+                <MetadataCard {...cardProps} />
               </div>
             );
 
           })}
       </div>
 
-      <ImageActionsCard />
+      {(selectedPhotos.length) != 0 && <ActionsCard />}
     </div>
   )
 
