@@ -11,8 +11,8 @@ type GlobalState = {
   selectedAlbum: Album | null;
   setSelectedAlbum: (album: Album | null) => void;
 
-  selectedCard: Photo | null;
-  setSelectedCard: (card: Photo | null) => void;
+  selectedPhotos: Photo[];
+  setSelectedPhotos: (card: Photo[]) => void;
 };
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
@@ -21,7 +21,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [albums, setAlbums] = useState<Album[]>([]);
   const [darkMode, setDarkMode] = useState(true);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
-  const [selectedCard, setSelectedCard] = useState<Photo | null>(null);
+  const [selectedPhotos, setSelectedPhotos] = useState<Photo[]>([]);
 
   const store: GlobalState = {
     albums,
@@ -30,8 +30,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
     setDarkMode,
     selectedAlbum,
     setSelectedAlbum,
-    selectedCard,
-    setSelectedCard,
+    selectedPhotos,
+    setSelectedPhotos,
   };
 
   return (
@@ -66,7 +66,7 @@ export const useSelectedAlbum = (): [Album | null, (album: Album | null) => void
   return [selectedAlbum, setSelectedAlbum];
 };
 
-export const useSelectedCard = (): [Photo | null, (photo: Photo | null) => void] => {
-  const { selectedCard, setSelectedCard } = useGlobalContext();
-  return [selectedCard, setSelectedCard];
+export const useSelectedPhotos = (): [Photo[], (photos: Photo[]) => void] => {
+  const { selectedPhotos, setSelectedPhotos } = useGlobalContext();
+  return [selectedPhotos, setSelectedPhotos];
 };

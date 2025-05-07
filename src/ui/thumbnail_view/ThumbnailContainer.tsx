@@ -1,27 +1,47 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
-import ImageDetailCard from "./ImageDetailCard.tsx";
-import {useSelectedAlbum} from "../../models/GlobalContext.tsx";
+import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import ImageDetailCardStack from "./ImageDetailCardStack.tsx";
 
 
 function ThumbnailContainer() {
 
   const [selectedAlbum] = useSelectedAlbum()
-  const [selectedCardID, setSelectedCardId] = useState<number | null>(null);
+  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+  const selectedPhotosRef = useRef(selectedPhotos);
+
+  const [cards, setCards] = useState<ThumbnailCardProps[]>([]);
+
 
   // Handles thumbnail card selection: toggles the selected state for that card and updates the metadata panel
   const onCardSelect = (cardId: number) => {
-    setSelectedCardId(prev => (prev == cardId) ? null : cardId);
-
-    setCards(cards => cards.map(card => {
-        return {...card, isSelected: (card.id === cardId && !card.isSelected)}
-      })
-    )
+    // Card already selected - deselect
+    if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
+      setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+    }
+    // Card not selected - select
+    else {
+      const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+      setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+    }
   }
 
 
-  const [cards, setCards] = useState<ThumbnailCardProps[]>([]);
+  // Update cards on photo select/deselect
+  useEffect(() => {
+    selectedPhotosRef.current = selectedPhotos;
+
+    setCards(cards => {
+      const selectedPhotoIds: number[] = selectedPhotos.map(photo => photo.photoId)
+      return cards.map(
+        card => {
+          return {...card, isSelected: (selectedPhotoIds.includes(card.id))}
+        }
+      )
+    });
+  }, [selectedPhotos]);
+
 
   // Update cards on album change/load
   useEffect(() => {
@@ -37,7 +57,7 @@ function ThumbnailContainer() {
         }
       }
     }))
-    setSelectedCardId(null)
+    setSelectedPhotos([])
   }, [selectedAlbum]);
 
 
@@ -58,7 +78,7 @@ function ThumbnailContainer() {
       }
 
       <div className="flex flex-row">
-        {selectedCardID && <ImageDetailCard {...cards.find(card => card.id === selectedCardID)!.properties} />}
+        {selectedPhotos.length !== 0 && <ImageDetailCardStack/>}
       </div>
     </>
   )
