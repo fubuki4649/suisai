@@ -16,7 +16,6 @@ function App() {
   // Update cards on album change/load
   useEffect(() => {
     getAlbums().then((albums: Album[]) => {
-      console.log(albums);
       setAlbums(albums);
     })
   }, []);

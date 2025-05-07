@@ -32,7 +32,7 @@ function ImageDetailCard(props: DetailCardProps) {
 
 
   return (
-    <Card shadow="sm" className="h-fit w-80 m-6">
+    <Card shadow="sm" className="h-fit w-80">
       <CardHeader className="pb-0 pt-3 px-4 flex-col items-start">
         <h4 className="font-bold text-large">{props.fileName}</h4>
         <small className="text-default-600 opacity-90">{props.filePath}</small>
