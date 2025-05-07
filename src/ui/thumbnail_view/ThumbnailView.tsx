@@ -2,11 +2,11 @@ import React, {useEffect, useRef, useState} from "react";
 import ThumbnailCard from "./ThumbnailCard.tsx";
 import {ThumbnailCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
-import ImageDetailCardStack from "./ImageDetailCardStack.tsx";
+import InspectorPanel from "./inspector_panel/InspectorPanel.tsx";
 import {PressEvent} from "@heroui/react";
 
 
-function ThumbnailContainer() {
+function ThumbnailView() {
 
   const [selectedAlbum] = useSelectedAlbum()
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
@@ -117,10 +117,10 @@ function ThumbnailContainer() {
       }
 
       <div className="flex flex-row">
-        {selectedPhotos.length !== 0 && <ImageDetailCardStack/>}
+        {(selectedAlbum?.photos?.length ?? 0) != 0 && <InspectorPanel/>}
       </div>
     </>
   )
 }
 
-export default ThumbnailContainer
+export default ThumbnailView

@@ -2,7 +2,7 @@ import {cn, HeroUIProvider, ToastProvider} from "@heroui/react";
 import React, {useEffect} from "react";
 import Header from "./ui/global_elements/Header.tsx";
 import Sidebar from "./ui/global_elements/sidebar/Sidebar.tsx";
-import ThumbnailContainer from "./ui/thumbnail_view/ThumbnailContainer.tsx";
+import ThumbnailView from "./ui/thumbnail_view/ThumbnailView.tsx";
 import {useAlbums, useDarkMode} from "./models/GlobalContext.tsx";
 import {getAlbums} from "./api/Album.ts";
 import {Album} from "./models/model.ts";
@@ -27,7 +27,7 @@ function App() {
           <Header />
           <div className="flex flex-row flex-grow">
             <Sidebar />
-            <ThumbnailContainer/>
+            <ThumbnailView/>
           </div>
         </main>
       </HeroUIProvider>
