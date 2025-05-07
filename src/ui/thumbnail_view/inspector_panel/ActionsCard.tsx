@@ -1,13 +1,23 @@
 import {Button, Card, CardBody, CardHeader, cn, Tooltip} from "@heroui/react";
 import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
 import React from "react";
-import {useDarkMode, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
+import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 
 
 export default function ActionsCard() {
 
   const [darkMode] = useDarkMode();
-  const [selectedPhotos] = useSelectedPhotos();
+  const [selectedAlbum] = useSelectedAlbum();
+  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+
+  const selectAll = () => {
+    setSelectedPhotos(selectedAlbum?.photos ?? []);
+  }
+
+  const deselectAll = () => {
+    setSelectedPhotos([]);
+  }
+
 
   return (
     <Card shadow="md" className="h-fit w-80 m-6">
@@ -20,10 +30,10 @@ export default function ActionsCard() {
       <CardBody className="p-4 !pt-0 flex-col">
         <div className="flex flex-row w-full gap-4 justify-evenly">
           <Tooltip className={cn(darkMode && "dark text-foreground")} content="Select All">
-            <Button isIconOnly className="p-1.5" aria-label="Select All" color="secondary" variant="light"><CheckCircleIcon /></Button>
+            <Button isIconOnly className="p-1.5" aria-label="Select All" color="secondary" variant="light" onPress={selectAll}><CheckCircleIcon /></Button>
           </Tooltip>
-          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Unselect All">
-            <Button isIconOnly className="p-1.5" aria-label="Unselect All" color="secondary" variant="light"><NoSymbolIcon /></Button>
+          <Tooltip className={cn(darkMode && "dark text-foreground")} content="Deselect All">
+            <Button isIconOnly className="p-1.5" aria-label="Deselect All" color="secondary" variant="light" onPress={deselectAll}><NoSymbolIcon /></Button>
           </Tooltip>
           <Tooltip className={cn(darkMode && "dark text-foreground")} content="Move To Album">
             <Button isIconOnly className="p-1.5" aria-label="Move To Album" color="success" variant="flat"><TruckIcon /></Button>

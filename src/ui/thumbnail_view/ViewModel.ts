@@ -4,7 +4,6 @@ export type ThumbnailCardProps = {
   id: number,
   previewUrl: string,
   isSelected: boolean,
-  onClick: (id: number, e: PressEvent) => void,
   properties: InspectorMetadataProps,
 }
 
