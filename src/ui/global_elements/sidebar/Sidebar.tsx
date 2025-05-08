@@ -4,9 +4,10 @@ import {Album} from "../../../models/model.ts";
 import {useAlbums, useSelectedAlbum} from "../../../models/GlobalContext.tsx";
 import NewAlbumBtn from "./NewAlbumBtn.tsx";
 import RightClickButton from "./RightClickButton.tsx";
-import RenameAlbumModal from "./RenameAlbumModal.tsx";
-import {Disclosure} from "./ViewModel.ts";
-import DeleteAlbumModal from "./DeleteAlbumModal.tsx";
+import RenameAlbumModal from "./album_modals/RenameAlbumModal.tsx";
+import DeleteAlbumModal from "./album_modals/DeleteAlbumModal.tsx";
+
+import {Disclosure} from "../../ViewModel.ts";
 
 
 function Sidebar() {

@@ -10,13 +10,13 @@ import {
   ModalHeader,
   Spacer,
 } from "@heroui/react";
-import {ModalProps} from "./ViewModel.ts";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
-import {deleteAlbum, getAlbums} from "../../../api/Album.ts";
-import {Album} from "../../../models/model.ts";
+import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
+import {deleteAlbum, getAlbums} from "../../../../api/Album.ts";
+import {Album} from "../../../../models/model.ts";
+import {AlbumModalProps} from "./ViewModel.ts";
 
-export function DeleteAlbumModal(props: ModalProps) {
+export function DeleteAlbumModal(props: AlbumModalProps) {
 
   const [darkMode] = useDarkMode();
   const [, setAlbums] = useAlbums();
@@ -24,7 +24,7 @@ export function DeleteAlbumModal(props: ModalProps) {
   const {isOpen, onOpen, onOpenChange} = props.disclosure;
   const [confirmText, setConfirmText] = useState("");
 
-  // Event handler for rename button
+  // Event handler for delete button
   const onDeleteAlbum = () => {
     deleteAlbum(props.album.albumId, (code) => {
       addToast({
@@ -43,7 +43,6 @@ export function DeleteAlbumModal(props: ModalProps) {
         shouldShowTimeoutProgress: true,
       });
       getAlbums().then((albums: Album[]) => {
-        console.log(albums);
         setAlbums(albums);
       });
     })

@@ -1,25 +1,8 @@
-import {PressEvent} from "@heroui/react";
+import {MetadataCardProps} from "./inspector_panel/ViewModel.ts";
 
 export type ThumbnailCardProps = {
   id: number,
   previewUrl: string,
   isSelected: boolean,
-  properties: InspectorMetadataProps,
-}
-
-export type InspectorMetadataProps = {
-  fileName: string,
-  filePath: string,
-  sizeOnDisk: number,
-  photoDate: Date,
-  photoTimezone: string,
-  resolution: [number, number],
-  mimeType: string,
-  cameraModel: string,
-  lensModel: string,
-  shutterCount: number,
-  focalLength: number,
-  iso: number,
-  shutterSpeed: string,
-  aperture: number,
+  properties: MetadataCardProps,
 }
