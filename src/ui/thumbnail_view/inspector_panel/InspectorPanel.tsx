@@ -1,8 +1,8 @@
 import React from "react";
 import {useSelectedPhotos} from "../../../models/GlobalContext.tsx";
-import {InspectorMetadataProps} from "../ViewModel.ts";
 import MetadataCard from "./MetadataCard.tsx";
 import ActionsCard from "./ActionsCard.tsx";
+import {MetadataCardProps} from "./ViewModel.ts";
 
 
 export default function InspectorPanel() {
@@ -21,7 +21,7 @@ export default function InspectorPanel() {
             const offset = index * 20; // vertical stacking offset
             const scale = 1 - index * 0.02; // slight scale-down effect
 
-            const cardProps: InspectorMetadataProps = {
+            const cardProps: MetadataCardProps = {
               ...photo,
               photoDate: new Date(photo.photoDate)
             }

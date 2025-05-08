@@ -11,12 +11,12 @@ import {
   Spacer,
 } from "@heroui/react";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
-import {ModalProps} from "./ViewModel.ts";
-import {getAlbums, renameAlbum} from "../../../api/Album.ts";
-import {Album} from "../../../models/model.ts";
+import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
+import {getAlbums, renameAlbum} from "../../../../api/Album.ts";
+import {Album} from "../../../../models/model.ts";
+import {AlbumModalProps} from "./ViewModel.ts";
 
-export function RenameAlbumModal(props: ModalProps) {
+export function RenameAlbumModal(props: AlbumModalProps) {
 
   const [darkMode] = useDarkMode();
   const [, setAlbums] = useAlbums();
@@ -43,7 +43,6 @@ export function RenameAlbumModal(props: ModalProps) {
         shouldShowTimeoutProgress: true,
       });
       getAlbums().then((albums: Album[]) => {
-        console.log(albums);
         setAlbums(albums);
       });
     })

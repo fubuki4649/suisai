@@ -1,6 +1,7 @@
 import {Card, CardBody, CardHeader, Divider} from "@heroui/react";
 import React from "react";
-import {InspectorMetadataProps} from "../ViewModel.ts";
+
+import {MetadataCardProps} from "./ViewModel.ts";
 
 
 function InfoField({label, data}: {label: string, data: string}) {
@@ -12,7 +13,7 @@ function InfoField({label, data}: {label: string, data: string}) {
   )
 }
 
-function MetadataCard(props: InspectorMetadataProps) {
+function MetadataCard(props: MetadataCardProps) {
 
   const timeOptions: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
