@@ -7,15 +7,26 @@ export async function getAlbums(onHttpError: (code: number) => void = () => {}):
   return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
 
     const albums = (await axios.get<Album[]>("http://localhost:8000/api/album/all")).data;
+    for (const album of albums) album.photos = null;
+
     albums.unshift(
       {
         albumId: -1,
         albumName: "Unfiled Photos",
-        photos: (await axios.get<Photo[]>("http://localhost:8000/api/album/unfiled/photos")).data
+        photos: null,
       }
     );
 
     return albums;
+
+  })();
+}
+
+export async function queryAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<Photo[]> {
+  return withAxiosErrorHandling<Photo[]>([], onHttpError, async (): Promise<Photo[]> => {
+
+    if (albumId === -1) return (await axios.get<Photo[]>("http://localhost:8000/api/album/unfiled/photos")).data;
+    else return (await axios.get<Photo[]>(`http://localhost:8000/api/album/${albumId}/photos`)).data;
 
   })();
 }

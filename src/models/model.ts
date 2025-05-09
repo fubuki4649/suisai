@@ -21,5 +21,5 @@ export type Photo = {
 export type Album = {
   albumId: number,
   albumName: string,
-  photos: Photo[],
+  photos: Photo[] | null,
 }

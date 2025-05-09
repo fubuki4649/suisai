@@ -1,10 +1,13 @@
-import {useAlbums, useDarkMode, useSelectedPhotos} from "../../../../models/GlobalContext.tsx";
+import {useAlbums, useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../../models/GlobalContext.tsx";
 import React, {useState} from "react";
-import {deleteAlbum, getAlbums} from "../../../../api/Album.ts";
 import {
   addToast,
   Button,
-  cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,
+  cn,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Input,
   Modal,
   ModalBody,
@@ -14,41 +17,76 @@ import {
   Spacer
 } from "@heroui/react";
 import {Album} from "../../../../models/model.ts";
-import {AlbumModalProps} from "../../../global_elements/sidebar/album_modals/ViewModel.ts";
 import {Disclosure} from "../../../ViewModel.ts";
+import {movePhotoToAlbum, unfilePhoto} from "../../../../api/PhotoMoveAlbum.ts";
 
 export default function MovePhotoModal(disclosure : Disclosure) {
 
   const [darkMode] = useDarkMode();
-  const [selectedPhotos] = useSelectedPhotos();
+  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
   const [albums] = useAlbums();
 
   const {isOpen, onOpen, onOpenChange} = disclosure;
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [modalSelectedAlbum, setModalSelectedAlbum] = useState<Album | null>(null);
 
   // Event handler for move photo button
-  const onDeleteAlbum = () => {
-    // deleteAlbum(selectedAlbum?.albumId ?? -1, (code) => {
-    //   addToast({
-    //     title: "Error",
-    //     description: "Failed to delete album with code " + code,
-    //     color: "danger",
-    //     timeout: 5000,
-    //     shouldShowTimeoutProgress: true,
-    //   })
-    // }).then(() => {
-    //   addToast({
-    //     title: "Success",
-    //     description: "Successfully moved ${selectedPhotos.length} photos to album ${selectedAlbum.albumName} (ID: ${selectedAlbum?.albumId})",
-    //     color: "success",
-    //     timeout: 5000,
-    //     shouldShowTimeoutProgress: true,
-    //   });
-    //   getAlbums().then((albums: Album[]) => {
-    //     console.log(albums);
-    //     setAlbums(albums);
-    //   });
-    // })
+  const onMovePhotos = () => {
+
+    const selectedPhotoIds = selectedPhotos.map((photo) => photo.photoId)
+
+    // On Success - Display toast + update frontend
+    const onSuccess = (message: string) => {
+      addToast({
+        title: "Success",
+        description: message,
+        color: "success",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      });
+
+      // Update frontend
+      // TODO this line is a problem
+      console.log(selectedPhotoIds);
+      selectedAlbum!.photos = selectedAlbum!.photos!.filter((p) => {
+        console.log(p.photoId.toString() + !(p.photoId in selectedPhotoIds).toString());
+        return !(p.photoId in selectedPhotoIds);
+      })
+      // TODO above line is a problem
+      setSelectedAlbum({...selectedAlbum!});
+
+      modalSelectedAlbum!.photos = null;
+      setSelectedPhotos([])
+
+    }
+
+    // On Error - Display error
+    const onError = (code: number, message: string) => {
+      addToast({
+        title: "Error",
+        description: message + " (Code: " + code + ")",
+        color: "danger",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      })
+    }
+
+    // Move album (or unfile if album id is -1)
+    if (modalSelectedAlbum!.albumId === -1) {
+      unfilePhoto(selectedPhotoIds, (code) => {
+        onError(code, "Failed to unfile photos");
+      }).then(() => {
+        onSuccess("Successfully unfiled ${selectedPhotos.length} photos");
+      });
+    }
+    else {
+      movePhotoToAlbum(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
+        onError(code, "Failed to move photos");
+      }).then(() => {
+        onSuccess("Successfully moved ${selectedPhotos.length} photos to album ${selectedAlbum.albumName} (ID: ${selectedAlbum?.albumId})");
+      });
+    }
+
   }
 
   return (
@@ -60,7 +98,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
         isOpen={isOpen}
         onOpenChange={() => {
           onOpenChange();
-          setSelectedAlbum(null);
+          setModalSelectedAlbum(null);
         }}
       >
         <ModalContent>
@@ -81,7 +119,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
                       <Input
                         isReadOnly
                         label="Destination Album"
-                        value={selectedAlbum?.albumName ?? ""}
+                        value={modalSelectedAlbum?.albumName ?? ""}
                         type="text"
                         placeholder="Select Album"
                         size="md"
@@ -91,7 +129,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
                   </DropdownTrigger>
                   <DropdownMenu aria-label="Dynamic Actions" items={albums}>
                     {(album) => (
-                      <DropdownItem key={album.albumId} onPress={() => {setSelectedAlbum(album);}}>
+                      <DropdownItem key={album.albumId} onPress={() => {setModalSelectedAlbum(album);}}>
                         {album.albumName} (ID: {album.albumId})
                       </DropdownItem>
                     )}
@@ -103,7 +141,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={() => {onDeleteAlbum(); onClose();}} isDisabled={selectedAlbum == null}>
+                <Button color="primary" onPress={() => {onMovePhotos(); onClose();}} isDisabled={modalSelectedAlbum == null}>
                   {selectedPhotos.length == 1 ? "Move Photo" : "Move Photos"}
                 </Button>
               </ModalFooter>
