@@ -1,4 +1,4 @@
-import {Spacer, useDisclosure} from "@heroui/react";
+import {addToast, Spacer, useDisclosure} from "@heroui/react";
 import React, {useState} from "react";
 import {Album} from "../../../models/model.ts";
 import {useAlbums, useSelectedAlbum} from "../../../models/GlobalContext.tsx";
@@ -8,6 +8,7 @@ import RenameAlbumModal from "./album_modals/RenameAlbumModal.tsx";
 import DeleteAlbumModal from "./album_modals/DeleteAlbumModal.tsx";
 
 import {Disclosure} from "../../ViewModel.ts";
+import {queryAlbum} from "../../../api/Album.ts";
 
 
 function Sidebar() {
@@ -20,7 +21,19 @@ function Sidebar() {
 
   // Hook for selecting an album
   const onAlbumSelect = (album: Album) => {
-    setSelectedAlbum(album)
+    if (album.photos != null) setSelectedAlbum(album)
+    else {
+      queryAlbum(album.albumId, () => { addToast({
+        title: "Error",
+        description: `Failed to load the contents of album ${album.albumName} (ID ${album.albumId})`,
+        color: "danger",
+        timeout: 5000,
+        shouldShowTimeoutProgress: true,
+      })}).then((photos) => {
+        album.photos = photos
+        setSelectedAlbum(album)
+      })
+    }
   }
 
   const renameAlbumDisclosure: Disclosure = useDisclosure();
