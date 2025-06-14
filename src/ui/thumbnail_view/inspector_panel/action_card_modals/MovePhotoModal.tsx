@@ -27,7 +27,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
   const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
   const [albums] = useAlbums();
 
-  const {isOpen, onOpen, onOpenChange} = disclosure;
+  const {isOpen, onOpenChange} = disclosure;
   const [modalSelectedAlbum, setModalSelectedAlbum] = useState<Album | null>(null);
 
   // Event handler for move photo button
@@ -46,13 +46,10 @@ export default function MovePhotoModal(disclosure : Disclosure) {
       });
 
       // Update frontend
-      // TODO this line is a problem
-      console.log(selectedPhotoIds);
       selectedAlbum!.photos = selectedAlbum!.photos!.filter((p) => {
-        console.log(p.photoId.toString() + !(p.photoId in selectedPhotoIds).toString());
-        return !(p.photoId in selectedPhotoIds);
+        return !selectedPhotoIds.includes(p.photoId);
       })
-      // TODO above line is a problem
+
       setSelectedAlbum({...selectedAlbum!});
 
       modalSelectedAlbum!.photos = null;
@@ -76,14 +73,14 @@ export default function MovePhotoModal(disclosure : Disclosure) {
       unfilePhoto(selectedPhotoIds, (code) => {
         onError(code, "Failed to unfile photos");
       }).then(() => {
-        onSuccess("Successfully unfiled ${selectedPhotos.length} photos");
+        onSuccess(`Successfully unfiled ${selectedPhotos.length} photos`);
       });
     }
     else {
       movePhotoToAlbum(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
         onError(code, "Failed to move photos");
       }).then(() => {
-        onSuccess("Successfully moved ${selectedPhotos.length} photos to album ${selectedAlbum.albumName} (ID: ${selectedAlbum?.albumId})");
+        onSuccess(`Successfully moved ${selectedPhotos.length} photos to album ${modalSelectedAlbum?.albumName ?? "Unknown"} (ID: ${modalSelectedAlbum?.albumId})`);
       });
     }
 
