@@ -4,6 +4,7 @@ import React from "react";
 import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 import MovePhotoModal from "./action_card_modals/MovePhotoModal.tsx";
 import {Disclosure} from "../../ViewModel.ts";
+import DeletePhotoModal from "./action_card_modals/DeletePhotoModal.tsx";
 
 
 export default function ActionsCard() {
@@ -22,10 +23,12 @@ export default function ActionsCard() {
 
 
   const movePhotoDisclosure: Disclosure = useDisclosure();
+  const deletePhotoDisclosure: Disclosure = useDisclosure();
 
   return (
     <>
       <MovePhotoModal {...movePhotoDisclosure}/>
+      <DeletePhotoModal {...deletePhotoDisclosure}/>
 
       <Card shadow="md" className="h-fit w-80 m-6">
         <CardHeader className="p-4 w-full flex-col">
@@ -46,7 +49,7 @@ export default function ActionsCard() {
               <Button isIconOnly className="p-1.5" aria-label="Move To Album" color="success" variant="flat" onPress={movePhotoDisclosure.onOpen}><TruckIcon/></Button>
             </Tooltip>
             <Tooltip className={cn(darkMode && "dark text-foreground")} content="Delete Images" color="danger">
-              <Button isIconOnly className="p-2" aria-label="Delete" color="danger" variant="shadow"><TrashIcon/></Button>
+              <Button isIconOnly className="p-2" aria-label="Delete" color="danger" variant="shadow" onPress={deletePhotoDisclosure.onOpen}><TrashIcon/></Button>
             </Tooltip>
           </div>
         </CardBody>
