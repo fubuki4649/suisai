@@ -44,7 +44,7 @@ function ThumbnailView() {
 
 
   return (
-    <>
+    <div className="flex flex-grow" style={{ zoom: (window.innerHeight <= 800 ? "0.825" : "1.0") }}>
       { cards.length ?
         <ul className="flex flex-wrap flex-grow h-full overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
           {cards.map(card => (
@@ -62,7 +62,7 @@ function ThumbnailView() {
       <div className="flex flex-row">
         {(selectedAlbum?.photos?.length ?? 0) != 0 && <InspectorPanel/>}
       </div>
-    </>
+    </div>
   )
 }
 

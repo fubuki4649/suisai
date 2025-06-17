@@ -36,7 +36,7 @@ export default function Header(props: HeaderProps) {
   };
 
   return (
-    <Navbar {...navbarProps}>
+    <Navbar {...navbarProps} style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
 
       {/* Left Content */}
       <NavbarBrand>
@@ -60,7 +60,7 @@ export default function Header(props: HeaderProps) {
 
           <Spacer />
 
-          <Button className="text-default-500" radius="full" variant="light">
+          <Button className="text-default-500 text-medium" radius="full" variant="light">
             Sign Out
           </Button>
 
