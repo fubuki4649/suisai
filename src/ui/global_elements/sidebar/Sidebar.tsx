@@ -40,46 +40,48 @@ function Sidebar() {
   const deleteAlbumDisclosure: Disclosure = useDisclosure();
 
   return (
-    <div className="flex flex-col bg-background/50 p-4 space-y-2" style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
+    <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
+      <div className="p-4 space-y-2" style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
 
-      <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
-      <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
+        <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
+        <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
 
-      {albums.sort((a, b) => a.albumId - b.albumId).map(album => (
-        <RightClickButton key={album.albumId} btnProps={{
-          className: "px-6",
-          children: album.albumName,
-          color: "default",
-          variant: selectedAlbum?.albumId == album.albumId ? "flat" : "light",
-          onPress: () => onAlbumSelect(album),
-        }}
-        rightClickItems={[
-          {
-            key: "rename",
-            children: "Rename",
-            isDisabled: album.albumId < 0,
-            onPress: () => {
-              setRightClickAlbum(album)
-              renameAlbumDisclosure.onOpen()
+        {albums.sort((a, b) => a.albumId - b.albumId).map(album => (
+          <RightClickButton key={album.albumId} btnProps={{
+            className: "px-6",
+            children: album.albumName,
+            color: "default",
+            variant: selectedAlbum?.albumId == album.albumId ? "flat" : "light",
+            onPress: () => onAlbumSelect(album),
+          }}
+          rightClickItems={[
+            {
+              key: "rename",
+              children: "Rename",
+              isDisabled: album.albumId < 0,
+              onPress: () => {
+                setRightClickAlbum(album)
+                renameAlbumDisclosure.onOpen()
+              },
             },
-          },
-          {
-            key: "delete",
-            className: "text-danger",
-            color: "danger",
-            children: "Delete",
-            isDisabled: album.albumId < 0,
-            onPress: () => {
-              setRightClickAlbum(album)
-              deleteAlbumDisclosure.onOpen()
-            },
-          }
-        ]}/>
-      ))}
+            {
+              key: "delete",
+              className: "text-danger",
+              color: "danger",
+              children: "Delete",
+              isDisabled: album.albumId < 0,
+              onPress: () => {
+                setRightClickAlbum(album)
+                deleteAlbumDisclosure.onOpen()
+              },
+            }
+          ]}/>
+        ))}
 
-      <Spacer className="h-1"/>
-      <NewAlbumBtn />
+        <Spacer className="h-0.5"/>
+        <NewAlbumBtn />
 
+      </div>
     </div>
   )
 }

@@ -47,7 +47,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
   }, [isOpen]);
 
   return (
-    <>
+    <div class="h-fit">
       <Button {...props.btnProps} fullWidth ref={buttonRef}>{props.btnProps.children}</Button>
 
       {isOpen && (
@@ -71,6 +71,6 @@ export default function RightClickButton(props: RightClickButtonProps) {
           </Dropdown>
         </div>
       )}
-    </>
+    </div>
   );
 }

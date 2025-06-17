@@ -39,50 +39,52 @@ function NewAlbumBtn() {
   }
 
   return (
-    <Popover
-      className={cn(darkMode && "dark text-foreground")}
-      placement="right"
-      showArrow={true}
-      backdrop="blur"
-      isOpen={popoverIsOpen}
-      onOpenChange={(isOpen: boolean) => {
-        setPopoverIsOpen(isOpen)
-        setNewAlbumName("")
-      }}
-      onClose={() => {setPopoverIsOpen(false)}}
-    >
-      <PopoverTrigger>
-        <Button color="default" variant="ghost" endContent={<PlusIcon className={"size-6"}/>}>
-          <Spacer className="w-0"/>
-          <p className="font-semibold">Add Album</p>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <div className="px-1 py-2">
-          <div className="flex flex-row justify-between">
-            <div className="text-small font-bold">New Album</div>
-            <Button
-              isDisabled={newAlbumName.trim().length == 0}
-              onPress={onCreateButtonPress}
-              className="mb-[-22px]"
-              color="primary"
-              size="sm"
-            >
-              {newAlbumName.trim().length == 0 ? "Name Cannot Be Blank" : "Create"}
-            </Button>
+    <div className="h-fit">
+      <Popover
+        className={cn(darkMode && "dark text-foreground")}
+        placement="right"
+        showArrow={true}
+        backdrop="blur"
+        isOpen={popoverIsOpen}
+        onOpenChange={(isOpen: boolean) => {
+          setPopoverIsOpen(isOpen)
+          setNewAlbumName("")
+        }}
+        onClose={() => {setPopoverIsOpen(false)}}
+      >
+        <PopoverTrigger>
+          <Button color="default" variant="ghost" endContent={<PlusIcon className={"size-6"}/>}>
+            <Spacer className="w-0"/>
+            <p className="font-semibold">Add Album</p>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <div className="px-1 py-2">
+            <div className="flex flex-row justify-between">
+              <div className="text-small font-bold">New Album</div>
+              <Button
+                isDisabled={newAlbumName.trim().length == 0}
+                onPress={onCreateButtonPress}
+                className="mb-[-22px]"
+                color="primary"
+                size="sm"
+              >
+                {newAlbumName.trim().length == 0 ? "Name Cannot Be Blank" : "Create"}
+              </Button>
+            </div>
+            <Input
+              label="Please choose a name"
+              value={newAlbumName}
+              onValueChange={setNewAlbumName}
+              type="text" size="sm"
+              placeholder="Album Name"
+              color={cn(darkMode ? "default" : "primary") as "primary" | "default"}
+              labelPlacement="outside"
+            />
           </div>
-          <Input
-            label="Please choose a name"
-            value={newAlbumName}
-            onValueChange={setNewAlbumName}
-            type="text" size="sm"
-            placeholder="Album Name"
-            color={cn(darkMode ? "default" : "primary") as "primary" | "default"}
-            labelPlacement="outside"
-          />
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }
 
