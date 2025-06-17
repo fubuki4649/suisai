@@ -25,7 +25,7 @@ function App() {
         <ToastProvider  placement="bottom-center"/>
         <main className={cn(darkMode && "dark text-foreground", "h-screen flex flex-col bg-default")}>
           <Header />
-          <div className="flex flex-row flex-grow">
+          <div className="flex flex-row flex-grow max-h-full overflow-y-auto">
             <Sidebar />
             <ThumbnailView/>
           </div>

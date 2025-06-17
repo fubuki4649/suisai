@@ -31,7 +31,7 @@ function ThumbnailView() {
     setCards((selectedAlbum?.photos ?? []).map(photo => {
       return {
         id: photo.photoId,
-        previewUrl: photo.thumbnailUrl,
+        previewUrl: `http://localhost:8000/api/thumbnail/${photo.hash}`,
         isSelected: false,
         properties: {
           ...photo,
@@ -46,7 +46,7 @@ function ThumbnailView() {
   return (
     <>
       { cards.length ?
-        <ul className="flex flex-wrap flex-grow content-start gap-6 p-6 grid-cols-auto">
+        <ul className="flex flex-wrap flex-grow h-full overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
           {cards.map(card => (
             <li key={card.id}>
               <ThumbnailCard {...card} />
