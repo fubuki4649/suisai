@@ -1,6 +1,6 @@
 export type Photo = {
   photoId: number;
-  thumbnailUrl: string;
+  thumbnailPath: string;
   hash: string;
   fileName: string,
   filePath: string,
