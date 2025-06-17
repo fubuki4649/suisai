@@ -38,7 +38,8 @@ export default function InspectorPanel() {
               </div>
             );
 
-          })}
+          })
+        }
       </div>
 
       {(selectedPhotos.length) != 0 && <ActionsCard />}

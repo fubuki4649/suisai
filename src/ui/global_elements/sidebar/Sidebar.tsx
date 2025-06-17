@@ -40,7 +40,7 @@ function Sidebar() {
   const deleteAlbumDisclosure: Disclosure = useDisclosure();
 
   return (
-    <div className="flex flex-col bg-background/50 p-4 space-y-2">
+    <div className="flex flex-col bg-background/50 p-4 space-y-2" style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
 
       <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
       <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
