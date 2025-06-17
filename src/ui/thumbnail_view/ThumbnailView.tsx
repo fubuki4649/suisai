@@ -46,7 +46,7 @@ function ThumbnailView() {
   return (
     <div className="flex flex-grow" style={{ zoom: (window.innerHeight <= 800 ? "0.825" : "1.0") }}>
       { cards.length ?
-        <ul className="flex flex-wrap flex-grow h-full overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
+        <ul className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
           {cards.map(card => (
             <li key={card.id}>
               <ThumbnailCard {...card} />
