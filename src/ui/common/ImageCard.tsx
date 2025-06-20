@@ -1,10 +1,10 @@
 import {Card, cn, Image, PressEvent} from "@heroui/react";
 import React, {useEffect, useRef} from "react";
-import {ThumbnailCardProps} from "./ViewModel.ts";
+import {ImageCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 
 
-function ThumbnailCard(props: ThumbnailCardProps) {
+function ImageCard(props: ImageCardProps) {
 
   const [selectedAlbum] = useSelectedAlbum()
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
@@ -29,7 +29,7 @@ function ThumbnailCard(props: ThumbnailCardProps) {
       }
       // Else perform a multi-select
       else {
-        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
         setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
       }
     }
@@ -45,7 +45,7 @@ function ThumbnailCard(props: ThumbnailCardProps) {
       }
       // Else perform a multi-select
       else {
-        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
         setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
       }
     }
@@ -58,7 +58,7 @@ function ThumbnailCard(props: ThumbnailCardProps) {
       }
       // Else perform a single select
       else {
-        const newlySelected = selectedAlbum?.photos.find(photo => photo.photoId === cardId);
+        const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
         setSelectedPhotos(newlySelected ? [newlySelected] : selectedPhotosRef.current);
       }
     }
@@ -83,4 +83,4 @@ function ThumbnailCard(props: ThumbnailCardProps) {
   )
 }
 
-export default ThumbnailCard
+export default ImageCard

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import ThumbnailCard from "./ThumbnailCard.tsx";
-import {ThumbnailCardProps} from "./ViewModel.ts";
+import ImageCard from "../common/ImageCard.tsx";
+import {ImageCardProps} from "../common/ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 import InspectorPanel from "./inspector_panel/InspectorPanel.tsx";
 
@@ -10,7 +10,7 @@ function ThumbnailView() {
   const [selectedAlbum] = useSelectedAlbum()
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
 
-  const [cards, setCards] = useState<ThumbnailCardProps[]>([]);
+  const [cards, setCards] = useState<ImageCardProps[]>([]);
 
 
   // Update cards on photo select/deselect
@@ -33,10 +33,6 @@ function ThumbnailView() {
         id: photo.photoId,
         previewUrl: `http://localhost:8000/api/thumbnail/${photo.hash}`,
         isSelected: false,
-        properties: {
-          ...photo,
-          photoDate: new Date(photo.photoDate)
-        }
       }
     }))
     setSelectedPhotos([])
@@ -49,7 +45,7 @@ function ThumbnailView() {
         <ul className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
           {cards.map(card => (
             <li key={card.id}>
-              <ThumbnailCard {...card} />
+              <ImageCard {...card} />
             </li>
           ))}
         </ul>
