@@ -1,4 +1,4 @@
-import Filmstrip from "./Filmstrip/Filmstrip.tsx";
+import Filmstrip from "./Filmstrip.tsx";
 import BigScreen from "./BigScreen.tsx";
 
 

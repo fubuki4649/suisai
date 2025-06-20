@@ -1,59 +1,17 @@
-import React, {useEffect, useState} from "react";
-import ImageCard from "../common/ImageCard.tsx";
-import {ImageCardProps} from "../common/ViewModel.ts";
-import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import React from "react";
+import {useSelectedAlbum} from "../../models/GlobalContext.tsx";
 import InspectorPanel from "./inspector_panel/InspectorPanel.tsx";
+import ImageCardContainer from "../common/ImageCardContainer.tsx";
 
 
 function ThumbnailView() {
 
   const [selectedAlbum] = useSelectedAlbum()
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
-
-  const [cards, setCards] = useState<ImageCardProps[]>([]);
-
-
-  // Update cards on photo select/deselect
-  useEffect(() => {
-    setCards(cards => {
-      const selectedPhotoIds: number[] = selectedPhotos.map(photo => photo.photoId)
-      return cards.map(
-        card => {
-          return {...card, isSelected: (selectedPhotoIds.includes(card.id))}
-        }
-      )
-    });
-  }, [selectedPhotos]);
-
-
-  // Update cards on album change/load
-  useEffect(() => {
-    setCards((selectedAlbum?.photos ?? []).map(photo => {
-      return {
-        id: photo.photoId,
-        previewUrl: `http://localhost:8000/api/thumbnail/${photo.hash}`,
-        isSelected: false,
-      }
-    }))
-    setSelectedPhotos([])
-  }, [selectedAlbum]);
-
 
   return (
     <div className="flex flex-grow" style={{ zoom: (window.innerHeight <= 800 ? "0.825" : "1.0") }}>
-      { cards.length ?
-        <ul className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto">
-          {cards.map(card => (
-            <li key={card.id}>
-              <ImageCard {...card} />
-            </li>
-          ))}
-        </ul>
-        :
-        <div className="flex flex-wrap flex-grow justify-center items-center">
-          <p className="text-default-600 text-xl">{selectedAlbum == null ? "No Album Selected" : "Album is Empty"}</p>
-        </div>
-      }
+
+      <ImageCardContainer className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-6 p-6 grid-cols-auto"/>
 
       <div className="flex flex-row">
         {(selectedAlbum?.photos?.length ?? 0) != 0 && <InspectorPanel/>}
