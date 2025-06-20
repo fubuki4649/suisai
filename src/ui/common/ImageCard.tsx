@@ -71,7 +71,7 @@ function ImageCard(props: ImageCardProps) {
       isPressable
       onPress={(e: PressEvent) => onCardSelect(props.id, e)}
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
-      className={cn(props.isSelected && "border-2 border-secondary", props.isSelected && "m-[-2px]", "h-fit w-fit")}
+      className={cn(props.isSelected && "border-2 border-secondary", props.isSelected && "m-[-2px]", "h-fit w-fit flex-shrink-0")}
     >
       <Image
         alt="Card background"
