@@ -50,7 +50,7 @@ export default function ImageCardContainer({ className }: { className?: string }
         </ul>
         :
         <div className="flex flex-wrap flex-grow justify-center items-center">
-          <p className="text-default-600 text-xl">{selectedAlbum == null ? "No Album Selected" : "Album is Empty"}</p>
+          <p className="text-default-600 text-3xl">{selectedAlbum == null ? "No Album Selected" : "Album is Empty"}</p>
         </div>
       }
     </>
