@@ -18,14 +18,18 @@ import {
   Switch,
 } from "@heroui/react";
 import {HeaderProps} from "./ViewModel.ts";
-import {MoonIcon, SunIcon} from "@heroicons/react/16/solid";
+import {FilmIcon, MoonIcon, Squares2X2Icon, SunIcon} from "@heroicons/react/16/solid";
 import {useDarkMode} from "../../models/GlobalContext.tsx";
+import {useLocation, useNavigate} from "react-router-dom";
 
 
 export default function Header(props: HeaderProps) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useDarkMode();
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const navbarProps: NavbarProps = {
     ...props.navbarProps,
@@ -52,10 +56,18 @@ export default function Header(props: HeaderProps) {
       <NavbarContent className="hidden md:flex" justify="end">
         <NavbarItem className="ml-2 !flex gap-2">
 
+          <Switch defaultSelected={location.pathname == "/film"} onValueChange={(isSelected) => isSelected ? navigate("/film") : navigate("/")}
+                  color="primary" size="lg" classNames={{startContent: "text-white"}}
+                  startContent={<FilmIcon/>} endContent={<Squares2X2Icon/>}>
+            <p className="text-medium text-default-500 w-14">{location.pathname == "/film" ? "Filmstrip" : "Gallery"}</p>
+          </Switch>
+
+          <Spacer />
+
           <Switch defaultSelected={!darkMode} onValueChange={(state) => setDarkMode(!state)}
                   color="warning" size="lg" classNames={{startContent: "text-white"}}
                   startContent={<SunIcon/>} endContent={<MoonIcon/>}>
-            <p className="text-medium text-default">{darkMode ? "Dark Mode" : "Light Mode"}</p>
+            <p className="text-medium text-default-500 w-8">{darkMode ? "Dark" : "Light"}</p>
           </Switch>
 
           <Spacer />
