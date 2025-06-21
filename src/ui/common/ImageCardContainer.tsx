@@ -1,11 +1,12 @@
 import ImageCard from "./ImageCard.tsx";
-import React, {useEffect, useState} from "react";
+import React, {forwardRef, useEffect, useState} from "react";
 import {ImageCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 
 
-export default function ImageCardContainer({ className }: { className?: string }) {
+type ULProps = React.HTMLAttributes<HTMLUListElement>;
 
+const ImageCardContainer = forwardRef<HTMLUListElement, ULProps>((props, ref) => {
   const [selectedAlbum] = useSelectedAlbum()
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
 
@@ -41,7 +42,7 @@ export default function ImageCardContainer({ className }: { className?: string }
   return (
     <>
       { cards.length ?
-        <ul className={className}>
+        <ul className={props.className} ref={ref}>
           {cards.map(card => (
             <li className="flex-shrink-0" key={card.id}>
               <ImageCard {...card} />
@@ -55,5 +56,6 @@ export default function ImageCardContainer({ className }: { className?: string }
       }
     </>
   )
+});
 
-}
+export default ImageCardContainer;
