@@ -1,7 +1,7 @@
 import {addToast, Spacer, useDisclosure} from "@heroui/react";
 import React, {useState} from "react";
 import {Album} from "../../../models/model.ts";
-import {useAlbums, useSelectedAlbum} from "../../../models/GlobalContext.tsx";
+import {useAlbums, useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 import NewAlbumBtn from "./NewAlbumBtn.tsx";
 import RightClickButton from "./RightClickButton.tsx";
 import RenameAlbumModal from "./album_modals/RenameAlbumModal.tsx";
@@ -15,13 +15,17 @@ function Sidebar() {
 
   const [albums] = useAlbums();
   const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
+  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
 
   // Stores state for the modal dialogues
   const [rightClickAlbum, setRightClickAlbum] = useState<Album>(selectedAlbum ?? albums[0]);
 
   // Hook for selecting an album
   const onAlbumSelect = (album: Album) => {
-    if (album.photos != null) setSelectedAlbum(album)
+    if (album.photos != null) {
+      setSelectedPhotos([])
+      setSelectedAlbum(album)
+    }
     else {
       queryAlbum(album.albumId, () => { addToast({
         title: "Error",
@@ -31,6 +35,7 @@ function Sidebar() {
         shouldShowTimeoutProgress: true,
       })}).then((photos) => {
         album.photos = photos
+        setSelectedPhotos([])
         setSelectedAlbum(album)
       })
     }

@@ -71,7 +71,7 @@ function Filmstrip() {
   return (
     <>
       {(selectedAlbum?.photos?.length ?? 0) != 0 &&
-        <div className="flex flex-col bg-default-100 shadow-2xl" style={{ zoom: (window.innerHeight <= 800 ? "0.6" : "0.8") }}>
+        <div className="flex flex-col bg-default-100 shadow-2xl" style={{ zoom: (window.innerHeight <= 800 ? "0.7" : "0.8") }}>
           <div className="flex flex-row min-h-48" onWheel={onWheel}>
             <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-6 p-6" ref={scrollRef}/>
           </div>

@@ -47,12 +47,12 @@ export default function RightClickButton(props: RightClickButtonProps) {
   }, [isOpen]);
 
   return (
-    <div class="h-fit">
+    <div className="h-fit">
       <Button {...props.btnProps} fullWidth ref={buttonRef}>{props.btnProps.children}</Button>
 
       {isOpen && (
         <div className="!m-0">
-          <Dropdown isOpen className={cn(darkMode && "dark text-foreground")} placement="right" showArrow backdrop="blur">
+          <Dropdown isOpen className={cn(darkMode && "dark text-foreground")} placement="right" backdrop="blur">
             <DropdownTrigger>
               {/* Invisible trigger */}
               <div className="absolute" style={{ top: menuPosition.y, left: menuPosition.x }} />
