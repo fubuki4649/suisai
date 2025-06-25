@@ -2,7 +2,6 @@ export type Photo = {
   photoId: number;
   hash: string;
   fileName: string,
-  filePath: string,
   sizeOnDisk: number,
   photoDate: string,
   photoTimezone: string,

@@ -1,6 +1,5 @@
 export type MetadataCardProps = {
   fileName: string,
-  filePath: string,
   sizeOnDisk: number,
   photoDate: Date,
   photoTimezone: string,
