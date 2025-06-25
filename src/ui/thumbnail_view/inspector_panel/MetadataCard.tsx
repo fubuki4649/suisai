@@ -36,9 +36,8 @@ function MetadataCard(props: MetadataCardProps) {
     <Card shadow="md" className="h-fit w-80">
       <CardHeader className="pb-0 pt-3 px-4 flex-col items-start">
         <h4 className="font-bold text-large">{props.fileName}</h4>
-        <small className="text-default-600 opacity-90">{props.filePath}</small>
       </CardHeader>
-      <CardBody className="p-4 flex-col gap-1 items-start">
+      <CardBody className="p-4 pt-2 flex-col gap-1 items-start">
         <p className="pb-1 text-tiny text-white/60 uppercase font-bold">File Properties</p>
         <InfoField label={"Size on Disk"} data={`${(props.sizeOnDisk / 1024).toFixed(2)} MB`} />
         <InfoField label={"Photo Date"} data={props.photoDate.toLocaleDateString('en-US', dateOptions).replace(',', '')} />
