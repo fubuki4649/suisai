@@ -4,7 +4,7 @@ import InspectorPanel from "../thumbnail_view/inspector_panel/InspectorPanel.tsx
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
 
 
-function BigScreen({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
+function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
 
   const [selectedAlbum] = useSelectedAlbum();
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
@@ -36,9 +36,9 @@ function BigScreen({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
         <>
           <div className="flex flex-col justify-center select-none">
             <div className="flex flex-row max-h-full justify-center">
-              <ArrowLeftIcon className="w-20 h-full mx-12 text-default-500 active:text-default-100" onClick={leftArrowHandler} />
+              <ArrowLeftIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={leftArrowHandler} />
               <img className="object-scale-down shadow-2xl" src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`} alt="" />
-              <ArrowRightIcon className="w-20 h-full mx-12 text-default-500 active:text-default-100" onClick={rightArrowHandler} />
+              <ArrowRightIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={rightArrowHandler} />
             </div>
           </div>
           <InspectorPanel />
@@ -55,4 +55,4 @@ function BigScreen({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
   )
 }
 
-export default BigScreen
+export default Lightbox
