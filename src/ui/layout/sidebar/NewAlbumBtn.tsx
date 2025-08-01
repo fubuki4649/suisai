@@ -1,5 +1,5 @@
 import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, Spacer} from "@heroui/react";
-import {PlusIcon} from "@heroicons/react/16/solid";
+import {PlusIcon} from "@heroicons/react/20/solid";
 import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../models/GlobalContext.tsx";
 import {createAlbum, getAlbums} from "../../../api/Album.ts";

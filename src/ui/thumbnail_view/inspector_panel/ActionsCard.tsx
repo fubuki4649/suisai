@@ -30,7 +30,7 @@ export default function ActionsCard() {
       <MovePhotoModal {...movePhotoDisclosure}/>
       <DeletePhotoModal {...deletePhotoDisclosure}/>
 
-      <Card shadow="md" className="h-fit w-80 m-6">
+      <Card shadow="md" className="h-fit w-80 m-6 select-none">
         <CardHeader className="p-4 w-full flex-col">
           <div className="flex flex-row justify-between w-full">
             <h4 className="font-bold text-large">Selected Photos</h4>

@@ -2,15 +2,13 @@ import ImageCardContainer from "../common/ImageCardContainer.tsx";
 import React, {RefObject, useEffect, useRef} from "react";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 
-function Filmstrip() {
+function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
 
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
   const selectedPhotosRef = useRef(selectedPhotos);
 
   const [selectedAlbum] = useSelectedAlbum();
   const selectedAlbumRef = useRef(selectedAlbum);
-
-  const scrollRef: RefObject<HTMLUListElement | null> = useRef(null);
 
 
   const onWheel = (e: React.WheelEvent) => {
