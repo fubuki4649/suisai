@@ -11,7 +11,7 @@ export default function InspectorPanel() {
 
   return(
     <div className="flex flex-col justify-between">
-      <div className="relative w-80 m-6">
+      <div className="relative w-80 m-5">
         {
           [...selectedPhotos].reverse().map((photo, index) => {
 

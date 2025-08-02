@@ -53,7 +53,7 @@ function NewAlbumBtn() {
         onClose={() => {setPopoverIsOpen(false)}}
       >
         <PopoverTrigger>
-          <Button color="default" variant="ghost" endContent={<PlusIcon className={"size-6"}/>}>
+          <Button className="text-medium" color="default" variant="ghost" endContent={<PlusIcon className={"size-6"}/>}>
             <Spacer className="w-0"/>
             <p className="font-semibold">Add Album</p>
           </Button>

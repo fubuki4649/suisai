@@ -33,21 +33,21 @@ export default function Header(props: HeaderProps) {
 
   const navbarProps: NavbarProps = {
     ...props.navbarProps,
-    height: "60px",
-    maxWidth: "2xl",
+    height: "50px",
+    maxWidth: "full",
     isMenuOpen: isMenuOpen,
     onMenuOpenChange: setIsMenuOpen,
   };
 
   return (
-    <Navbar {...navbarProps} style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
+    <Navbar {...navbarProps} >
 
       {/* Left Content */}
       <NavbarBrand>
         <div className="rounded-full bg-foreground text-background">
           <img src="/vite.svg" className="logo" alt="Vite logo" />
         </div>
-        <span className="ml-2 text-large font-medium">suisai</span>
+        <span className="ml-2 text-2xl font-medium">suisai</span>
       </NavbarBrand>
 
       <NavbarContent className="flex-grow" />

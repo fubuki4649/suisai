@@ -38,19 +38,19 @@ function MetadataCard(props: MetadataCardProps) {
         <h4 className="font-bold text-large">{props.fileName}</h4>
       </CardHeader>
       <CardBody className="p-4 pt-2 flex-col gap-1 items-start">
-        <p className="pb-1 text-tiny text-white/60 uppercase font-bold">File Properties</p>
+        <p className="pb-1 text-tiny text-default-800 uppercase font-bold">File Properties</p>
         <InfoField label={"Size on Disk"} data={`${(props.sizeOnDisk / 1024).toFixed(2)} MB`} />
         <InfoField label={"Photo Date"} data={props.photoDate.toLocaleDateString('en-US', dateOptions).replace(',', '')} />
         <InfoField label={"Photo Time"} data={props.photoDate.toLocaleTimeString('en-US', timeOptions).replace(/\s([A-Z]+)$/, ' ($1)')} />
         <InfoField label={"Resolution"} data={props.resolution[0] + 'x' + props.resolution[1]} />
         <InfoField label={"MIME Type"} data={props.mimeType} />
         <Divider className="my-2" />
-        <p className="pb-1 text-tiny text-white/60 uppercase font-bold">Camera Info</p>
+        <p className="pb-1 text-tiny text-default-800 uppercase font-bold">Camera Info</p>
         <InfoField label={"Camera Model"} data={props.cameraModel} />
         <InfoField label={"Lens Model"} data={props.lensModel} />
         <InfoField label={"Shutter Count"} data={props.shutterCount.toString()} />
         <Divider className="my-2" />
-        <p className="pb-1 text-tiny text-white/60 uppercase font-bold">Photo Info</p>
+        <p className="pb-1 text-tiny text-default-800 uppercase font-bold">Photo Info</p>
         <InfoField label={"Focal Length"} data={props.focalLength + "mm"} />
         <InfoField label={"ISO Sensitivity"} data={"ISO " + props.iso} />
         <InfoField label={"Shutter Speed"} data={props.shutterSpeed} />
