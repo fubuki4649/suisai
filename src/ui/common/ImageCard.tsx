@@ -77,7 +77,6 @@ function ImageCard(props: ImageCardProps) {
         alt="Card background"
         className="rounded-xl"
         src={props.previewUrl}
-        width={270}
       />
     </Card>
   )

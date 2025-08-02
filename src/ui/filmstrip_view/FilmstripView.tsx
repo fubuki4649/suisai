@@ -8,7 +8,7 @@ function FilmstripView() {
   const filmstripScroll = useRef<HTMLUListElement>(null);
 
   return (
-    <div className="flex flex-col flex-grow" style={{ zoom: (window.innerHeight <= 800 ? "0.825" : "1.0") }}>
+    <div className="flex flex-col flex-grow">
       <Lightbox scrollRef={filmstripScroll}/>
       <Filmstrip scrollRef={filmstripScroll}/>
     </div>

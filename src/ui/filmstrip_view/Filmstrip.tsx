@@ -44,7 +44,7 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
           setSelectedPhotos(selectedAlbumRef.current?.photos?.[idx-1] ? [selectedAlbumRef.current?.photos?.[idx-1]] : []);
         }
 
-        scrollRef.current.scrollLeft -= 294;
+        scrollRef.current.scrollLeft -= 220;
 
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
@@ -54,7 +54,7 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
           setSelectedPhotos(selectedAlbumRef.current?.photos?.[idx+1] ? [selectedAlbumRef.current?.photos?.[idx+1]] : []);
         }
 
-        scrollRef.current.scrollLeft += 294;
+        scrollRef.current.scrollLeft += 220;
       }
     }
 
@@ -69,10 +69,8 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
   return (
     <>
       {(selectedAlbum?.photos?.length ?? 0) != 0 &&
-        <div className="flex flex-col bg-default-100 shadow-2xl" style={{ zoom: (window.innerHeight <= 800 ? "0.7" : "0.8") }}>
-          <div className="flex flex-row min-h-48" onWheel={onWheel}>
-            <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-6 p-6" ref={scrollRef}/>
-          </div>
+        <div className="grid grid-rows-1 bg-default-100 shadow-2xl" onWheel={onWheel}>
+          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5" cardWidth={200} ref={scrollRef}/>
         </div>
       }
     </>

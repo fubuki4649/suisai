@@ -46,14 +46,14 @@ function Sidebar() {
 
   return (
     <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
-      <div className="p-4 space-y-2" style={{ zoom: (window.innerHeight <= 800 ? "0.9" : "1.0") }}>
+      <div className="p-4 space-y-0.5">
 
         <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
         <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
 
         {albums.sort((a, b) => a.albumId - b.albumId).map(album => (
           <RightClickButton key={album.albumId} btnProps={{
-            className: "px-6",
+            className: "px-4 text-medium",
             children: album.albumName,
             color: "default",
             variant: selectedAlbum?.albumId == album.albumId ? "flat" : "light",

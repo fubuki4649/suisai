@@ -16,7 +16,7 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
       setSelectedPhotos(selectedAlbum?.photos?.[idx-1] ? [selectedAlbum?.photos?.[idx-1]] : []);
     }
 
-    if(scrollRef.current != null) scrollRef.current.scrollLeft -= 294;
+    if(scrollRef.current != null) scrollRef.current.scrollLeft -= 220;
   }
 
   const rightArrowHandler = () => {
@@ -26,7 +26,7 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
       setSelectedPhotos(selectedAlbum?.photos?.[idx+1] ? [selectedAlbum?.photos?.[idx+1]] : []);
     }
 
-    if(scrollRef.current != null) scrollRef.current.scrollLeft += 294;
+    if(scrollRef.current != null) scrollRef.current.scrollLeft += 220;
   }
 
   return (
