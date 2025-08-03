@@ -42,6 +42,7 @@ const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) =
       { cards.length ?
         <ul className={props.className} ref={ref}>
           {cards.map(card => (
+            // Putting this here so Tailwind compiler includes this: w-[256px]
             <li className={`flex-shrink-0 w-[${props.cardWidth ?? 256}px]`} key={card.id}>
               <ImageCard {...card} />
             </li>
