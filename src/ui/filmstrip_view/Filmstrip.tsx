@@ -44,7 +44,7 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
           setSelectedPhotos(selectedAlbumRef.current?.photos?.[idx-1] ? [selectedAlbumRef.current?.photos?.[idx-1]] : []);
         }
 
-        scrollRef.current.scrollLeft -= 220;
+        scrollRef.current.scrollLeft -= 170;
 
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
@@ -54,7 +54,7 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
           setSelectedPhotos(selectedAlbumRef.current?.photos?.[idx+1] ? [selectedAlbumRef.current?.photos?.[idx+1]] : []);
         }
 
-        scrollRef.current.scrollLeft += 220;
+        scrollRef.current.scrollLeft += 170;
       }
     }
 
@@ -70,7 +70,8 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
     <>
       {(selectedAlbum?.photos?.length ?? 0) != 0 &&
         <div className="grid grid-rows-1 bg-default-100 shadow-2xl" onWheel={onWheel}>
-          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5" cardWidth={200} ref={scrollRef}/>
+          {/* Putting this here so the Tailwind compiler includes it: w-[150px] */}
+          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5" cardWidth={150} ref={scrollRef}/>
         </div>
       }
     </>
