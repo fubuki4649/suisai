@@ -7,7 +7,7 @@ import {Disclosure} from "../../ViewModel.ts";
 import DeletePhotoModal from "./action_card_modals/DeletePhotoModal.tsx";
 
 
-export default function ActionsCard() {
+export default function ActionsCard({ vertical = false }: { vertical?: boolean }) {
 
   const [darkMode] = useDarkMode();
   const [selectedAlbum] = useSelectedAlbum();
@@ -30,15 +30,15 @@ export default function ActionsCard() {
       <MovePhotoModal {...movePhotoDisclosure}/>
       <DeletePhotoModal {...deletePhotoDisclosure}/>
 
-      <Card shadow="md" className="h-fit w-80 m-6 select-none">
-        <CardHeader className="p-4 w-full flex-col">
-          <div className="flex flex-row justify-between w-full">
-            <h4 className="font-bold text-large">Selected Photos</h4>
+      <Card shadow="md" className="h-fit min-w-fit m-6 mt-auto select-none">
+        <CardHeader className="p-4">
+          <div className="flex flex-row justify-center w-full">
+            {!vertical && <h4 className="font-bold text-large mr-auto">Selected Photos</h4>}
             <p className="text-default-600 opacity-90">({selectedPhotos.length})</p>
           </div>
         </CardHeader>
-        <CardBody className="p-4 !pt-0 flex-col">
-          <div className="flex flex-row w-full gap-4 justify-evenly">
+        <CardBody className="p-4 !pt-0">
+          <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full gap-4 justify-evenly")}>
             <Tooltip className={cn(darkMode && "dark text-foreground")} content="Select All">
               <Button isIconOnly className="p-1.5" aria-label="Select All" color="secondary" variant="light" onPress={selectAll}><CheckCircleIcon/></Button>
             </Tooltip>

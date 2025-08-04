@@ -1,6 +1,7 @@
 import Filmstrip from "./Filmstrip.tsx";
 import Lightbox from "./Lightbox.tsx";
 import {useRef} from "react";
+import DataStrip from "./DataStrip.tsx";
 
 
 function FilmstripView() {
@@ -9,8 +10,9 @@ function FilmstripView() {
 
   return (
     <div className="flex flex-col flex-grow">
-      <Lightbox scrollRef={filmstripScroll}/>
-      <Filmstrip scrollRef={filmstripScroll}/>
+      <Lightbox scrollRef={filmstripScroll} />
+      <DataStrip />
+      <Filmstrip scrollRef={filmstripScroll} />
     </div>
   )
 }
