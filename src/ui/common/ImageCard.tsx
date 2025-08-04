@@ -24,30 +24,35 @@ function ImageCard(props: ImageCardProps) {
     if (e.ctrlKey || e.metaKey) {
 
       // Perform a multi-deselect if the pressed card is already selected,
-      if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
-        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+      if (selectedPhotosRef.current.some(iter => iter.photoId === cardId)) {
+        setSelectedPhotos(selectedPhotosRef.current.filter(iter => iter.photoId !== cardId))
       }
       // Else perform a multi-select
       else {
-        const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
+        const newlySelected = selectedAlbum?.photos?.find(iter => iter.photoId === cardId);
         setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
       }
     }
     // Handle continuous multi-select
     else if (e.shiftKey) {
 
-      // TODO: Determine what the intended behaviour for continuous multi-select should be
-      // TODO: Behaves like a normal multi-select for now
-      // ---
-      // Perform a multi-deselect if the pressed card is already selected,
-      if (selectedPhotosRef.current.some(photo => photo.photoId === cardId)) {
-        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+      // If nothing is selected, perform a normal select
+      if (selectedPhotosRef.current.length == 0) {
+        const newlySelectedPhoto = selectedAlbum?.photos?.find(iter => iter.photoId === cardId);
+        setSelectedPhotos(newlySelectedPhoto ? [newlySelectedPhoto] : [])
       }
-      // Else perform a multi-select
+      // Select all photos between the last selected and newly selected photos (by index)
       else {
-        const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
-        setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+        const lastSelectedIndex = selectedAlbum?.photos?.findIndex(iter => iter.photoId === selectedPhotosRef.current[selectedPhotosRef.current.length - 1].photoId);
+        const newlySelectedIndex = selectedAlbum?.photos?.findIndex(iter => iter.photoId === cardId);
+
+        if (lastSelectedIndex != undefined || newlySelectedIndex != undefined) {
+          // @ts-ignore
+          const slice = selectedAlbum?.photos?.slice(Math.min(lastSelectedIndex, newlySelectedIndex), Math.max(lastSelectedIndex, newlySelectedIndex) + 1);
+          setSelectedPhotos(slice ? selectedPhotosRef.current.concat(slice) : selectedPhotosRef.current);
+        }
       }
+
     }
     // Handle normal select
     else {
