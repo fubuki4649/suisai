@@ -1,7 +1,7 @@
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 import React, {RefObject} from "react";
-import InspectorPanel from "../thumbnail_view/inspector_panel/InspectorPanel.tsx";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
+import ActionsCard from "../thumbnail_view/inspector_panel/ActionsCard.tsx";
 
 
 function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
@@ -41,7 +41,7 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
               <ArrowRightIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={rightArrowHandler} />
             </div>
           </div>
-          <InspectorPanel />
+          <ActionsCard vertical/>
         </>
         :
         // Nothing Selected message
