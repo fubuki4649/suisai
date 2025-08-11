@@ -42,7 +42,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
 };
 
 // Primary useGlobalContext if you want full access
-export const useGlobalContext = (): GlobalState => {
+const useGlobalContext = (): GlobalState => {
   const context = useContext(GlobalContext);
   if (!context) {
     throw new Error("useGlobalContext must be used within a GlobalContextProvider");
