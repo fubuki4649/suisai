@@ -10,7 +10,6 @@ const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) =
 
   const [cards, setCards] = useState<ImageCardProps[]>([]);
 
-
   // Update cards on photo select/deselect
   useEffect(() => {
     setCards(cards => {
@@ -29,8 +28,10 @@ const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) =
     setCards((selectedAlbum?.photos ?? []).map(photo => {
       return {
         id: photo.photoId,
+        alt: photo.fileName,
         previewUrl: `http://localhost:8000/api/thumbnail/${photo.hash}`,
         isSelected: false,
+        allowZoom: !!props.allowCardZoom,
       }
     }))
     setSelectedPhotos([])

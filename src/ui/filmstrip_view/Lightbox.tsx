@@ -2,6 +2,7 @@ import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.ts
 import React, {RefObject} from "react";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
 import ActionsCard from "../thumbnail_view/inspector_panel/ActionsCard.tsx";
+import ModalZoomImage from "../common/ModalZoomImage.tsx";
 
 
 function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
@@ -37,7 +38,15 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
           <div className="flex flex-col justify-center select-none">
             <div className="flex flex-row max-h-full justify-center">
               <ArrowLeftIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={leftArrowHandler} />
-              <img className="object-scale-down shadow-2xl" src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`} alt="" />
+
+              <ModalZoomImage
+                className="object-scale-down rounded-none shadow-2xl"
+                alt={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`}
+                src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`}
+                removeWrapper
+              />
+
+              {/*<img className="object-scale-down shadow-2xl" src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`} alt="" />*/}
               <ArrowRightIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={rightArrowHandler} />
             </div>
           </div>

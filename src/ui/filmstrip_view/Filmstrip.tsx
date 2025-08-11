@@ -71,7 +71,7 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
       {(selectedAlbum?.photos?.length ?? 0) != 0 &&
         <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
           {/* Putting this here so the Tailwind compiler includes it: w-[150px] */}
-          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1" cardWidth={150} ref={scrollRef}/>
+          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1" cardWidth={150} ref={scrollRef} allowCardZoom/>
         </div>
       }
     </>

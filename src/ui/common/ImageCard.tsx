@@ -2,6 +2,7 @@ import {Card, cn, Image, PressEvent} from "@heroui/react";
 import React, {useEffect, useRef} from "react";
 import {ImageCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import ModalZoomImage from "./ModalZoomImage.tsx";
 
 
 function ImageCard(props: ImageCardProps) {
@@ -71,18 +72,28 @@ function ImageCard(props: ImageCardProps) {
   }
 
 
+
   return (
     <Card
       isPressable
       onPress={(e: PressEvent) => onCardSelect(props.id, e)}
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
-      className={cn(props.isSelected ? "border-1.5 border-primary-500 m-[-1.5px]" : "border-1 border-default-400 m-[-1px] h-fit w-fit flex-shrink-0")}
+      className={cn(props.isSelected ? "border-1.5 border-primary-500" : "border-1 border-default-400 h-fit w-fit flex-shrink-0")}
     >
-      <Image
-        alt="Card background"
-        className="rounded-xl"
-        src={props.previewUrl}
-      />
+      {
+        props.allowZoom ?
+          <ModalZoomImage
+            className="rounded-none object-contain"
+            alt={props.alt}
+            src={props.previewUrl}
+          />
+          :
+          <Image
+            className="rounded-none object-contain"
+            alt={props.alt}
+            src={props.previewUrl}
+          />
+      }
     </Card>
   )
 }
