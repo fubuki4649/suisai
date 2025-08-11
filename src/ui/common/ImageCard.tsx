@@ -1,8 +1,9 @@
 import {Card, cn, Image, PressEvent} from "@heroui/react";
-import React, {useEffect, useRef} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ImageCardProps} from "./ViewModel.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 import ModalZoomImage from "./ModalZoomImage.tsx";
+import {Photo} from "../../models/model.ts";
 
 
 function ImageCard(props: ImageCardProps) {
@@ -10,6 +11,20 @@ function ImageCard(props: ImageCardProps) {
   const [selectedAlbum] = useSelectedAlbum()
   const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
   const selectedPhotosRef = useRef(selectedPhotos);
+
+  // For undoing double clicks
+  const [prevSelectedPhotos, setPrevSelectedPhotos] = useState<Photo[]>([]);
+  const [prevSelectedPhotos2, setPrevSelectedPhotos2] = useState<Photo[]>([]);
+
+  const selectPhotos = useCallback((newSelectedPhotos: Photo[]) => {
+    setPrevSelectedPhotos2(prevSelectedPhotos);
+    setPrevSelectedPhotos(selectedPhotos);
+    setSelectedPhotos(newSelectedPhotos);
+  }, [prevSelectedPhotos, selectedPhotos, setSelectedPhotos]);
+
+  const undoSelectPhotos = useCallback(() => {
+    setSelectedPhotos(prevSelectedPhotos2);
+  }, [prevSelectedPhotos2, setSelectedPhotos]);
 
 
   // Update ref on photo select/deselect
@@ -26,12 +41,12 @@ function ImageCard(props: ImageCardProps) {
 
       // Perform a multi-deselect if the pressed card is already selected,
       if (selectedPhotosRef.current.some(iter => iter.photoId === cardId)) {
-        setSelectedPhotos(selectedPhotosRef.current.filter(iter => iter.photoId !== cardId))
+        selectPhotos(selectedPhotosRef.current.filter(iter => iter.photoId !== cardId))
       }
       // Else perform a multi-select
       else {
         const newlySelected = selectedAlbum?.photos?.find(iter => iter.photoId === cardId);
-        setSelectedPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
+        selectPhotos(newlySelected ? selectedPhotosRef.current.concat(newlySelected) : selectedPhotosRef.current);
       }
     }
     // Handle continuous multi-select
@@ -40,7 +55,7 @@ function ImageCard(props: ImageCardProps) {
       // If nothing is selected, perform a normal select
       if (selectedPhotosRef.current.length == 0) {
         const newlySelectedPhoto = selectedAlbum?.photos?.find(iter => iter.photoId === cardId);
-        setSelectedPhotos(newlySelectedPhoto ? [newlySelectedPhoto] : [])
+        selectPhotos(newlySelectedPhoto ? [newlySelectedPhoto] : [])
       }
       // Select all photos between the last selected and newly selected photos (by index)
       else {
@@ -50,7 +65,7 @@ function ImageCard(props: ImageCardProps) {
         if (lastSelectedIndex != undefined || newlySelectedIndex != undefined) {
           // @ts-ignore
           const slice = selectedAlbum?.photos?.slice(Math.min(lastSelectedIndex, newlySelectedIndex), Math.max(lastSelectedIndex, newlySelectedIndex) + 1);
-          setSelectedPhotos(slice ? selectedPhotosRef.current.concat(slice) : selectedPhotosRef.current);
+          selectPhotos(slice ? selectedPhotosRef.current.concat(slice) : selectedPhotosRef.current);
         }
       }
 
@@ -60,12 +75,12 @@ function ImageCard(props: ImageCardProps) {
 
       // Perform a single deselect if the pressed card is the only selected card,
       if (selectedPhotosRef.current.some(photo => photo.photoId === cardId) && selectedPhotosRef.current.length === 1) {
-        setSelectedPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
+        selectPhotos(selectedPhotosRef.current.filter(item => item.photoId !== cardId))
       }
       // Else perform a single select
       else {
         const newlySelected = selectedAlbum?.photos?.find(photo => photo.photoId === cardId);
-        setSelectedPhotos(newlySelected ? [newlySelected] : selectedPhotosRef.current);
+        selectPhotos(newlySelected ? [newlySelected] : selectedPhotosRef.current);
       }
     }
 
@@ -77,6 +92,7 @@ function ImageCard(props: ImageCardProps) {
     <Card
       isPressable
       onPress={(e: PressEvent) => onCardSelect(props.id, e)}
+      onDoubleClick={undoSelectPhotos}
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
       className={cn(props.isSelected ? "border-1.5 border-primary-500" : "border-1 border-default-400 h-fit w-fit flex-shrink-0")}
     >

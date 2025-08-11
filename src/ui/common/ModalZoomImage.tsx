@@ -1,9 +1,11 @@
-import {Image, ImageProps, Modal, ModalContent, useDisclosure} from "@heroui/react";
+import {cn, Image, ImageProps, Modal, ModalContent, useDisclosure} from "@heroui/react";
 import React from "react";
+import {useDarkMode} from "../../models/GlobalContext.tsx";
 
 
 export default function ModalZoomImage(props: ImageProps) {
 
+  const [darkMode] = useDarkMode();
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   return (
@@ -13,10 +15,10 @@ export default function ModalZoomImage(props: ImageProps) {
         onDoubleClick={() => onOpen()}
       />
 
-      <Modal isOpen={isOpen} backdrop="blur" onClose={onClose} classNames={{
+      <Modal isOpen={isOpen} backdrop="blur" onClose={onClose} className={cn(darkMode && "dark text-foreground")} classNames={{
         wrapper: "w-auto h-auto max-w-full max-h-full",
         base: "w-auto h-auto max-w-full max-h-full bg-transparent shadow-none !m-0",
-        closeButton: "bg-background m-4"
+        closeButton: "bg-content3 m-4"
       }} onClick={() => onClose()}>
         <ModalContent>
           <img
