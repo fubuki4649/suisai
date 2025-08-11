@@ -11,7 +11,7 @@ function ThumbnailView() {
   return (
     <div className="flex flex-grow">
 
-      <ImageCardContainer className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-5 p-5 grid-cols-auto"/>
+      <ImageCardContainer className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-5 p-5 grid-cols-auto" allowCardZoom/>
 
       <div className="flex flex-row">
         {(selectedAlbum?.photos?.length ?? 0) != 0 && <InspectorPanel/>}
