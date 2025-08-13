@@ -14,7 +14,7 @@ import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
 import {getAlbums, renameAlbum} from "../../../../api/Album.ts";
 import {Album} from "../../../../models/model.ts";
-import {AlbumModalProps} from "./ViewModel.ts";
+import {AlbumModalProps} from "./Props.ts";
 
 export function RenameAlbumModal(props: AlbumModalProps) {
 

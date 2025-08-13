@@ -2,9 +2,9 @@ import {Button, Card, CardBody, CardHeader, cn, Tooltip, useDisclosure} from "@h
 import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
 import React from "react";
 import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
-import MovePhotoModal from "./action_card_modals/MovePhotoModal.tsx";
-import {Disclosure} from "../../ViewModel.ts";
-import DeletePhotoModal from "./action_card_modals/DeletePhotoModal.tsx";
+import MovePhotoModal from "./modals/MovePhotoModal.tsx";
+import {Disclosure} from "../../../viewmodel/ModalDisclosures.ts";
+import DeletePhotoModal from "./modals/DeletePhotoModal.tsx";
 
 
 export default function ActionsCard({ vertical = false }: { vertical?: boolean }) {

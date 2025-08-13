@@ -1,9 +1,9 @@
 import {Card, cn, Image, PressEvent} from "@heroui/react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {ImageCardProps} from "./ViewModel.ts";
-import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
-import ModalZoomImage from "./ModalZoomImage.tsx";
-import {Photo} from "../../models/model.ts";
+import {ImageCardProps} from "../Props.ts";
+import {useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
+import ModalZoomImage from "../ModalZoomImage.tsx";
+import {Photo} from "../../../models/model.ts";
 
 
 function ImageCard(props: ImageCardProps) {

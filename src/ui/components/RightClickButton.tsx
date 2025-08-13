@@ -2,8 +2,9 @@
 
 import {RefObject, useEffect, useRef, useState} from 'react';
 import {Button, cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@heroui/react";
-import {useDarkMode} from "../../../models/GlobalContext.tsx";
-import {RightClickButtonProps} from "./ViewModel.ts";
+import {useDarkMode} from "../../models/GlobalContext.tsx";
+
+import {RightClickButtonProps} from "./Props.ts";
 
 export default function RightClickButton(props: RightClickButtonProps) {
 
