@@ -1,7 +1,7 @@
 import {Card, CardBody, CardHeader, Divider} from "@heroui/react";
 import React from "react";
 
-import {MetadataCardProps} from "./ViewModel.ts";
+import {MetadataCardProps} from "./Props.ts";
 
 
 function InfoField({label, data}: {label: string, data: string}) {

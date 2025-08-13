@@ -1,7 +1,7 @@
 import ImageCard from "./ImageCard.tsx";
 import React, {forwardRef, useEffect, useState} from "react";
-import {ICCProps, ImageCardProps} from "./ViewModel.ts";
-import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import {ICCProps, ImageCardProps} from "../Props.ts";
+import {useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 
 
 const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) => {

@@ -1,7 +1,7 @@
 import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../../models/GlobalContext.tsx";
 import React from "react";
 import {addToast, Button, cn, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@heroui/react";
-import {Disclosure} from "../../../ViewModel.ts";
+import {Disclosure} from "../../../../viewmodel/ModalDisclosures.ts";
 import {deletePhoto} from "../../../../api/Photo.ts";
 
 export default function DeletePhotoModal(disclosure : Disclosure) {

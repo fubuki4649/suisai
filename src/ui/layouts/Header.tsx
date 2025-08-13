@@ -17,7 +17,7 @@ import {
   Spacer,
   Switch,
 } from "@heroui/react";
-import {HeaderProps} from "./ViewModel.ts";
+import {HeaderProps} from "./Props.ts";
 import {FilmIcon, MoonIcon, Squares2X2Icon, SunIcon} from "@heroicons/react/16/solid";
 import {useDarkMode} from "../../models/GlobalContext.tsx";
 import {useLocation, useNavigate} from "react-router-dom";

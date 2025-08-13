@@ -1,6 +1,7 @@
-import ImageCardContainer from "../common/ImageCardContainer.tsx";
+import ImageCardContainer from "../image_cards/ImageCardContainer.tsx";
 import React, {RefObject, useEffect, useRef} from "react";
-import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import {useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
+import DataStrip from "./DataStrip.tsx";
 
 function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
 
@@ -69,10 +70,13 @@ function Filmstrip({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | nul
   return (
     <>
       {(selectedAlbum?.photos?.length ?? 0) != 0 &&
-        <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
-          {/* Putting this here so the Tailwind compiler includes it: w-[150px] */}
-          <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1" cardWidth={150} ref={scrollRef} allowCardZoom/>
-        </div>
+        <>
+          <DataStrip />
+          <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
+            {/* Putting this here so the Tailwind compiler includes it: w-[150px] */}
+              <ImageCardContainer className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1" cardWidth={150} ref={scrollRef} allowCardZoom/>
+          </div>
+        </>
       }
     </>
   )

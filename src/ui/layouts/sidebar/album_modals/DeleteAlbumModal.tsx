@@ -14,7 +14,7 @@ import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
 import {deleteAlbum, getAlbums} from "../../../../api/Album.ts";
 import {Album} from "../../../../models/model.ts";
-import {AlbumModalProps} from "./ViewModel.ts";
+import {AlbumModalProps} from "./Props.ts";
 
 export function DeleteAlbumModal(props: AlbumModalProps) {
 

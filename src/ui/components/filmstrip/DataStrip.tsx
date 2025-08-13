@@ -1,4 +1,4 @@
-import {useSelectedPhotos} from "../../models/GlobalContext.tsx";
+import {useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 import {cn} from "@heroui/react";
 
 

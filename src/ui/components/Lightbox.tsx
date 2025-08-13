@@ -1,8 +1,8 @@
 import {useSelectedAlbum, useSelectedPhotos} from "../../models/GlobalContext.tsx";
 import React, {RefObject} from "react";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
-import ActionsCard from "../thumbnail_view/inspector_panel/ActionsCard.tsx";
-import ModalZoomImage from "../common/ModalZoomImage.tsx";
+import ActionsCard from "./action_card/ActionsCard.tsx";
+import ModalZoomImage from "./ModalZoomImage.tsx";
 
 
 function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {

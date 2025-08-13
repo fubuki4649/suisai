@@ -17,7 +17,7 @@ import {
   Spacer
 } from "@heroui/react";
 import {Album} from "../../../../models/model.ts";
-import {Disclosure} from "../../../ViewModel.ts";
+import {Disclosure} from "../../../../viewmodel/ModalDisclosures.ts";
 import {movePhotoToAlbum, unfilePhoto} from "../../../../api/PhotoMoveAlbum.ts";
 
 export default function MovePhotoModal(disclosure : Disclosure) {
