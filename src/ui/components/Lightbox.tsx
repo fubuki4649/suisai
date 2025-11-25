@@ -3,6 +3,7 @@ import React, {RefObject} from "react";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
 import ActionsCard from "./action_card/ActionsCard.tsx";
 import ModalZoomImage from "./ModalZoomImage.tsx";
+import {BACKEND_URL} from "../../config.ts";
 
 
 function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
@@ -41,12 +42,11 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
 
               <ModalZoomImage
                 className="object-scale-down rounded-none shadow-2xl"
-                alt={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`}
-                src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`}
+                alt={`${BACKEND_URL}/thumbnail/${selectedPhotos[0].hash}`}
+                src={`${BACKEND_URL}/thumbnail/${selectedPhotos[0].hash}`}
                 removeWrapper
               />
 
-              {/*<img className="object-scale-down shadow-2xl" src={`http://localhost:8000/api/thumbnail/${selectedPhotos[0].hash}`} alt="" />*/}
               <ArrowRightIcon className="w-16 flex-shrink-0 h-full mx-10 text-default-500 active:text-default-100" onClick={rightArrowHandler} />
             </div>
           </div>

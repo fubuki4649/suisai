@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
-import {getAlbums, renameAlbum} from "../../../../api/Album.ts";
+import {getRootAlbums, renameAlbum} from "../../../../api/Album.ts";
 import {Album} from "../../../../models/model.ts";
 import {AlbumModalProps} from "./Props.ts";
 
@@ -42,7 +42,7 @@ export function RenameAlbumModal(props: AlbumModalProps) {
         timeout: 5000,
         shouldShowTimeoutProgress: true,
       });
-      getAlbums().then((albums: Album[]) => {
+      getRootAlbums().then((albums: Album[]) => {
         setAlbums(albums);
       });
     })

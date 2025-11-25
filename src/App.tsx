@@ -4,7 +4,7 @@ import Header from "./ui/layouts/Header.tsx";
 import Sidebar from "./ui/layouts/sidebar/Sidebar.tsx";
 import ThumbnailView from "./ui/layouts/ThumbnailView.tsx";
 import {useAlbums, useDarkMode} from "./models/GlobalContext.tsx";
-import {getAlbums} from "./api/Album.ts";
+import {getRootAlbums} from "./api/Album.ts";
 import {Album} from "./models/model.ts";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import FilmstripView from "./ui/layouts/FilmstripView.tsx";
@@ -17,7 +17,7 @@ function App() {
 
   // Update cards on album change/load
   useEffect(() => {
-    getAlbums().then((albums: Album[]) => {
+    getRootAlbums().then((albums: Album[]) => {
       setAlbums(albums);
     })
   }, []);

@@ -2,6 +2,7 @@ import ImageCard from "./ImageCard.tsx";
 import React, {forwardRef, useEffect, useState} from "react";
 import {ICCProps, ImageCardProps} from "../Props.ts";
 import {useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
+import {BACKEND_URL} from "../../../config.ts";
 
 
 const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) => {
@@ -29,7 +30,7 @@ const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) =
       return {
         id: photo.photoId,
         alt: photo.fileName,
-        previewUrl: `http://localhost:8000/api/thumbnail/${photo.hash}`,
+        previewUrl: `${BACKEND_URL}/api/thumbnail/${photo.hash}`,
         isSelected: false,
         allowZoom: !!props.allowCardZoom,
       }

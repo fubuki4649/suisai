@@ -42,7 +42,7 @@ function MetadataCard(props: MetadataCardProps) {
         <InfoField label={"Size on Disk"} data={`${(props.sizeOnDisk / 1024).toFixed(2)} MB`} />
         <InfoField label={"Photo Date"} data={props.photoDate.toLocaleDateString('en-US', dateOptions).replace(',', '')} />
         <InfoField label={"Photo Time"} data={props.photoDate.toLocaleTimeString('en-US', timeOptions).replace(/\s([A-Z]+)$/, ' ($1)')} />
-        <InfoField label={"Resolution"} data={props.resolution[0] + 'x' + props.resolution[1]} />
+        <InfoField label={"Resolution"} data={props.resolutionWidth + 'x' + props.resolutionHeight} />
         <InfoField label={"MIME Type"} data={props.mimeType} />
         <Divider className="my-2" />
         <p className="pb-1 text-tiny text-default-800 uppercase font-bold">Camera Info</p>
