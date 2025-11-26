@@ -1,6 +1,6 @@
-import {Album, Photo} from "../models/model.ts";
-import {client} from "./client.ts";
-import {withAxiosErrorHandling} from "./AxiosErrorHandling.ts";
+import {Album, Photo} from "../../models/model.ts";
+import {client} from "../client.ts";
+import {withAxiosErrorHandling} from "../axios-error-handling.ts";
 
 // Get the root albums ("Top level" albums with no parent)
 export async function getRootAlbums(onHttpError: (code: number) => void = () => {}): Promise<Album[]> {

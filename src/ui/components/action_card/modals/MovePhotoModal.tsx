@@ -17,8 +17,8 @@ import {
   Spacer
 } from "@heroui/react";
 import {Album} from "../../../../models/model.ts";
-import {Disclosure} from "../../../../viewmodel/ModalDisclosures.ts";
-import {movePhotoToAlbum, unfilePhoto} from "../../../../api/PhotoMoveAlbum.ts";
+import {Disclosure} from "../../../../models/modal-disclosure.ts";
+import {movePhoto, unfilePhoto} from "../../../../api/endpoints/management.ts";
 
 export default function MovePhotoModal(disclosure : Disclosure) {
 
@@ -77,7 +77,7 @@ export default function MovePhotoModal(disclosure : Disclosure) {
       });
     }
     else {
-      movePhotoToAlbum(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
+      movePhoto(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
         onError(code, "Failed to move photos");
       }).then(() => {
         onSuccess(`Successfully moved ${selectedPhotos.length} photos to album ${modalSelectedAlbum?.albumName ?? "Unknown"} (ID: ${modalSelectedAlbum?.albumId})`);

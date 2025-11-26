@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
-import {getRootAlbums, renameAlbum} from "../../../../api/Album.ts";
+import {getRootAlbums, renameAlbum} from "../../../../api/endpoints/album.ts";
 import {Album} from "../../../../models/model.ts";
 import {AlbumModalProps} from "./Props.ts";
 

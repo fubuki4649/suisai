@@ -3,7 +3,7 @@ import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/re
 import React from "react";
 import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../models/GlobalContext.tsx";
 import MovePhotoModal from "./modals/MovePhotoModal.tsx";
-import {Disclosure} from "../../../viewmodel/ModalDisclosures.ts";
+import {Disclosure} from "../../../models/modal-disclosure.ts";
 import DeletePhotoModal from "./modals/DeletePhotoModal.tsx";
 
 

@@ -6,8 +6,8 @@ import NewAlbumBtn from "./NewAlbumBtn.tsx";
 import RightClickButton from "../../components/RightClickButton.tsx";
 import RenameAlbumModal from "./album_modals/RenameAlbumModal.tsx";
 import DeleteAlbumModal from "./album_modals/DeleteAlbumModal.tsx";
-import {Disclosure} from "../../../viewmodel/ModalDisclosures.ts";
-import {queryAlbum} from "../../../api/Album.ts";
+import {Disclosure} from "../../../models/modal-disclosure.ts";
+import {queryAlbum} from "../../../api/endpoints/album.ts";
 
 
 function Sidebar() {

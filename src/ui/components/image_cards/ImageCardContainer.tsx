@@ -30,7 +30,7 @@ const ImageCardContainer = forwardRef<HTMLUListElement, ICCProps>((props, ref) =
       return {
         id: photo.photoId,
         alt: photo.fileName,
-        previewUrl: `${BACKEND_URL}/api/thumbnail/${photo.hash}`,
+        previewUrl: `${BACKEND_URL}/thumbnail/${photo.hash}`,
         isSelected: false,
         allowZoom: !!props.allowCardZoom,
       }

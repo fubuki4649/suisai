@@ -1,5 +1,5 @@
-import {withAxiosErrorHandling} from "./AxiosErrorHandling.ts";
-import {client} from "./client.ts";
+import {withAxiosErrorHandling} from "../axios-error-handling.ts";
+import {client} from "../client.ts";
 
 export async function deletePhoto(photoIds: number[], onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {

@@ -11,8 +11,8 @@ import {
   Spacer,
 } from "@heroui/react";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode} from "../../../../models/GlobalContext.tsx";
-import {deleteAlbum, getRootAlbums} from "../../../../api/Album.ts";
+import {useAlbums, useDarkMode, useSelectedAlbum} from "../../../../models/GlobalContext.tsx";
+import {deleteAlbum, getRootAlbums} from "../../../../api/endpoints/album.ts";
 import {Album} from "../../../../models/model.ts";
 import {AlbumModalProps} from "./Props.ts";
 
@@ -20,6 +20,7 @@ export function DeleteAlbumModal(props: AlbumModalProps) {
 
   const [darkMode] = useDarkMode();
   const [, setAlbums] = useAlbums();
+  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
 
   const {isOpen, onOpen, onOpenChange} = props.disclosure;
   const [confirmText, setConfirmText] = useState("");
@@ -35,6 +36,7 @@ export function DeleteAlbumModal(props: AlbumModalProps) {
         shouldShowTimeoutProgress: true,
       })
     }).then(() => {
+      // Display success message
       addToast({
         title: "Success",
         description: "Album ID " + props.album.albumId + " successfully deleted!",
@@ -42,9 +44,14 @@ export function DeleteAlbumModal(props: AlbumModalProps) {
         timeout: 5000,
         shouldShowTimeoutProgress: true,
       });
+      // Update album list
       getRootAlbums().then((albums: Album[]) => {
         setAlbums(albums);
       });
+      // If the deleted album was selected, set selected album to null
+      if (selectedAlbum?.albumId == props.album.albumId) {
+        setSelectedAlbum(null);
+      }
     })
   }
 
