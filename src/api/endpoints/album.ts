@@ -30,8 +30,20 @@ export async function getRootAlbums(onHttpError: (code: number) => void = () => 
 export async function queryAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<Photo[]> {
   return withAxiosErrorHandling<Photo[]>([], onHttpError, async (): Promise<Photo[]> => {
 
+    // If the album ID is -1, query the unfiled photos endpoint. Otherwise, query the album endpoint.
     if (albumId === -1) return (await client.get<Photo[]>("/album/unfiled/photos")).data;
     else return (await client.get<Photo[]>(`/album/${albumId}/photos`)).data;
+
+  })();
+}
+
+// Query the subalbums in an album
+export async function querySubalbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<Album[]> {
+  return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
+
+    // If the album ID is -1, return an empty list because it's not applicable
+    if (albumId === -1) return [];
+    else return (await client.get<Album[]>(`/album/${albumId}/albums`)).data;
 
   })();
 }
@@ -56,7 +68,7 @@ export async function renameAlbum(albumId: number, albumName: string, onHttpErro
   })();
 }
 
-// Delete an album
+// Delete an album, moving all its contents to root level/unfiled
 export async function deleteAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
 
