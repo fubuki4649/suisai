@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import type { Album, Photo } from "./model.ts";
+import {createContext, ReactNode, useContext, useState} from "react";
+import type {Album, Photo} from "./model.ts";
 
 type GlobalState = {
   albums: Album[];
