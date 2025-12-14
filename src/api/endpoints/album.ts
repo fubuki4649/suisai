@@ -1,4 +1,4 @@
-import {Album, Photo} from "../../models/model.ts";
+import {Album, Photo} from "../models.ts";
 import {client} from "../client.ts";
 import {withAxiosErrorHandling} from "../axios-error-handling.ts";
 
