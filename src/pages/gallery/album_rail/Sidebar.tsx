@@ -21,10 +21,12 @@ function Sidebar() {
 
   // Hook for selecting an album
   const onAlbumSelect = (album: Album) => {
+    // If album has already been loaded, select album
     if (album.photos != null) {
       setSelectedPhotos([])
       setSelectedAlbum(album)
     }
+    // Otherwise, load album (contents), then select album
     else {
       queryAlbum(album.albumId, () => { addToast({
         title: "Error",

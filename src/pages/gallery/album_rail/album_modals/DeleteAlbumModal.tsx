@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useAlbums, useDarkMode, useSelectedAlbum} from "../../../../components/GlobalContext.tsx";
-import {deleteAlbum, getRootAlbums} from "../../../../api/endpoints/album.ts";
+import {deleteAlbum, getAlbums} from "../../../../api/endpoints/album.ts";
 import {Album} from "../../../../api/models.ts";
 import {AlbumModalProps} from "./props.ts";
 
@@ -45,7 +45,7 @@ export function DeleteAlbumModal(props: AlbumModalProps) {
         shouldShowTimeoutProgress: true,
       });
       // Update album list
-      getRootAlbums().then((albums: Album[]) => {
+      getAlbums().then((albums: Album[]) => {
         setAlbums(albums);
       });
       // If the deleted album was selected, set selected album to null

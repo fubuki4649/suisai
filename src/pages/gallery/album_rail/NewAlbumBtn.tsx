@@ -2,7 +2,7 @@ import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, Sp
 import {PlusIcon} from "@heroicons/react/20/solid";
 import React, {useState} from "react";
 import {useAlbums, useDarkMode} from "../../../components/GlobalContext.tsx";
-import {createAlbum, getRootAlbums} from "../../../api/endpoints/album.ts";
+import {createAlbum, getAlbums} from "../../../api/endpoints/album.ts";
 import {Album} from "../../../api/models.ts";
 
 function NewAlbumBtn() {
@@ -31,7 +31,7 @@ function NewAlbumBtn() {
         timeout: 5000,
         shouldShowTimeoutProgress: true,
       });
-      getRootAlbums().then((albums: Album[]) => {
+      getAlbums().then((albums: Album[]) => {
         console.log(albums);
         setAlbums(albums);
       });

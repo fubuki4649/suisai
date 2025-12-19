@@ -1,6 +1,6 @@
 import React, {ReactNode, useEffect} from "react";
 import {useAlbums} from "../../components/GlobalContext.tsx";
-import {getRootAlbums} from "../../api/endpoints/album.ts";
+import {getAlbums} from "../../api/endpoints/album.ts";
 import {Album} from "../../api/models.ts";
 import Sidebar from "./album_rail/Sidebar.tsx";
 
@@ -11,7 +11,7 @@ export default function Gallery ({ children }: { children: ReactNode }) {
 
   // Update cards on album change/load
   useEffect(() => {
-    getRootAlbums().then((albums: Album[]) => {
+    getAlbums().then((albums: Album[]) => {
       setAlbums(albums);
     })
   }, []);
