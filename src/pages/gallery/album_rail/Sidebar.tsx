@@ -50,7 +50,7 @@ function Sidebar() {
 
   return (
     <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
-      <div className="p-4">
+      <div className="p-4 pt-2">
 
         <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
         <MoveAlbumModal disclosure={moveAlbumDisclosure} album={rightClickAlbum} />
@@ -59,6 +59,7 @@ function Sidebar() {
         <ul className="space-y-1">
           {albums.map(album => (
             <ShowAlbum
+              depth={1}
               key={album.albumId}
               album={album}
               selectedAlbum={selectedAlbum}
@@ -80,6 +81,7 @@ function Sidebar() {
 }
 
 const ShowAlbum = ({
+  depth,
   album,
   selectedAlbum,
   onAlbumSelect,
@@ -88,6 +90,8 @@ const ShowAlbum = ({
   moveAlbumDisclosure,
   deleteAlbumDisclosure,
 }: {
+  // Depth of the album in the tree, used to render client-side decorations
+  depth: number,
   album: Album,
   selectedAlbum: Album | null,
   onAlbumSelect: (album: Album) => void,
@@ -100,7 +104,7 @@ const ShowAlbum = ({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <li>
+    <li key={album.albumId}>
       {/* Display Album Button */}
       <AlbumButton
         key={album.albumId}
@@ -120,20 +124,29 @@ const ShowAlbum = ({
       {/* Display Album Children */}
       {
         expanded && album.children && album.children.length > 0 && (
-          <ul className="space-y-1 mt-1" id={album.albumId.toString()}>
-            {album.children.map(album => (
-              <ShowAlbum
-                key={album.albumId}
-                album={album}
-                selectedAlbum={selectedAlbum}
-                onAlbumSelect={onAlbumSelect}
-                setRightClickAlbum={setRightClickAlbum}
-                renameAlbumDisclosure={renameAlbumDisclosure}
-                moveAlbumDisclosure={moveAlbumDisclosure}
-                deleteAlbumDisclosure={deleteAlbumDisclosure}
-              />
+
+          <div className="flex flex-row">
+
+            {Array(depth).fill(null).map(() => (
+              <span className="self-stretch w-[2px] bg-default-300 dark:bg-default-200 mx-2 mt-1" />
             ))}
-          </ul>
+
+            <ul id={album.albumId.toString()} className="flex-grow space-y-1 mt-1">
+              {album.children.map(album => (
+                <ShowAlbum
+                  depth={depth+1}
+                  key={album.albumId}
+                  album={album}
+                  selectedAlbum={selectedAlbum}
+                  onAlbumSelect={onAlbumSelect}
+                  setRightClickAlbum={setRightClickAlbum}
+                  renameAlbumDisclosure={renameAlbumDisclosure}
+                  moveAlbumDisclosure={moveAlbumDisclosure}
+                  deleteAlbumDisclosure={deleteAlbumDisclosure}
+                />
+              ))}
+            </ul>
+          </div>
         )
       }
     </li>
