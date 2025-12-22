@@ -33,6 +33,29 @@ export async function getAlbums(onHttpError: (code: number) => void = () => {}):
   })();
 }
 
+export async function getAlbumsFlat(onHttpError: (code: number) => void = () => {}): Promise<Album[]> {
+  return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
+
+    // Get albums from the server
+    const albums = (await client.get<Album[]>("/album/flat")).data;
+    albums.forEach(album => {
+      album.photos = null;
+      album.children = [];
+    });
+
+    // Add an "Unfiled Photos" album to the top of the list
+    albums.unshift(
+      {
+        albumId: -1,
+        albumName: "Unfiled Photos / Root Level",
+        photos: null,
+        children: [],
+      }
+    );
+
+    return albums;
+  })();
+}
 
 // Query the photos in an album
 export async function queryAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<Photo[]> {

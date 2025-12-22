@@ -5,19 +5,23 @@ import {Disclosure} from "../../../components/modal-disclosure.ts";
 
 interface AlbumButtonProps {
   album: Album;
+  expanded: boolean;
   selectedAlbum: Album | null;
   onAlbumSelect: (album: Album) => void;
   setRightClickAlbum: (album: Album) => void;
   renameAlbumDisclosure: Disclosure;
+  moveAlbumDisclosure: Disclosure;
   deleteAlbumDisclosure: Disclosure;
 }
 
 const AlbumButton: React.FC<AlbumButtonProps> = ({
   album,
+  expanded,
   selectedAlbum,
   onAlbumSelect,
   setRightClickAlbum,
   renameAlbumDisclosure,
+  moveAlbumDisclosure,
   deleteAlbumDisclosure,
 }) => {
   return (
@@ -26,7 +30,7 @@ const AlbumButton: React.FC<AlbumButtonProps> = ({
         className: "px-4 text-medium",
         children: album.albumName,
         color: "default",
-        variant: selectedAlbum?.albumId === album.albumId ? "flat" : "light",
+        variant: selectedAlbum?.albumId === album.albumId ? "faded" : (expanded ? "flat" : "light"),
         onPress: () => onAlbumSelect(album),
       }}
       rightClickItems={[
@@ -37,6 +41,15 @@ const AlbumButton: React.FC<AlbumButtonProps> = ({
           onPress: () => {
             setRightClickAlbum(album);
             renameAlbumDisclosure.onOpen();
+          },
+        },
+        {
+          key: "move",
+          children: "Move",
+          isDisabled: album.albumId < 0,
+          onPress: () => {
+            setRightClickAlbum(album);
+            moveAlbumDisclosure.onOpen();
           },
         },
         {

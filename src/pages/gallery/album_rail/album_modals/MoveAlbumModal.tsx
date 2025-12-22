@@ -1,5 +1,3 @@
-import {useAlbums, useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../../components/GlobalContext.tsx";
-import React, {useEffect, useState} from "react";
 import {
   addToast,
   Button,
@@ -16,37 +14,34 @@ import {
   ModalHeader,
   Spacer
 } from "@heroui/react";
+import React, {useEffect, useState} from "react";
+import {useAlbums, useDarkMode} from "../../../../components/GlobalContext.tsx";
+import {getAlbums, getAlbumsFlat} from "../../../../api/endpoints/album.ts";
 import {Album} from "../../../../api/models.ts";
-import {Disclosure} from "../../../../components/modal-disclosure.ts";
-import {movePhoto, unfilePhoto} from "../../../../api/endpoints/management.ts";
-import {getAlbumsFlat} from "../../../../api/endpoints/album.ts";
-import {findAlbumByID} from "../../../../components/helpers.ts";
+import {AlbumModalProps} from "./props.ts";
+import {moveAlbum, unfileAlbum} from "../../../../api/endpoints/management.ts";
 
-export default function MovePhotoModal(disclosure : Disclosure) {
+export function MoveAlbumModal(props: AlbumModalProps) {
 
   const [darkMode] = useDarkMode();
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
-  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
-  const [albums] = useAlbums();
   const [albumList, setAlbumList] = useState<Album[]>([]);
+  const [, setAlbums] = useAlbums();
 
-  const {isOpen, onOpenChange} = disclosure;
+  const {isOpen, onOpenChange} = props.disclosure;
   const [modalSelectedAlbum, setModalSelectedAlbum] = useState<Album | null>(null);
 
   // Fetch album list
   useEffect(() => {
-    if (isOpen) {
+    if (props.disclosure.isOpen) {
       getAlbumsFlat().then((result) => {
-        setAlbumList(result);
+        // Remove the option to move the album to itself
+        setAlbumList(result.filter((album) => album.albumId != props.album.albumId));
       })
     }
-  }, [isOpen])
+  }, [props.disclosure.isOpen])
 
   // Event handler for move photo button
-  const onMovePhotos = () => {
-
-    const selectedPhotoIds = selectedPhotos.map((photo) => photo.photoId)
-
+  const onMoveAlbum = () => {
     // On Success - Display toast + update frontend
     const onSuccess = (message: string) => {
       addToast({
@@ -57,18 +52,10 @@ export default function MovePhotoModal(disclosure : Disclosure) {
         shouldShowTimeoutProgress: true,
       });
 
-      // Remove photos from the frontend
-      selectedAlbum!.photos = selectedAlbum!.photos!.filter((p) => {
-        return !selectedPhotoIds.includes(p.photoId);
-      })
-      setSelectedAlbum({...selectedAlbum!});
-
-      // Clear selected photos
-      setSelectedPhotos([])
-
-      // Mark the photo list in the destination album as dirty so that it gets reloaded
-      const destAlbum = findAlbumByID(modalSelectedAlbum!.albumId, albums);
-      if (destAlbum) destAlbum.photos = null;
+      // Update album list on left rail
+      getAlbums().then((albums: Album[]) => {
+        setAlbums(albums);
+      });
     }
 
     // On Error - Display error
@@ -84,17 +71,17 @@ export default function MovePhotoModal(disclosure : Disclosure) {
 
     // Move album (or unfile if album id is -1)
     if (modalSelectedAlbum!.albumId === -1) {
-      unfilePhoto(selectedPhotoIds, (code) => {
-        onError(code, "Failed to unfile photos");
+      unfileAlbum([props.album.albumId], (code) => {
+        onError(code, "Failed to move album");
       }).then(() => {
-        onSuccess(`Successfully unfiled ${selectedPhotos.length} photos`);
+        onSuccess(`Successfully moved ${props.album.albumName} to root`);
       });
     }
     else {
-      movePhoto(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
+      moveAlbum(modalSelectedAlbum!.albumId, [props.album.albumId], (code) => {
         onError(code, "Failed to move photos");
       }).then(() => {
-        onSuccess(`Successfully moved ${selectedPhotos.length} photos to album ${modalSelectedAlbum?.albumName ?? "Unknown"} (ID: ${modalSelectedAlbum?.albumId})`);
+        onSuccess(`Successfully moved ${props.album.albumName} to ${modalSelectedAlbum?.albumName}`);
       });
     }
 
@@ -115,11 +102,11 @@ export default function MovePhotoModal(disclosure : Disclosure) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Move Photos</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Move Album</ModalHeader>
               <ModalBody>
 
                 <p>
-                  Moving {selectedPhotos.length} {selectedPhotos.length == 1 ? "photo" : "photos"} to the following album
+                  Moving album "{props.album.albumName}" to the following album
                 </p>
 
                 <Spacer className="h-1"/>
@@ -152,8 +139,8 @@ export default function MovePhotoModal(disclosure : Disclosure) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={() => {onMovePhotos(); onClose();}} isDisabled={modalSelectedAlbum == null}>
-                  {selectedPhotos.length == 1 ? "Move Photo" : "Move Photos"}
+                <Button color="primary" onPress={() => {onMoveAlbum(); onClose();}} isDisabled={modalSelectedAlbum == null}>
+                  Move Album
                 </Button>
               </ModalFooter>
             </>
@@ -163,3 +150,5 @@ export default function MovePhotoModal(disclosure : Disclosure) {
     </>
   );
 }
+
+export default MoveAlbumModal;
