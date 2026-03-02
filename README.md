@@ -11,9 +11,10 @@ A great way to manage your photo library from anywhere
 
 ## Setup
 
-Create a `.env` file and tell suisai where your backend server is
+Create a `.env` file from `example.env` and tell suisai where your backend server is.
 
 
 ## Running
 
+    bun install
     bun run dev
