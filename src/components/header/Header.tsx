@@ -2,16 +2,13 @@
 
 import React, {useState} from "react";
 import {
-  Button,
   cn,
   Divider,
-  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   NavbarMenu,
-  NavbarMenuItem,
   NavbarMenuToggle,
   NavbarProps,
   Spacer,
@@ -70,12 +67,6 @@ export default function Header(props: HeaderProps) {
             <p className="text-medium text-default-500 w-8">{darkMode ? "Dark" : "Light"}</p>
           </Switch>
 
-          <Spacer />
-
-          <Button className="text-default-500 text-medium" radius="full" variant="light">
-            Sign Out
-          </Button>
-
         </NavbarItem>
       </NavbarContent>
 
@@ -84,11 +75,11 @@ export default function Header(props: HeaderProps) {
       <NavbarMenuToggle className="text-default-400 md:hidden" />
       <NavbarMenu className={cn(darkMode && "dark", "text-background bg-default-200/50 dark:bg-default-50/50 pb-6 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150")}>
 
-        <NavbarMenuItem>
-          <Button fullWidth as={Link} href="/#" variant="faded">
-            Log Out
-          </Button>
-        </NavbarMenuItem>
+        {/*<NavbarMenuItem>*/}
+        {/*  <Button fullWidth as={Link} href="/#" variant="faded">*/}
+        {/*    Log Out*/}
+        {/*  </Button>*/}
+        {/*</NavbarMenuItem>*/}
 
         <Divider className="opacity-50 my-2" />
 

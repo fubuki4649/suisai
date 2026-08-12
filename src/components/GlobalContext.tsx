@@ -1,37 +1,37 @@
 import {createContext, ReactNode, useContext, useState} from "react";
-import {Album, Photo} from "../api/models.ts";
+import {Asset, Collection} from "../api/models.ts";
 
 type GlobalState = {
-  albums: Album[];
-  setAlbums: (albums: Album[]) => void;
+  collections: Collection[];
+  setCollections: (collections: Collection[]) => void;
 
   darkMode: boolean;
   setDarkMode: (value: boolean) => void;
 
-  selectedAlbum: Album | null;
-  setSelectedAlbum: (album: Album | null) => void;
+  selectedCollection: Collection | null;
+  setSelectedCollection: (collection: Collection | null) => void;
 
-  selectedPhotos: Photo[];
-  setSelectedPhotos: (card: Photo[]) => void;
+  selectedAssets: Asset[];
+  setSelectedAssets: (assets: Asset[]) => void;
 };
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [darkMode, setDarkMode] = useState(true);
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
-  const [selectedPhotos, setSelectedPhotos] = useState<Photo[]>([]);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
   const store: GlobalState = {
-    albums,
-    setAlbums,
+    collections,
+    setCollections,
     darkMode,
     setDarkMode,
-    selectedAlbum,
-    setSelectedAlbum,
-    selectedPhotos,
-    setSelectedPhotos,
+    selectedCollection,
+    setSelectedCollection,
+    selectedAssets,
+    setSelectedAssets,
   };
 
   return (
@@ -50,10 +50,10 @@ const useGlobalContext = (): GlobalState => {
   return context;
 };
 
-// Smaller scoped hooks
-export const useAlbums = (): [Album[], (albums: Album[]) => void] => {
-  const { albums, setAlbums } = useGlobalContext();
-  return [albums, setAlbums];
+// Scoped hooks
+export const useCollections = (): [Collection[], (collections: Collection[]) => void] => {
+  const { collections, setCollections } = useGlobalContext();
+  return [collections, setCollections];
 };
 
 export const useDarkMode = (): [boolean, (darkMode: boolean) => void] => {
@@ -61,12 +61,17 @@ export const useDarkMode = (): [boolean, (darkMode: boolean) => void] => {
   return [darkMode, setDarkMode];
 };
 
-export const useSelectedAlbum = (): [Album | null, (album: Album | null) => void] => {
-  const { selectedAlbum, setSelectedAlbum } = useGlobalContext();
-  return [selectedAlbum, setSelectedAlbum];
+export const useSelectedCollection = (): [Collection | null, (collection: Collection | null) => void] => {
+  const { selectedCollection, setSelectedCollection } = useGlobalContext();
+  return [selectedCollection, setSelectedCollection];
 };
 
-export const useSelectedPhotos = (): [Photo[], (photos: Photo[]) => void] => {
-  const { selectedPhotos, setSelectedPhotos } = useGlobalContext();
-  return [selectedPhotos, setSelectedPhotos];
+export const useSelectedAssets = (): [Asset[], (assets: Asset[]) => void] => {
+  const { selectedAssets, setSelectedAssets } = useGlobalContext();
+  return [selectedAssets, setSelectedAssets];
 };
+
+// Backwards compatibility hooks
+export const useAlbums = useCollections;
+export const useSelectedAlbum = useSelectedCollection;
+export const useSelectedPhotos = useSelectedAssets;

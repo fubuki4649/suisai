@@ -1,39 +1,37 @@
-import {useSelectedAlbum, useSelectedPhotos} from "../../../components/GlobalContext.tsx";
+import {useSelectedCollection, useSelectedAssets} from "../../../components/GlobalContext.tsx";
 import React, {RefObject} from "react";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
 import ActionsCard from "../action_card/ActionsCard.tsx";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
 import {BACKEND_URL} from "../../../config.ts";
 
-
 function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null> }) {
-
-  const [selectedAlbum] = useSelectedAlbum();
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+  const [selectedCollection] = useSelectedCollection();
+  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
   const leftArrowHandler = () => {
-    const idx = selectedAlbum?.photos?.findIndex(photo => selectedPhotos[0].photoId == photo.photoId) ?? 0;
+    const idx = selectedCollection?.assets?.findIndex((asset) => selectedAssets[0]?.id === asset.id) ?? 0;
 
     if (idx - 1 >= 0) {
-      setSelectedPhotos(selectedAlbum?.photos?.[idx-1] ? [selectedAlbum?.photos?.[idx-1]] : []);
+      setSelectedAssets(selectedCollection?.assets?.[idx - 1] ? [selectedCollection?.assets?.[idx - 1]] : []);
     }
 
-    if(scrollRef.current != null) scrollRef.current.scrollLeft -= 170;
-  }
+    if (scrollRef.current != null) scrollRef.current.scrollLeft -= 170;
+  };
 
   const rightArrowHandler = () => {
-    const idx = selectedAlbum?.photos?.findIndex(photo => selectedPhotos[0].photoId == photo.photoId) ?? 0;
+    const idx = selectedCollection?.assets?.findIndex((asset) => selectedAssets[0]?.id === asset.id) ?? 0;
 
-    if (idx + 1 < (selectedAlbum?.photos?.length ?? 0)) {
-      setSelectedPhotos(selectedAlbum?.photos?.[idx+1] ? [selectedAlbum?.photos?.[idx+1]] : []);
+    if (idx + 1 < (selectedCollection?.assets?.length ?? 0)) {
+      setSelectedAssets(selectedCollection?.assets?.[idx + 1] ? [selectedCollection?.assets?.[idx + 1]] : []);
     }
 
-    if(scrollRef.current != null) scrollRef.current.scrollLeft += 170;
-  }
+    if (scrollRef.current != null) scrollRef.current.scrollLeft += 170;
+  };
 
   return (
     <div className="flex flex-row flex-grow overflow-auto justify-center">
-      { selectedPhotos[0] ?
+      { selectedAssets[0] ? (
         // Viewing Area
         <>
           <div className="flex flex-col justify-center select-none">
@@ -42,8 +40,8 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
 
               <ModalZoomImage
                 className="object-scale-down rounded-none shadow-2xl"
-                alt={`${BACKEND_URL}/thumbnail/${selectedPhotos[0].hash}`}
-                src={`${BACKEND_URL}/thumbnail/${selectedPhotos[0].hash}`}
+                alt={`${BACKEND_URL}/thumbnail/${selectedAssets[0].hash}`}
+                src={`${BACKEND_URL}/thumbnail/${selectedAssets[0].hash}`}
                 removeWrapper
               />
 
@@ -52,16 +50,16 @@ function Lightbox({ scrollRef } : { scrollRef: RefObject<HTMLUListElement | null
           </div>
           <ActionsCard vertical/>
         </>
-        :
+      ) : (
         // Nothing Selected message
         <div className="flex flex-wrap flex-grow justify-center items-center">
           <p className="text-default-600 text-3xl">
-            {(selectedAlbum?.albumId == null) ? "No Album Selected" : ((selectedAlbum?.photos?.length == 0) ? "Album is Empty" : "No Photo Selected")}
+            {selectedCollection?.id == null ? "No Collection Selected" : ((selectedCollection?.assets?.length === 0) ? "Collection is Empty" : "No Asset Selected")}
           </p>
         </div>
-      }
+      )}
     </div>
-  )
+  );
 }
 
-export default Lightbox
+export default Lightbox;

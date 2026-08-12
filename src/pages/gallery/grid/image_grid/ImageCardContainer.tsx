@@ -1,63 +1,58 @@
 import ImageCard from "./image_card/ImageCard.tsx";
 import React, {forwardRef, useEffect, useState} from "react";
-import {useSelectedAlbum, useSelectedPhotos} from "../../../../components/GlobalContext.tsx";
+import {useSelectedCollection, useSelectedAssets} from "../../../../components/GlobalContext.tsx";
 import {BACKEND_URL} from "../../../../config.ts";
 import {ImageGridProps} from "./props.ts";
 import {ImageCardProps} from "./image_card/props.ts";
 
-
 const ImageCardContainer = forwardRef<HTMLUListElement, ImageGridProps>((props, ref) => {
-  const [selectedAlbum] = useSelectedAlbum()
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+  const [selectedCollection] = useSelectedCollection();
+  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
   const [cards, setCards] = useState<ImageCardProps[]>([]);
 
-  // Update cards on photo select/deselect
+  // Update cards on asset select/deselect
   useEffect(() => {
-    setCards(cards => {
-      const selectedPhotoIds: number[] = selectedPhotos.map(photo => photo.photoId)
-      return cards.map(
-        card => {
-          return {...card, isSelected: (selectedPhotoIds.includes(card.id))}
-        }
-      )
+    setCards((cards) => {
+      const selectedAssetIds: string[] = selectedAssets.map((asset) => asset.id);
+      return cards.map((card) => {
+        return {...card, isSelected: selectedAssetIds.includes(card.id)};
+      });
     });
-  }, [selectedPhotos]);
+  }, [selectedAssets]);
 
-
-  // Update cards on album change/load
+  // Update cards on collection change/load
   useEffect(() => {
-    setCards((selectedAlbum?.photos ?? []).map(photo => {
+    setCards((selectedCollection?.assets ?? []).map((asset) => {
       return {
-        id: photo.photoId,
-        alt: photo.fileName,
-        previewUrl: `${BACKEND_URL}/thumbnail/${photo.hash}`,
+        id: asset.id,
+        alt: asset.file_name,
+        previewUrl: `${BACKEND_URL}/thumbnail/${asset.hash}`,
         isSelected: false,
         allowZoom: !!props.allowCardZoom,
-      }
-    }))
-    setSelectedPhotos([])
-  }, [selectedAlbum]);
-
+      };
+    }));
+    setSelectedAssets([]);
+  }, [selectedCollection, props.allowCardZoom, setSelectedAssets]);
 
   return (
     <>
-      { cards.length ?
+      { cards.length ? (
         <ul className={props.className} ref={ref}>
-          {cards.map(card => (
+          {cards.map((card) => (
             // Putting this here so Tailwind compiler includes this: w-[256px]
             <li className={`flex-shrink-0 w-[${props.cardWidth ?? 256}px]`} key={card.id}>
               <ImageCard {...card} />
             </li>
           ))}
         </ul>
-        :
+      ) : (
         <div className="flex flex-wrap flex-grow justify-center items-center">
-          <p className="text-default-600 text-3xl">{selectedAlbum == null ? "No Album Selected" : "Album is Empty"}</p>
+          <p className="text-default-600 text-3xl">{selectedCollection == null ? "No Collection Selected" : "Collection is Empty"}</p>
         </div>
-      }
+      )}
     </>
-  )
+  );
 });
 
 export default ImageCardContainer;

@@ -1,17 +1,15 @@
-import axios, {AxiosError} from "axios";
-
+import axios from "axios";
 
 export function withAxiosErrorHandling<T extends Exclude<unknown, void>>(
   fallback: T,
   onHttpError: (code: number) => void,
-  fn: (...args: any[]) => Promise<T>
-): (...args: any[]) => Promise<T> {
-  return async (...args: any[]): Promise<T> => {
-
+  fn: (...args: unknown[]) => Promise<T>
+): (...args: unknown[]) => Promise<T> {
+  return async (...args: unknown[]): Promise<T> => {
     // Run inner function
     try {
       return await fn(...args);
-    } catch (error: AxiosError | unknown) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           console.error("HTTP error", error.response.status);
@@ -25,7 +23,6 @@ export function withAxiosErrorHandling<T extends Exclude<unknown, void>>(
       }
 
       return fallback;
-
     }
   };
 }

@@ -1,25 +1,23 @@
 import React, {ReactNode, useEffect} from "react";
-import {useAlbums} from "../../components/GlobalContext.tsx";
-import {getAlbums} from "../../api/endpoints/album.ts";
-import {Album} from "../../api/models.ts";
+import {useCollections} from "../../components/GlobalContext.tsx";
+import {getCollections} from "../../api/endpoints/album.ts";
+import {Collection} from "../../api/models.ts";
 import Sidebar from "./album_rail/Sidebar.tsx";
 
-
 export default function Gallery ({ children }: { children: ReactNode }) {
+  const [, setCollections] = useCollections();
 
-  const [, setAlbums] = useAlbums();
-
-  // Update cards on album change/load
+  // Update collections on load
   useEffect(() => {
-    getAlbums().then((albums: Album[]) => {
-      setAlbums(albums);
-    })
-  }, []);
+    getCollections().then((collections: Collection[]) => {
+      setCollections(collections);
+    });
+  }, [setCollections]);
 
   return (
     <div className="flex flex-row flex-grow overflow-y-auto">
       <Sidebar />
       { children }
     </div>
-  )
+  );
 }

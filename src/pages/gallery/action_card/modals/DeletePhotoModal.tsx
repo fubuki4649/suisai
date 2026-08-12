@@ -1,20 +1,18 @@
-import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../../components/GlobalContext.tsx";
+import {useDarkMode, useSelectedCollection, useSelectedAssets} from "../../../../components/GlobalContext.tsx";
 import React from "react";
 import {addToast, Button, cn, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@heroui/react";
 import {Disclosure} from "../../../../components/modal-disclosure.ts";
-import {deletePhoto} from "../../../../api/endpoints/photo.ts";
+import {deleteAsset} from "../../../../api/endpoints/asset.ts";
 
 export default function DeletePhotoModal(disclosure : Disclosure) {
-
   const [darkMode] = useDarkMode();
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
-  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
+  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
+  const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const {isOpen, onOpenChange} = disclosure;
 
-  // Event handler for move photo button
-  const onMovePhotos = () => {
-
-    const selectedPhotoIds = selectedPhotos.map((photo) => photo.photoId)
+  // Event handler for delete asset button
+  const onDeleteAssets = () => {
+    const selectedAssetIds = selectedAssets.map((asset) => asset.id);
 
     // On Success - Display toast + update frontend
     const onSuccess = (message: string) => {
@@ -27,14 +25,15 @@ export default function DeletePhotoModal(disclosure : Disclosure) {
       });
 
       // Update frontend
-      selectedAlbum!.photos = selectedAlbum!.photos!.filter((p) => {
-        return !selectedPhotoIds.includes(p.photoId);
-      })
+      if (selectedCollection && selectedCollection.assets) {
+        selectedCollection.assets = selectedCollection.assets.filter((a) => {
+          return !selectedAssetIds.includes(a.id);
+        });
+        setSelectedCollection({...selectedCollection});
+      }
 
-      setSelectedAlbum({...selectedAlbum!});
-      setSelectedPhotos([])
-
-    }
+      setSelectedAssets([]);
+    };
 
     // On Error - Display error
     const onError = (code: number, message: string) => {
@@ -44,50 +43,45 @@ export default function DeletePhotoModal(disclosure : Disclosure) {
         color: "danger",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
-      })
-    }
+      });
+    };
 
-    // Delete photo
-    deletePhoto(selectedPhotoIds, (code) => {
-      onError(code, "Failed to delete photos");
+    // Delete asset
+    deleteAsset(selectedAssetIds, (code) => {
+      onError(code, "Failed to delete assets");
     }).then(() => {
-      onSuccess(`Successfully deleted ${selectedPhotos.length} photos`);
+      onSuccess(`Successfully deleted ${selectedAssets.length} ${selectedAssets.length === 1 ? "asset" : "assets"}`);
     });
-
-  }
+  };
 
   return (
-    <>
-      <Modal
-        className={cn(darkMode && "dark text-foreground")}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Delete Photos</ModalHeader>
-              <ModalBody>
-
-                <p>
-                  You are about to DELETE {selectedPhotos.length} {selectedPhotos.length == 1 ? "photo" : "photos"}. This action cannot be undone!
-                </p>
-
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => {onMovePhotos(); onClose();}}>
-                  Confirm Delete
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal
+      className={cn(darkMode && "dark text-foreground")}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Delete Assets</ModalHeader>
+            <ModalBody>
+              <p>
+                You are about to DELETE {selectedAssets.length} {selectedAssets.length === 1 ? "asset" : "assets"}. This action cannot be undone!
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button color="primary" onPress={() => {onDeleteAssets(); onClose();}}>
+                Confirm Delete
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }

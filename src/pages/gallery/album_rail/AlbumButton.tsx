@@ -1,55 +1,79 @@
 import React from "react";
-import {Album} from "../../../api/models.ts";
+import {Collection} from "../../../api/models.ts";
 import RightClickButton from "../../../components/right_click_button/RightClickButton.tsx";
 import {Disclosure} from "../../../components/modal-disclosure.ts";
 
-interface AlbumButtonProps {
-  album: Album;
+export interface CollectionButtonProps {
+  collection?: Collection;
+  album?: Collection;
   expanded: boolean;
-  selectedAlbum: Album | null;
-  onAlbumSelect: (album: Album) => void;
-  setRightClickAlbum: (album: Album) => void;
-  renameAlbumDisclosure: Disclosure;
-  moveAlbumDisclosure: Disclosure;
-  deleteAlbumDisclosure: Disclosure;
+  selectedCollection?: Collection | null;
+  selectedAlbum?: Collection | null;
+  onCollectionSelect?: (collection: Collection) => void;
+  onAlbumSelect?: (album: Collection) => void;
+  setRightClickCollection?: (collection: Collection) => void;
+  setRightClickAlbum?: (album: Collection) => void;
+  renameCollectionDisclosure?: Disclosure;
+  renameAlbumDisclosure?: Disclosure;
+  moveCollectionDisclosure?: Disclosure;
+  moveAlbumDisclosure?: Disclosure;
+  deleteCollectionDisclosure?: Disclosure;
+  deleteAlbumDisclosure?: Disclosure;
 }
 
-const AlbumButton: React.FC<AlbumButtonProps> = ({
-  album,
+const AlbumButton: React.FC<CollectionButtonProps> = ({
+  collection: propCollection,
+  album: propAlbum,
   expanded,
-  selectedAlbum,
+  selectedCollection: propSelectedCollection,
+  selectedAlbum: propSelectedAlbum,
+  onCollectionSelect,
   onAlbumSelect,
+  setRightClickCollection,
   setRightClickAlbum,
+  renameCollectionDisclosure,
   renameAlbumDisclosure,
+  moveCollectionDisclosure,
   moveAlbumDisclosure,
+  deleteCollectionDisclosure,
   deleteAlbumDisclosure,
 }) => {
+  const collection = propCollection ?? propAlbum!;
+  const selected = propSelectedCollection !== undefined ? propSelectedCollection : propSelectedAlbum;
+  const onSelect = onCollectionSelect ?? onAlbumSelect!;
+  const setRightClick = setRightClickCollection ?? setRightClickAlbum!;
+  const renameDisclosure = renameCollectionDisclosure ?? renameAlbumDisclosure!;
+  const moveDisclosure = moveCollectionDisclosure ?? moveAlbumDisclosure!;
+  const deleteDisclosure = deleteCollectionDisclosure ?? deleteAlbumDisclosure!;
+
+  const isUnfiled = collection.id === "-1";
+
   return (
     <RightClickButton
       btnProps={{
         className: "px-4 text-medium",
-        children: album.albumName,
+        children: collection.label,
         color: "default",
-        variant: selectedAlbum?.albumId === album.albumId ? "faded" : (expanded ? "flat" : "light"),
-        onPress: () => onAlbumSelect(album),
+        variant: selected?.id === collection.id ? "faded" : (expanded ? "flat" : "light"),
+        onPress: () => onSelect(collection),
       }}
       rightClickItems={[
         {
           key: "rename",
           children: "Rename",
-          isDisabled: album.albumId < 0,
+          isDisabled: isUnfiled,
           onPress: () => {
-            setRightClickAlbum(album);
-            renameAlbumDisclosure.onOpen();
+            setRightClick(collection);
+            renameDisclosure.onOpen();
           },
         },
         {
           key: "move",
           children: "Move",
-          isDisabled: album.albumId < 0,
+          isDisabled: isUnfiled,
           onPress: () => {
-            setRightClickAlbum(album);
-            moveAlbumDisclosure.onOpen();
+            setRightClick(collection);
+            moveDisclosure.onOpen();
           },
         },
         {
@@ -57,10 +81,10 @@ const AlbumButton: React.FC<AlbumButtonProps> = ({
           className: "text-danger",
           color: "danger",
           children: "Delete",
-          isDisabled: album.albumId < 0,
+          isDisabled: isUnfiled,
           onPress: () => {
-            setRightClickAlbum(album);
-            deleteAlbumDisclosure.onOpen();
+            setRightClick(collection);
+            deleteDisclosure.onOpen();
           },
         },
       ]}

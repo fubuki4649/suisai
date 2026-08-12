@@ -1,16 +1,21 @@
-import {Album} from "../api/models.ts";
+import {Collection} from "../api/models.ts";
 import PriorityQueue from "js-priority-queue";
 
-// Find an album by its ID in a tree of albums via BFS
-export function findAlbumByID(id: number, albums: Album[]) {
-  const pq = new PriorityQueue<Album>();
+// Find a collection by its ID in a tree of collections via BFS
+export function findCollectionByID(id: string, collections: Collection[]): Collection | undefined {
+  const pq = new PriorityQueue<Collection>();
 
-  for (const album of albums) pq.queue(album);
+  for (const collection of collections) pq.queue(collection);
 
   while (pq.length > 0) {
-    const album = pq.dequeue();
+    const collection = pq.dequeue();
 
-    if (album.albumId === id) return album;
-    for (const child of album.children) pq.queue(child);
+    if (collection.id === id) return collection;
+    for (const child of collection.children) pq.queue(child);
   }
+  return undefined;
 }
+
+// Backwards compatibility alias
+export const findAlbumByID = (id: string | number, collections: Collection[]) =>
+  findCollectionByID(String(id), collections);

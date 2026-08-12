@@ -1,42 +1,47 @@
 import {withAxiosErrorHandling} from "../axios-error-handling.ts";
 import {client} from "../client.ts";
 
-// Unfile a photo (set its parent album to none)
-export async function unfilePhoto(photoIds: number[], onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Unfile an asset (set its parent collection to none)
+export async function unfileAsset(assetIds: string[], onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.post(`/management/photo/unfile`, {photoIds: photoIds});
+    await client.post(`/management/asset/unfile`, {assetIds});
     return;
-
   })();
 }
 
-// Move a photo (set its parent album to something else)
-export async function movePhoto(albumId: number, photoIds: number[], onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Move an asset (set its parent collection to something else)
+export async function reassignAsset(collectionId: string, assetIds: string[], onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.post(`/management/photo/reassign`, {albumId: albumId, photoIds: photoIds});
+    await client.post(`/management/asset/reassign`, {collectionId, assetIds});
     return;
-
   })();
 }
 
-// Unfile an album (move an album along with its contents to root level)
-export async function unfileAlbum(albumIds: number[], onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Unfile a collection (move a collection along with its contents to root level)
+export async function unfileCollection(collectionIds: string[], onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.post(`/management/album/unfile`, {albumIds: albumIds});
+    await client.post(`/management/collection/unfile`, {collectionIds});
     return;
-
   })();
 }
 
-// Move an album (move an album along with its contents to another album)
-export async function moveAlbum(parentId: number, albumIds: number[], onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Move a collection (move a collection along with its contents to another collection)
+export async function reassignCollection(parentId: string, collectionIds: string[], onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.post(`/management/album/reassign`, {parentId: parentId, albumIds: albumIds});
+    await client.post(`/management/collection/reassign`, {parentId, collectionIds});
     return;
-
   })();
 }
+
+// Backwards compatibility aliases
+export const unfilePhoto = (photoIds: (string | number)[], onHttpError?: (code: number) => void) =>
+  unfileAsset(photoIds.map(String), onHttpError);
+
+export const movePhoto = (albumId: string | number, photoIds: (string | number)[], onHttpError?: (code: number) => void) =>
+  reassignAsset(String(albumId), photoIds.map(String), onHttpError);
+
+export const unfileAlbum = (albumIds: (string | number)[], onHttpError?: (code: number) => void) =>
+  unfileCollection(albumIds.map(String), onHttpError);
+
+export const moveAlbum = (parentId: string | number, albumIds: (string | number)[], onHttpError?: (code: number) => void) =>
+  reassignCollection(String(parentId), albumIds.map(String), onHttpError);

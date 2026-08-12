@@ -15,33 +15,34 @@ import {
   Spacer
 } from "@heroui/react";
 import React, {useEffect, useState} from "react";
-import {useAlbums, useDarkMode} from "../../../../components/GlobalContext.tsx";
-import {getAlbums, getAlbumsFlat} from "../../../../api/endpoints/album.ts";
-import {Album} from "../../../../api/models.ts";
-import {AlbumModalProps} from "./props.ts";
-import {moveAlbum, unfileAlbum} from "../../../../api/endpoints/management.ts";
+import {useCollections, useDarkMode} from "../../../../components/GlobalContext.tsx";
+import {getCollections, getCollectionsFlat} from "../../../../api/endpoints/collection.ts";
+import {Collection} from "../../../../api/models.ts";
+import {CollectionModalProps, AlbumModalProps} from "./props.ts";
+import {reassignCollection, unfileCollection} from "../../../../api/endpoints/management.ts";
 
-export function MoveAlbumModal(props: AlbumModalProps) {
+export function MoveAlbumModal(props: CollectionModalProps | AlbumModalProps) {
+  const collection = "collection" in props ? props.collection : props.album;
 
   const [darkMode] = useDarkMode();
-  const [albumList, setAlbumList] = useState<Album[]>([]);
-  const [, setAlbums] = useAlbums();
+  const [collectionList, setCollectionList] = useState<Collection[]>([]);
+  const [, setCollections] = useCollections();
 
   const {isOpen, onOpenChange} = props.disclosure;
-  const [modalSelectedAlbum, setModalSelectedAlbum] = useState<Album | null>(null);
+  const [modalSelectedCollection, setModalSelectedCollection] = useState<Collection | null>(null);
 
-  // Fetch album list
+  // Fetch collection list
   useEffect(() => {
     if (props.disclosure.isOpen) {
-      getAlbumsFlat().then((result) => {
-        // Remove the option to move the album to itself
-        setAlbumList(result.filter((album) => album.albumId != props.album.albumId));
-      })
+      getCollectionsFlat().then((result) => {
+        // Remove the option to move the collection to itself
+        setCollectionList(result.filter((c) => c.id !== collection.id));
+      });
     }
-  }, [props.disclosure.isOpen])
+  }, [props.disclosure.isOpen, collection.id]);
 
-  // Event handler for move photo button
-  const onMoveAlbum = () => {
+  // Event handler for move collection button
+  const onMoveCollection = () => {
     // On Success - Display toast + update frontend
     const onSuccess = (message: string) => {
       addToast({
@@ -52,11 +53,11 @@ export function MoveAlbumModal(props: AlbumModalProps) {
         shouldShowTimeoutProgress: true,
       });
 
-      // Update album list on left rail
-      getAlbums().then((albums: Album[]) => {
-        setAlbums(albums);
+      // Update collection list on left rail
+      getCollections().then((collections: Collection[]) => {
+        setCollections(collections);
       });
-    }
+    };
 
     // On Error - Display error
     const onError = (code: number, message: string) => {
@@ -66,88 +67,82 @@ export function MoveAlbumModal(props: AlbumModalProps) {
         color: "danger",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
-      })
-    }
+      });
+    };
 
-    // Move album (or unfile if album id is -1)
-    if (modalSelectedAlbum!.albumId === -1) {
-      unfileAlbum([props.album.albumId], (code) => {
-        onError(code, "Failed to move album");
+    // Move collection (or unfile if collection id is "-1")
+    if (modalSelectedCollection!.id === "-1") {
+      unfileCollection([collection.id], (code) => {
+        onError(code, "Failed to move collection");
       }).then(() => {
-        onSuccess(`Successfully moved ${props.album.albumName} to root`);
+        onSuccess(`Successfully moved ${collection.label} to root`);
+      });
+    } else {
+      reassignCollection(modalSelectedCollection!.id, [collection.id], (code) => {
+        onError(code, "Failed to move collection");
+      }).then(() => {
+        onSuccess(`Successfully moved ${collection.label} to ${modalSelectedCollection?.label}`);
       });
     }
-    else {
-      moveAlbum(modalSelectedAlbum!.albumId, [props.album.albumId], (code) => {
-        onError(code, "Failed to move photos");
-      }).then(() => {
-        onSuccess(`Successfully moved ${props.album.albumName} to ${modalSelectedAlbum?.albumName}`);
-      });
-    }
-
-  }
+  };
 
   return (
-    <>
-      <Modal
-        className={cn(darkMode && "dark text-foreground")}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        isOpen={isOpen}
-        onOpenChange={() => {
-          onOpenChange();
-          setModalSelectedAlbum(null);
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Move Album</ModalHeader>
-              <ModalBody>
+    <Modal
+      className={cn(darkMode && "dark text-foreground")}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      isOpen={isOpen}
+      onOpenChange={() => {
+        onOpenChange();
+        setModalSelectedCollection(null);
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Move Collection</ModalHeader>
+            <ModalBody>
+              <p>
+                Moving collection "{collection.label}" to the following collection
+              </p>
 
-                <p>
-                  Moving album "{props.album.albumName}" to the following album
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
-
-                <Dropdown className={cn(darkMode && "dark text-foreground")} placement="bottom-start">
-                  <DropdownTrigger>
-                    <div>
-                      <Input
-                        isReadOnly
-                        label="Destination Album"
-                        value={modalSelectedAlbum?.albumName ?? ""}
-                        type="text"
-                        placeholder="Select Album"
-                        size="md"
-                        labelPlacement="inside"
-                      />
-                    </div>
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="Dynamic Actions" items={albumList}>
-                    {(album) => (
-                      <DropdownItem key={album.albumId} onPress={() => {setModalSelectedAlbum(album);}}>
-                        {album.albumName} (ID: {album.albumId})
-                      </DropdownItem>
-                    )}
-                  </DropdownMenu>
-                </Dropdown>
-
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => {onMoveAlbum(); onClose();}} isDisabled={modalSelectedAlbum == null}>
-                  Move Album
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+              <Dropdown className={cn(darkMode && "dark text-foreground")} placement="bottom-start">
+                <DropdownTrigger>
+                  <div>
+                    <Input
+                      isReadOnly
+                      label="Destination Collection"
+                      value={modalSelectedCollection?.label ?? ""}
+                      type="text"
+                      placeholder="Select Collection"
+                      size="md"
+                      labelPlacement="inside"
+                    />
+                  </div>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Dynamic Actions" items={collectionList}>
+                  {(item) => (
+                    <DropdownItem key={item.id} onPress={() => {setModalSelectedCollection(item);}}>
+                      {item.label} (ID: {item.id})
+                    </DropdownItem>
+                  )}
+                </DropdownMenu>
+              </Dropdown>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button color="primary" onPress={() => {onMoveCollection(); onClose();}} isDisabled={modalSelectedCollection == null}>
+                Move Collection
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }
 

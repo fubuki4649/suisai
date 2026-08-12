@@ -1,4 +1,4 @@
-import {useAlbums, useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../../components/GlobalContext.tsx";
+import {useCollections, useDarkMode, useSelectedCollection, useSelectedAssets} from "../../../../components/GlobalContext.tsx";
 import React, {useEffect, useState} from "react";
 import {
   addToast,
@@ -16,36 +16,34 @@ import {
   ModalHeader,
   Spacer
 } from "@heroui/react";
-import {Album} from "../../../../api/models.ts";
+import {Collection} from "../../../../api/models.ts";
 import {Disclosure} from "../../../../components/modal-disclosure.ts";
-import {movePhoto, unfilePhoto} from "../../../../api/endpoints/management.ts";
-import {getAlbumsFlat} from "../../../../api/endpoints/album.ts";
-import {findAlbumByID} from "../../../../components/helpers.ts";
+import {reassignAsset, unfileAsset} from "../../../../api/endpoints/management.ts";
+import {getCollectionsFlat} from "../../../../api/endpoints/collection.ts";
+import {findCollectionByID} from "../../../../components/helpers.ts";
 
 export default function MovePhotoModal(disclosure : Disclosure) {
-
   const [darkMode] = useDarkMode();
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
-  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
-  const [albums] = useAlbums();
-  const [albumList, setAlbumList] = useState<Album[]>([]);
+  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
+  const [selectedCollection, setSelectedCollection] = useSelectedCollection();
+  const [collections] = useCollections();
+  const [collectionList, setCollectionList] = useState<Collection[]>([]);
 
   const {isOpen, onOpenChange} = disclosure;
-  const [modalSelectedAlbum, setModalSelectedAlbum] = useState<Album | null>(null);
+  const [modalSelectedCollection, setModalSelectedCollection] = useState<Collection | null>(null);
 
-  // Fetch album list
+  // Fetch collection list
   useEffect(() => {
     if (isOpen) {
-      getAlbumsFlat().then((result) => {
-        setAlbumList(result);
-      })
+      getCollectionsFlat().then((result) => {
+        setCollectionList(result);
+      });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  // Event handler for move photo button
-  const onMovePhotos = () => {
-
-    const selectedPhotoIds = selectedPhotos.map((photo) => photo.photoId)
+  // Event handler for move asset button
+  const onMoveAssets = () => {
+    const selectedAssetIds = selectedAssets.map((asset) => asset.id);
 
     // On Success - Display toast + update frontend
     const onSuccess = (message: string) => {
@@ -57,19 +55,21 @@ export default function MovePhotoModal(disclosure : Disclosure) {
         shouldShowTimeoutProgress: true,
       });
 
-      // Remove photos from the frontend
-      selectedAlbum!.photos = selectedAlbum!.photos!.filter((p) => {
-        return !selectedPhotoIds.includes(p.photoId);
-      })
-      setSelectedAlbum({...selectedAlbum!});
+      // Remove assets from the frontend
+      if (selectedCollection && selectedCollection.assets) {
+        selectedCollection.assets = selectedCollection.assets.filter((a) => {
+          return !selectedAssetIds.includes(a.id);
+        });
+        setSelectedCollection({...selectedCollection});
+      }
 
-      // Clear selected photos
-      setSelectedPhotos([])
+      // Clear selected assets
+      setSelectedAssets([]);
 
-      // Mark the photo list in the destination album as dirty so that it gets reloaded
-      const destAlbum = findAlbumByID(modalSelectedAlbum!.albumId, albums);
-      if (destAlbum) destAlbum.photos = null;
-    }
+      // Mark the asset list in the destination collection as dirty so that it gets reloaded
+      const destCollection = findCollectionByID(modalSelectedCollection!.id, collections);
+      if (destCollection) destCollection.assets = null;
+    };
 
     // On Error - Display error
     const onError = (code: number, message: string) => {
@@ -79,87 +79,81 @@ export default function MovePhotoModal(disclosure : Disclosure) {
         color: "danger",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
-      })
-    }
+      });
+    };
 
-    // Move album (or unfile if album id is -1)
-    if (modalSelectedAlbum!.albumId === -1) {
-      unfilePhoto(selectedPhotoIds, (code) => {
-        onError(code, "Failed to unfile photos");
+    // Move asset (or unfile if collection id is "-1")
+    if (modalSelectedCollection!.id === "-1") {
+      unfileAsset(selectedAssetIds, (code) => {
+        onError(code, "Failed to unfile assets");
       }).then(() => {
-        onSuccess(`Successfully unfiled ${selectedPhotos.length} photos`);
+        onSuccess(`Successfully unfiled ${selectedAssets.length} assets`);
+      });
+    } else {
+      reassignAsset(modalSelectedCollection!.id, selectedAssetIds, (code) => {
+        onError(code, "Failed to move assets");
+      }).then(() => {
+        onSuccess(`Successfully moved ${selectedAssets.length} assets to collection ${modalSelectedCollection?.label ?? "Unknown"} (ID: ${modalSelectedCollection?.id})`);
       });
     }
-    else {
-      movePhoto(modalSelectedAlbum!.albumId, selectedPhotoIds, (code) => {
-        onError(code, "Failed to move photos");
-      }).then(() => {
-        onSuccess(`Successfully moved ${selectedPhotos.length} photos to album ${modalSelectedAlbum?.albumName ?? "Unknown"} (ID: ${modalSelectedAlbum?.albumId})`);
-      });
-    }
-
-  }
+  };
 
   return (
-    <>
-      <Modal
-        className={cn(darkMode && "dark text-foreground")}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        isOpen={isOpen}
-        onOpenChange={() => {
-          onOpenChange();
-          setModalSelectedAlbum(null);
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Move Photos</ModalHeader>
-              <ModalBody>
+    <Modal
+      className={cn(darkMode && "dark text-foreground")}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      isOpen={isOpen}
+      onOpenChange={() => {
+        onOpenChange();
+        setModalSelectedCollection(null);
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Move Assets</ModalHeader>
+            <ModalBody>
+              <p>
+                Moving {selectedAssets.length} {selectedAssets.length === 1 ? "asset" : "assets"} to the following collection
+              </p>
 
-                <p>
-                  Moving {selectedPhotos.length} {selectedPhotos.length == 1 ? "photo" : "photos"} to the following album
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
-
-                <Dropdown className={cn(darkMode && "dark text-foreground")} placement="bottom-start">
-                  <DropdownTrigger>
-                    <div>
-                      <Input
-                        isReadOnly
-                        label="Destination Album"
-                        value={modalSelectedAlbum?.albumName ?? ""}
-                        type="text"
-                        placeholder="Select Album"
-                        size="md"
-                        labelPlacement="inside"
-                      />
-                    </div>
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="Dynamic Actions" items={albumList}>
-                    {(album) => (
-                      <DropdownItem key={album.albumId} onPress={() => {setModalSelectedAlbum(album);}}>
-                        {album.albumName} (ID: {album.albumId})
-                      </DropdownItem>
-                    )}
-                  </DropdownMenu>
-                </Dropdown>
-
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => {onMovePhotos(); onClose();}} isDisabled={modalSelectedAlbum == null}>
-                  {selectedPhotos.length == 1 ? "Move Photo" : "Move Photos"}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+              <Dropdown className={cn(darkMode && "dark text-foreground")} placement="bottom-start">
+                <DropdownTrigger>
+                  <div>
+                    <Input
+                      isReadOnly
+                      label="Destination Collection"
+                      value={modalSelectedCollection?.label ?? ""}
+                      type="text"
+                      placeholder="Select Collection"
+                      size="md"
+                      labelPlacement="inside"
+                    />
+                  </div>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Dynamic Actions" items={collectionList}>
+                  {(item) => (
+                    <DropdownItem key={item.id} onPress={() => {setModalSelectedCollection(item);}}>
+                      {item.label} (ID: {item.id})
+                    </DropdownItem>
+                  )}
+                </DropdownMenu>
+              </Dropdown>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button color="primary" onPress={() => {onMoveAssets(); onClose();}} isDisabled={modalSelectedCollection == null}>
+                {selectedAssets.length === 1 ? "Move Asset" : "Move Assets"}
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }

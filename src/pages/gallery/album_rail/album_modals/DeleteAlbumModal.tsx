@@ -11,106 +11,107 @@ import {
   Spacer,
 } from "@heroui/react";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode, useSelectedAlbum} from "../../../../components/GlobalContext.tsx";
-import {deleteAlbum, getAlbums} from "../../../../api/endpoints/album.ts";
-import {Album} from "../../../../api/models.ts";
-import {AlbumModalProps} from "./props.ts";
+import {useCollections, useDarkMode, useSelectedCollection} from "../../../../components/GlobalContext.tsx";
+import {deleteCollection, getCollections} from "../../../../api/endpoints/collection.ts";
+import {Collection} from "../../../../api/models.ts";
+import {AlbumModalProps, CollectionModalProps} from "./props.ts";
 
-export function DeleteAlbumModal(props: AlbumModalProps) {
+export function DeleteAlbumModal(props: CollectionModalProps | AlbumModalProps) {
+  const collection = "collection" in props ? props.collection : props.album;
 
   const [darkMode] = useDarkMode();
-  const [, setAlbums] = useAlbums();
-  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
+  const [, setCollections] = useCollections();
+  const [selectedCollection, setSelectedCollection] = useSelectedCollection();
 
-  const {isOpen, onOpen, onOpenChange} = props.disclosure;
+  const {isOpen, onOpenChange} = props.disclosure;
   const [confirmText, setConfirmText] = useState("");
 
   // Event handler for delete button
-  const onDeleteAlbum = () => {
-    deleteAlbum(props.album.albumId, (code) => {
+  const onDeleteCollection = () => {
+    deleteCollection(collection.id, (code) => {
       addToast({
         title: "Error",
-        description: "Failed to delete album with code " + code,
+        description: "Failed to delete collection with code " + code,
         color: "danger",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
-      })
+      });
     }).then(() => {
       // Display success message
       addToast({
         title: "Success",
-        description: "Album ID " + props.album.albumId + " successfully deleted!",
+        description: "Collection ID " + collection.id + " successfully deleted!",
         color: "success",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
       });
-      // Update album list
-      getAlbums().then((albums: Album[]) => {
-        setAlbums(albums);
+      // Update collection list
+      getCollections().then((collections: Collection[]) => {
+        setCollections(collections);
       });
-      // If the deleted album was selected, set selected album to null
-      if (selectedAlbum?.albumId == props.album.albumId) {
-        setSelectedAlbum(null);
+      // If the deleted collection was selected, set selected collection to null
+      if (selectedCollection?.id === collection.id) {
+        setSelectedCollection(null);
       }
-    })
-  }
+    });
+  };
 
   return (
-    <>
-      <Modal
-        className={cn(darkMode && "dark text-foreground")}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        isOpen={isOpen}
-        onOpenChange={() => {
-          onOpenChange();
-          setConfirmText("");
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Delete Album</ModalHeader>
-              <ModalBody>
+    <Modal
+      className={cn(darkMode && "dark text-foreground")}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      isOpen={isOpen}
+      onOpenChange={() => {
+        onOpenChange();
+        setConfirmText("");
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Delete Collection</ModalHeader>
+            <ModalBody>
+              <p>
+                You are about to DELETE the following collection. This action cannot be undone!
+              </p>
 
-                <p>
-                  You are about to DELETE the following album. This action cannot be undone!
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
+              <p>
+                Current Name : {collection.label}
+              </p>
+              <p>
+                Collection ID : {collection.id}
+              </p>
 
-                <p>
-                  Current Name : {props.album.albumName}
-                </p>
-                <p>
-                  Album ID : {props.album.albumId}
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
-
-                <Input
-                  label="Please enter the album ID to confirm deletion"
-                  value={confirmText}
-                  onValueChange={setConfirmText}
-                  type="text" size="sm"
-                  placeholder="Album ID"
-                  labelPlacement="outside"
-                />
-
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => {onDeleteAlbum(); onClose();}} isDisabled={confirmText != props.album.albumId.toString()}>
-                  Delete
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+              <Input
+                label="Please enter the collection ID to confirm deletion"
+                value={confirmText}
+                onValueChange={setConfirmText}
+                type="text" size="sm"
+                placeholder="Collection ID"
+                labelPlacement="outside"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                onPress={() => {onDeleteCollection(); onClose();}}
+                isDisabled={confirmText !== collection.id}
+              >
+                Delete
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }
 

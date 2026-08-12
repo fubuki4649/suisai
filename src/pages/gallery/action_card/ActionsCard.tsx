@@ -1,26 +1,23 @@
 import {Button, Card, CardBody, CardHeader, cn, Tooltip, useDisclosure} from "@heroui/react";
 import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
 import React from "react";
-import {useDarkMode, useSelectedAlbum, useSelectedPhotos} from "../../../components/GlobalContext.tsx";
+import {useDarkMode, useSelectedCollection, useSelectedAssets} from "../../../components/GlobalContext.tsx";
 import MovePhotoModal from "./modals/MovePhotoModal.tsx";
 import {Disclosure} from "../../../components/modal-disclosure.ts";
 import DeletePhotoModal from "./modals/DeletePhotoModal.tsx";
 
-
 export default function ActionsCard({ vertical = false }: { vertical?: boolean }) {
-
   const [darkMode] = useDarkMode();
-  const [selectedAlbum] = useSelectedAlbum();
-  const [selectedPhotos, setSelectedPhotos] = useSelectedPhotos();
+  const [selectedCollection] = useSelectedCollection();
+  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
   const selectAll = () => {
-    setSelectedPhotos(selectedAlbum?.photos ?? []);
-  }
+    setSelectedAssets(selectedCollection?.assets ?? []);
+  };
 
   const deselectAll = () => {
-    setSelectedPhotos([]);
-  }
-
+    setSelectedAssets([]);
+  };
 
   const movePhotoDisclosure: Disclosure = useDisclosure();
   const deletePhotoDisclosure: Disclosure = useDisclosure();
@@ -33,8 +30,8 @@ export default function ActionsCard({ vertical = false }: { vertical?: boolean }
       <Card shadow="md" className="h-fit min-w-fit m-6 mt-auto select-none">
         <CardHeader className="p-4">
           <div className="flex flex-row justify-center w-full">
-            {!vertical && <h4 className="font-bold text-large mr-auto">Selected Photos</h4>}
-            <p className="text-default-600 opacity-90">({selectedPhotos.length})</p>
+            {!vertical && <h4 className="font-bold text-large mr-auto">Selected Assets</h4>}
+            <p className="text-default-600 opacity-90">({selectedAssets.length})</p>
           </div>
         </CardHeader>
         <CardBody className="p-4 !pt-0">
@@ -45,15 +42,15 @@ export default function ActionsCard({ vertical = false }: { vertical?: boolean }
             <Tooltip className={cn(darkMode && "dark text-foreground")} content="Deselect All">
               <Button isIconOnly className="p-1.5" aria-label="Deselect All" color="secondary" variant="light" onPress={deselectAll}><NoSymbolIcon/></Button>
             </Tooltip>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Move To Album">
-              <Button isIconOnly className="p-1.5" aria-label="Move To Album" color="success" variant="flat" onPress={movePhotoDisclosure.onOpen}><TruckIcon/></Button>
+            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Move To Collection">
+              <Button isIconOnly className="p-1.5" aria-label="Move To Collection" color="success" variant="flat" onPress={movePhotoDisclosure.onOpen}><TruckIcon/></Button>
             </Tooltip>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Delete Images" color="danger">
+            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Delete Assets" color="danger">
               <Button isIconOnly className="p-2" aria-label="Delete" color="danger" variant="shadow" onPress={deletePhotoDisclosure.onOpen}><TrashIcon/></Button>
             </Tooltip>
           </div>
         </CardBody>
       </Card>
     </>
-  )
+  );
 }

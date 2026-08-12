@@ -11,99 +11,100 @@ import {
   Spacer,
 } from "@heroui/react";
 import React, {useState} from "react";
-import {useAlbums, useDarkMode} from "../../../../components/GlobalContext.tsx";
-import {getAlbums, renameAlbum} from "../../../../api/endpoints/album.ts";
-import {Album} from "../../../../api/models.ts";
-import {AlbumModalProps} from "./props.ts";
+import {useCollections, useDarkMode} from "../../../../components/GlobalContext.tsx";
+import {getCollections, renameCollection} from "../../../../api/endpoints/collection.ts";
+import {Collection} from "../../../../api/models.ts";
+import {AlbumModalProps, CollectionModalProps} from "./props.ts";
 
-export function RenameAlbumModal(props: AlbumModalProps) {
+export function RenameAlbumModal(props: CollectionModalProps | AlbumModalProps) {
+  const collection = "collection" in props ? props.collection : props.album;
 
   const [darkMode] = useDarkMode();
-  const [, setAlbums] = useAlbums();
+  const [, setCollections] = useCollections();
 
-  const {isOpen, onOpen, onOpenChange} = props.disclosure;
-  const [newAlbumName, setNewAlbumName] = useState("");
+  const {isOpen, onOpenChange} = props.disclosure;
+  const [newCollectionName, setNewCollectionName] = useState("");
 
   // Event handler for rename button
-  const onRenameAlbum = () => {
-    renameAlbum(props.album.albumId, newAlbumName, (code) => {
+  const onRenameCollection = () => {
+    renameCollection(collection.id, newCollectionName, (code) => {
       addToast({
         title: "Error",
-        description: "Failed to rename album with code " + code,
+        description: "Failed to rename collection with code " + code,
         color: "danger",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
-      })
+      });
     }).then(() => {
       addToast({
         title: "Success",
-        description: "Album ID " + props.album.albumId + " successfully renamed to " + newAlbumName + "!",
+        description: "Collection ID " + collection.id + " successfully renamed to " + newCollectionName + "!",
         color: "success",
         timeout: 5000,
         shouldShowTimeoutProgress: true,
       });
-      getAlbums().then((albums: Album[]) => {
-        setAlbums(albums);
+      getCollections().then((collections: Collection[]) => {
+        setCollections(collections);
       });
-    })
-  }
-
+    });
+  };
 
   return (
-    <>
-      <Modal
-        className={cn(darkMode && "dark text-foreground")}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        isOpen={isOpen}
-        onOpenChange={() => {
-          onOpenChange();
-          setNewAlbumName("");
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Rename Album</ModalHeader>
-              <ModalBody>
+    <Modal
+      className={cn(darkMode && "dark text-foreground")}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      isOpen={isOpen}
+      onOpenChange={() => {
+        onOpenChange();
+        setNewCollectionName("");
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Rename Collection</ModalHeader>
+            <ModalBody>
+              <p>
+                You are about to modify the following collection. This action cannot be undone!
+              </p>
 
-                <p>
-                  You are about to modify the following album. This action cannot be undone!
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
+              <p>
+                Current Name : {collection.label}
+              </p>
+              <p>
+                Collection ID : {collection.id}
+              </p>
 
-                <p>
-                  Current Name : {props.album.albumName}
-                </p>
-                <p>
-                  Album ID : {props.album.albumId}
-                </p>
+              <Spacer className="h-1"/>
 
-                <Spacer className="h-1"/>
-
-                <Input
-                  label="Please choose a new name"
-                  value={newAlbumName}
-                  onValueChange={setNewAlbumName}
-                  type="text" size="sm"
-                  placeholder="Album Name"
-                  labelPlacement="outside"
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => {onRenameAlbum(); onClose();}} isDisabled={newAlbumName.trim().length == 0}>
-                  Rename
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+              <Input
+                label="Please choose a new name"
+                value={newCollectionName}
+                onValueChange={setNewCollectionName}
+                type="text" size="sm"
+                placeholder="Collection Name"
+                labelPlacement="outside"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                onPress={() => {onRenameCollection(); onClose();}}
+                isDisabled={newCollectionName.trim().length === 0}
+              >
+                Rename
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }
 

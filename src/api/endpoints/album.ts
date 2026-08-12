@@ -1,99 +1,101 @@
-import {Album, Photo} from "../models.ts";
+import {Asset, Collection, CollectionTree} from "../models.ts";
 import {client} from "../client.ts";
 import {withAxiosErrorHandling} from "../axios-error-handling.ts";
 
-// Get the album tree
-export async function getAlbums(onHttpError: (code: number) => void = () => {}): Promise<Album[]> {
-  return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
+// Get the collection tree
+export async function getCollections(onHttpError: (code: number) => void = () => {}): Promise<Collection[]> {
+  return withAxiosErrorHandling<Collection[]>([], onHttpError, async (): Promise<Collection[]> => {
+    // Get collections tree from the server
+    const root = (await client.get<CollectionTree>("/collection/tree")).data;
 
-    // Get albums from the server
-    const root = (await client.get<Album>("/album/tree")).data;
-    // Since the list of photos for each album is lazy loaded, let's traverse the tree first and set it to `null` for each album
-    const setPhotosToNull = (node: Album) => {
-      node.photos = null;
-      console.log(node.albumName);
-      for (const child of node.children) setPhotosToNull(child);
-    }
-    console.log(root);
-    setPhotosToNull(root);
+    // Convert CollectionTree nodes to Collection nodes and set assets to null for lazy loading
+    const formatNode = (node: CollectionTree): Collection => {
+      return {
+        id: node.id,
+        label: node.label,
+        assets: null,
+        children: node.children.map(formatNode),
+      };
+    };
 
-    // Now, grab the list of "root level" albums
-    const albums = root.children;
-    // Add an "Unfiled Photos" album to the top of the list
-    albums.unshift(
-      {
-        albumId: -1,
-        albumName: "Unfiled Photos",
-        photos: null,
-        children: [],
-      }
-    );
+    const formattedRoot = formatNode(root);
 
-    return albums;
-  })();
-}
+    // Grab the list of "root level" collections
+    const collections = formattedRoot.children;
 
-export async function getAlbumsFlat(onHttpError: (code: number) => void = () => {}): Promise<Album[]> {
-  return withAxiosErrorHandling<Album[]>([], onHttpError, async (): Promise<Album[]> => {
-
-    // Get albums from the server
-    const albums = (await client.get<Album[]>("/album/flat")).data;
-    albums.forEach(album => {
-      album.photos = null;
-      album.children = [];
+    // Add an "Unfiled Assets" collection to the top of the list
+    collections.unshift({
+      id: "-1",
+      label: "Unfiled Assets",
+      assets: null,
+      children: [],
     });
 
-    // Add an "Unfiled Photos" album to the top of the list
-    albums.unshift(
-      {
-        albumId: -1,
-        albumName: "Unfiled Photos / Root Level",
-        photos: null,
-        children: [],
-      }
-    );
-
-    return albums;
+    return collections;
   })();
 }
 
-// Query the photos in an album
-export async function queryAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<Photo[]> {
-  return withAxiosErrorHandling<Photo[]>([], onHttpError, async (): Promise<Photo[]> => {
+export async function getCollectionsFlat(onHttpError: (code: number) => void = () => {}): Promise<Collection[]> {
+  return withAxiosErrorHandling<Collection[]>([], onHttpError, async (): Promise<Collection[]> => {
+    // Get collections from the server
+    const collections = (await client.get<Collection[]>("/collection/flat")).data;
+    collections.forEach((collection) => {
+      collection.assets = null;
+      collection.children = [];
+    });
 
-    // If the album ID is -1, query the unfiled photos endpoint. Otherwise, query the album endpoint.
-    if (albumId === -1) return (await client.get<Photo[]>("/album/unfiled/photos")).data;
-    else return (await client.get<Photo[]>(`/album/${albumId}/photos`)).data;
+    // Add an "Unfiled Assets / Root Level" collection to the top of the list
+    collections.unshift({
+      id: "-1",
+      label: "Unfiled Assets / Root Level",
+      assets: null,
+      children: [],
+    });
 
+    return collections;
   })();
 }
 
-// Create a new album
-export async function createAlbum(albumName: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Query the assets in a collection
+export async function queryCollection(collectionId: string, onHttpError: (code: number) => void = () => {}): Promise<Asset[]> {
+  return withAxiosErrorHandling<Asset[]>([], onHttpError, async (): Promise<Asset[]> => {
+    // If the collection ID is "-1", query the unfiled assets endpoint. Otherwise, query the collection endpoint.
+    if (collectionId === "-1") {
+      return (await client.get<Asset[]>("/collection/unfiled/assets")).data;
+    } else {
+      return (await client.get<Asset[]>(`/collection/${collectionId}/assets`)).data;
+    }
+  })();
+}
+
+// Create a new collection
+export async function createCollection(label: string, parentId?: string | null, onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.post("/album/new", {albumName: albumName});
+    await client.post("/collection/new", {label, parentId: parentId ?? null});
     return;
-
   })();
 }
 
-// Rename an album
-export async function renameAlbum(albumId: number, albumName: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Rename a collection
+export async function renameCollection(collectionId: string, label: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.patch(`/album/${albumId}/rename`, {albumName: albumName});
+    await client.patch(`/collection/${collectionId}/rename`, {label});
     return;
-
   })();
 }
 
-// Delete an album, moving all its contents to root level/unfiled
-export async function deleteAlbum(albumId: number, onHttpError: (code: number) => void = () => {}): Promise<void> {
+// Delete a collection, moving all its contents to root level/unfiled
+export async function deleteCollection(collectionId: string, onHttpError: (code: number) => void = () => {}): Promise<void> {
   return withAxiosErrorHandling<void>(undefined, onHttpError, async (): Promise<void> => {
-
-    await client.delete(`/album/${albumId}/delete`);
+    await client.delete(`/collection/${collectionId}/delete`);
     return;
-
   })();
 }
+
+// Backwards compatibility re-exports
+export const getAlbums = getCollections;
+export const getAlbumsFlat = getCollectionsFlat;
+export const queryAlbum = queryCollection;
+export const createAlbum = createCollection;
+export const renameAlbum = renameCollection;
+export const deleteAlbum = deleteCollection;

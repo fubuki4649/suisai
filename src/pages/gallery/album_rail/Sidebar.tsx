@@ -1,156 +1,152 @@
 import {addToast, Spacer, useDisclosure} from "@heroui/react";
 import React, {JSX, useState} from "react";
-import {useAlbums, useSelectedAlbum, useSelectedPhotos} from "../../../components/GlobalContext.tsx";
+import {useCollections, useSelectedCollection, useSelectedAssets} from "../../../components/GlobalContext.tsx";
 import NewAlbumBtn from "./NewAlbumBtn.tsx";
 import AlbumButton from "./AlbumButton.tsx";
 import RenameAlbumModal from "./album_modals/RenameAlbumModal.tsx";
 import DeleteAlbumModal from "./album_modals/DeleteAlbumModal.tsx";
 import {Disclosure} from "../../../components/modal-disclosure.ts";
-import {queryAlbum} from "../../../api/endpoints/album.ts";
-import {Album} from "../../../api/models.ts";
+import {queryCollection} from "../../../api/endpoints/collection.ts";
+import {Collection} from "../../../api/models.ts";
 import MoveAlbumModal from "./album_modals/MoveAlbumModal.tsx";
 
-
 function Sidebar() {
-
-  const [albums] = useAlbums();
-  const [selectedAlbum, setSelectedAlbum] = useSelectedAlbum();
-  const [, setSelectedPhotos] = useSelectedPhotos();
+  const [collections] = useCollections();
+  const [selectedCollection, setSelectedCollection] = useSelectedCollection();
+  const [, setSelectedAssets] = useSelectedAssets();
 
   // Stores state for the modal dialogues
-  const [rightClickAlbum, setRightClickAlbum] = useState<Album>(selectedAlbum ?? albums[0]);
+  const [rightClickCollection, setRightClickCollection] = useState<Collection>(selectedCollection ?? collections[0]);
 
-  // Hook for selecting an album
-  const onAlbumSelect = (album: Album) => {
-    // If album has already been loaded, select album
-    if (album.photos != null) {
-      setSelectedPhotos([])
-      setSelectedAlbum(album)
+  // Hook for selecting a collection
+  const onCollectionSelect = (collection: Collection) => {
+    // If collection has already been loaded, select collection
+    if (collection.assets != null) {
+      setSelectedAssets([]);
+      setSelectedCollection(collection);
     }
-    // Otherwise, load album (contents), then select album
+    // Otherwise, load collection (contents), then select collection
     else {
-      queryAlbum(album.albumId, () => { addToast({
-        title: "Error",
-        description: `Failed to load the contents of album ${album.albumName} (ID ${album.albumId})`,
-        color: "danger",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
-      })}).then((photos) => {
-        album.photos = photos
-        setSelectedPhotos([])
-        setSelectedAlbum(album)
-      })
+      queryCollection(collection.id, () => {
+        addToast({
+          title: "Error",
+          description: `Failed to load the contents of collection ${collection.label} (ID ${collection.id})`,
+          color: "danger",
+          timeout: 5000,
+          shouldShowTimeoutProgress: true,
+        });
+      }).then((assets) => {
+        collection.assets = assets;
+        setSelectedAssets([]);
+        setSelectedCollection(collection);
+      });
     }
-  }
+  };
 
-  const renameAlbumDisclosure: Disclosure = useDisclosure();
-  const moveAlbumDisclosure: Disclosure = useDisclosure();
-  const deleteAlbumDisclosure: Disclosure = useDisclosure();
-
+  const renameCollectionDisclosure: Disclosure = useDisclosure();
+  const moveCollectionDisclosure: Disclosure = useDisclosure();
+  const deleteCollectionDisclosure: Disclosure = useDisclosure();
 
   return (
     <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
       <div className="p-4 pt-2">
-
-        <RenameAlbumModal disclosure={renameAlbumDisclosure} album={rightClickAlbum} />
-        <MoveAlbumModal disclosure={moveAlbumDisclosure} album={rightClickAlbum} />
-        <DeleteAlbumModal disclosure={deleteAlbumDisclosure} album={rightClickAlbum} />
+        {rightClickCollection && (
+          <>
+            <RenameAlbumModal disclosure={renameCollectionDisclosure} collection={rightClickCollection} />
+            <MoveAlbumModal disclosure={moveCollectionDisclosure} collection={rightClickCollection} />
+            <DeleteAlbumModal disclosure={deleteCollectionDisclosure} collection={rightClickCollection} />
+          </>
+        )}
 
         <ul className="space-y-1">
-          {albums.map(album => (
-            <ShowAlbum
+          {collections.map((collection) => (
+            <ShowCollection
               depth={1}
-              key={album.albumId}
-              album={album}
-              selectedAlbum={selectedAlbum}
-              onAlbumSelect={onAlbumSelect}
-              setRightClickAlbum={setRightClickAlbum}
-              renameAlbumDisclosure={renameAlbumDisclosure}
-              moveAlbumDisclosure={moveAlbumDisclosure}
-              deleteAlbumDisclosure={deleteAlbumDisclosure}
+              key={collection.id}
+              collection={collection}
+              selectedCollection={selectedCollection}
+              onCollectionSelect={onCollectionSelect}
+              setRightClickCollection={setRightClickCollection}
+              renameCollectionDisclosure={renameCollectionDisclosure}
+              moveCollectionDisclosure={moveCollectionDisclosure}
+              deleteCollectionDisclosure={deleteCollectionDisclosure}
             />
           ))}
         </ul>
 
         <Spacer className="h-0.5"/>
         <NewAlbumBtn />
-
       </div>
     </div>
-  )
+  );
 }
 
-const ShowAlbum = ({
+const ShowCollection = ({
   depth,
-  album,
-  selectedAlbum,
-  onAlbumSelect,
-  setRightClickAlbum,
-  renameAlbumDisclosure,
-  moveAlbumDisclosure,
-  deleteAlbumDisclosure,
+  collection,
+  selectedCollection,
+  onCollectionSelect,
+  setRightClickCollection,
+  renameCollectionDisclosure,
+  moveCollectionDisclosure,
+  deleteCollectionDisclosure,
 }: {
-  // Depth of the album in the tree, used to render client-side decorations
-  depth: number,
-  album: Album,
-  selectedAlbum: Album | null,
-  onAlbumSelect: (album: Album) => void,
-  setRightClickAlbum: (album: Album) => void,
-  renameAlbumDisclosure: Disclosure,
-  moveAlbumDisclosure: Disclosure,
-  deleteAlbumDisclosure: Disclosure,
+  // Depth of the collection in the tree, used to render client-side decorations
+  depth: number;
+  collection: Collection;
+  selectedCollection: Collection | null;
+  onCollectionSelect: (collection: Collection) => void;
+  setRightClickCollection: (collection: Collection) => void;
+  renameCollectionDisclosure: Disclosure;
+  moveCollectionDisclosure: Disclosure;
+  deleteCollectionDisclosure: Disclosure;
 }): JSX.Element => {
-
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <li key={album.albumId}>
-      {/* Display Album Button */}
+    <li key={collection.id}>
+      {/* Display Collection Button */}
       <AlbumButton
-        key={album.albumId}
+        key={collection.id}
         expanded={expanded}
-        album={album}
-        selectedAlbum={selectedAlbum}
-        onAlbumSelect={(album: Album) => {
-          if (album.children && album.children.length > 0) setExpanded(prev => !prev);
-          onAlbumSelect(album)
+        collection={collection}
+        selectedCollection={selectedCollection}
+        onCollectionSelect={(col: Collection) => {
+          if (col.children && col.children.length > 0) setExpanded((prev) => !prev);
+          onCollectionSelect(col);
         }}
-        setRightClickAlbum={setRightClickAlbum}
-        renameAlbumDisclosure={renameAlbumDisclosure}
-        moveAlbumDisclosure={moveAlbumDisclosure}
-        deleteAlbumDisclosure={deleteAlbumDisclosure}
+        setRightClickCollection={setRightClickCollection}
+        renameCollectionDisclosure={renameCollectionDisclosure}
+        moveCollectionDisclosure={moveCollectionDisclosure}
+        deleteCollectionDisclosure={deleteCollectionDisclosure}
       />
 
-      {/* Display Album Children */}
-      {
-        expanded && album.children && album.children.length > 0 && (
+      {/* Display Collection Children */}
+      {expanded && collection.children && collection.children.length > 0 && (
+        <div className="flex flex-row">
+          {Array(depth).fill(null).map((_, i) => (
+            <span key={i} className="self-stretch w-[2px] bg-default-300 dark:bg-default-200 mx-2 mt-1" />
+          ))}
 
-          <div className="flex flex-row">
-
-            {Array(depth).fill(null).map(() => (
-              <span className="self-stretch w-[2px] bg-default-300 dark:bg-default-200 mx-2 mt-1" />
+          <ul id={collection.id} className="flex-grow space-y-1 mt-1">
+            {collection.children.map((child) => (
+              <ShowCollection
+                depth={depth + 1}
+                key={child.id}
+                collection={child}
+                selectedCollection={selectedCollection}
+                onCollectionSelect={onCollectionSelect}
+                setRightClickCollection={setRightClickCollection}
+                renameCollectionDisclosure={renameCollectionDisclosure}
+                moveCollectionDisclosure={moveCollectionDisclosure}
+                deleteCollectionDisclosure={deleteCollectionDisclosure}
+              />
             ))}
-
-            <ul id={album.albumId.toString()} className="flex-grow space-y-1 mt-1">
-              {album.children.map(album => (
-                <ShowAlbum
-                  depth={depth+1}
-                  key={album.albumId}
-                  album={album}
-                  selectedAlbum={selectedAlbum}
-                  onAlbumSelect={onAlbumSelect}
-                  setRightClickAlbum={setRightClickAlbum}
-                  renameAlbumDisclosure={renameAlbumDisclosure}
-                  moveAlbumDisclosure={moveAlbumDisclosure}
-                  deleteAlbumDisclosure={deleteAlbumDisclosure}
-                />
-              ))}
-            </ul>
-          </div>
-        )
-      }
+          </ul>
+        </div>
+      )}
     </li>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
