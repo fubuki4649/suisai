@@ -3,49 +3,27 @@ import {Collection} from "../../../api/models.ts";
 import RightClickButton from "../../../components/right_click_button/RightClickButton.tsx";
 import {Disclosure} from "../../../components/modal-disclosure.ts";
 
-export interface CollectionButtonProps {
-  collection?: Collection;
-  album?: Collection;
+export interface AlbumButtonProps {
+  collection: Collection;
   expanded: boolean;
-  selectedCollection?: Collection | null;
-  selectedAlbum?: Collection | null;
-  onCollectionSelect?: (collection: Collection) => void;
-  onAlbumSelect?: (album: Collection) => void;
-  setRightClickCollection?: (collection: Collection) => void;
-  setRightClickAlbum?: (album: Collection) => void;
-  renameCollectionDisclosure?: Disclosure;
-  renameAlbumDisclosure?: Disclosure;
-  moveCollectionDisclosure?: Disclosure;
-  moveAlbumDisclosure?: Disclosure;
-  deleteCollectionDisclosure?: Disclosure;
-  deleteAlbumDisclosure?: Disclosure;
+  selectedCollection: Collection | null;
+  onCollectionSelect: (collection: Collection) => void;
+  setRightClickCollection: (collection: Collection) => void;
+  renameCollectionDisclosure: Disclosure;
+  moveCollectionDisclosure: Disclosure;
+  deleteCollectionDisclosure: Disclosure;
 }
 
-const AlbumButton: React.FC<CollectionButtonProps> = ({
-  collection: propCollection,
-  album: propAlbum,
+const AlbumButton: React.FC<AlbumButtonProps> = ({
+  collection,
   expanded,
-  selectedCollection: propSelectedCollection,
-  selectedAlbum: propSelectedAlbum,
+  selectedCollection,
   onCollectionSelect,
-  onAlbumSelect,
   setRightClickCollection,
-  setRightClickAlbum,
   renameCollectionDisclosure,
-  renameAlbumDisclosure,
   moveCollectionDisclosure,
-  moveAlbumDisclosure,
   deleteCollectionDisclosure,
-  deleteAlbumDisclosure,
 }) => {
-  const collection = propCollection ?? propAlbum!;
-  const selected = propSelectedCollection !== undefined ? propSelectedCollection : propSelectedAlbum;
-  const onSelect = onCollectionSelect ?? onAlbumSelect!;
-  const setRightClick = setRightClickCollection ?? setRightClickAlbum!;
-  const renameDisclosure = renameCollectionDisclosure ?? renameAlbumDisclosure!;
-  const moveDisclosure = moveCollectionDisclosure ?? moveAlbumDisclosure!;
-  const deleteDisclosure = deleteCollectionDisclosure ?? deleteAlbumDisclosure!;
-
   const isUnfiled = collection.id === "-1";
 
   return (
@@ -54,8 +32,8 @@ const AlbumButton: React.FC<CollectionButtonProps> = ({
         className: "px-4 text-medium",
         children: collection.label,
         color: "default",
-        variant: selected?.id === collection.id ? "faded" : (expanded ? "flat" : "light"),
-        onPress: () => onSelect(collection),
+        variant: selectedCollection?.id === collection.id ? "faded" : (expanded ? "flat" : "light"),
+        onPress: () => onCollectionSelect(collection),
       }}
       rightClickItems={[
         {
@@ -63,8 +41,8 @@ const AlbumButton: React.FC<CollectionButtonProps> = ({
           children: "Rename",
           isDisabled: isUnfiled,
           onPress: () => {
-            setRightClick(collection);
-            renameDisclosure.onOpen();
+            setRightClickCollection(collection);
+            renameCollectionDisclosure.onOpen();
           },
         },
         {
@@ -72,8 +50,8 @@ const AlbumButton: React.FC<CollectionButtonProps> = ({
           children: "Move",
           isDisabled: isUnfiled,
           onPress: () => {
-            setRightClick(collection);
-            moveDisclosure.onOpen();
+            setRightClickCollection(collection);
+            moveCollectionDisclosure.onOpen();
           },
         },
         {
@@ -83,8 +61,8 @@ const AlbumButton: React.FC<CollectionButtonProps> = ({
           children: "Delete",
           isDisabled: isUnfiled,
           onPress: () => {
-            setRightClick(collection);
-            deleteDisclosure.onOpen();
+            setRightClickCollection(collection);
+            deleteCollectionDisclosure.onOpen();
           },
         },
       ]}

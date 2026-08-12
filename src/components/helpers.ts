@@ -15,7 +15,3 @@ export function findCollectionByID(id: string, collections: Collection[]): Colle
   }
   return undefined;
 }
-
-// Backwards compatibility alias
-export const findAlbumByID = (id: string | number, collections: Collection[]) =>
-  findCollectionByID(String(id), collections);

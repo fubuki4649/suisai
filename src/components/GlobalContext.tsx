@@ -1,18 +1,19 @@
-import {createContext, ReactNode, useContext, useState} from "react";
+/* eslint-disable react-refresh/only-export-components */
+import React, {createContext, ReactNode, useContext, useState} from "react";
 import {Asset, Collection} from "../api/models.ts";
 
 type GlobalState = {
   collections: Collection[];
-  setCollections: (collections: Collection[]) => void;
+  setCollections: React.Dispatch<React.SetStateAction<Collection[]>>;
 
   darkMode: boolean;
-  setDarkMode: (value: boolean) => void;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
 
   selectedCollection: Collection | null;
-  setSelectedCollection: (collection: Collection | null) => void;
+  setSelectedCollection: React.Dispatch<React.SetStateAction<Collection | null>>;
 
   selectedAssets: Asset[];
-  setSelectedAssets: (assets: Asset[]) => void;
+  setSelectedAssets: React.Dispatch<React.SetStateAction<Asset[]>>;
 };
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
@@ -41,8 +42,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   );
 };
 
-// Primary useGlobalContext if you want full access
-const useGlobalContext = (): GlobalState => {
+export const useGlobalContext = (): GlobalState => {
   const context = useContext(GlobalContext);
   if (!context) {
     throw new Error("useGlobalContext must be used within a GlobalContextProvider");
@@ -50,28 +50,22 @@ const useGlobalContext = (): GlobalState => {
   return context;
 };
 
-// Scoped hooks
-export const useCollections = (): [Collection[], (collections: Collection[]) => void] => {
+export const useCollections = (): [Collection[], React.Dispatch<React.SetStateAction<Collection[]>>] => {
   const { collections, setCollections } = useGlobalContext();
   return [collections, setCollections];
 };
 
-export const useDarkMode = (): [boolean, (darkMode: boolean) => void] => {
+export const useDarkMode = (): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
   const { darkMode, setDarkMode } = useGlobalContext();
   return [darkMode, setDarkMode];
 };
 
-export const useSelectedCollection = (): [Collection | null, (collection: Collection | null) => void] => {
+export const useSelectedCollection = (): [Collection | null, React.Dispatch<React.SetStateAction<Collection | null>>] => {
   const { selectedCollection, setSelectedCollection } = useGlobalContext();
   return [selectedCollection, setSelectedCollection];
 };
 
-export const useSelectedAssets = (): [Asset[], (assets: Asset[]) => void] => {
+export const useSelectedAssets = (): [Asset[], React.Dispatch<React.SetStateAction<Asset[]>>] => {
   const { selectedAssets, setSelectedAssets } = useGlobalContext();
   return [selectedAssets, setSelectedAssets];
 };
-
-// Backwards compatibility hooks
-export const useAlbums = useCollections;
-export const useSelectedAlbum = useSelectedCollection;
-export const useSelectedPhotos = useSelectedAssets;

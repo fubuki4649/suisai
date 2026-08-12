@@ -16,30 +16,28 @@ import {
 } from "@heroui/react";
 import React, {useEffect, useState} from "react";
 import {useCollections, useDarkMode} from "../../../../components/GlobalContext.tsx";
-import {getCollections, getCollectionsFlat} from "../../../../api/endpoints/collection.ts";
+import {getCollections, getCollectionsFlat} from "../../../../api/endpoints/album.ts";
 import {Collection} from "../../../../api/models.ts";
-import {CollectionModalProps, AlbumModalProps} from "./props.ts";
+import {CollectionModalProps} from "./props.ts";
 import {reassignCollection, unfileCollection} from "../../../../api/endpoints/management.ts";
 
-export function MoveAlbumModal(props: CollectionModalProps | AlbumModalProps) {
-  const collection = "collection" in props ? props.collection : props.album;
-
+export function MoveAlbumModal({disclosure, collection}: CollectionModalProps) {
   const [darkMode] = useDarkMode();
   const [collectionList, setCollectionList] = useState<Collection[]>([]);
   const [, setCollections] = useCollections();
 
-  const {isOpen, onOpenChange} = props.disclosure;
+  const {isOpen, onOpenChange} = disclosure;
   const [modalSelectedCollection, setModalSelectedCollection] = useState<Collection | null>(null);
 
   // Fetch collection list
   useEffect(() => {
-    if (props.disclosure.isOpen) {
+    if (isOpen) {
       getCollectionsFlat().then((result) => {
         // Remove the option to move the collection to itself
         setCollectionList(result.filter((c) => c.id !== collection.id));
       });
     }
-  }, [props.disclosure.isOpen, collection.id]);
+  }, [isOpen, collection.id]);
 
   // Event handler for move collection button
   const onMoveCollection = () => {

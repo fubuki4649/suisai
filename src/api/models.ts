@@ -32,7 +32,3 @@ export type CollectionTree = {
   label: string;
   children: CollectionTree[];
 };
-
-// Aliases for backwards compatibility
-export type Photo = Asset;
-export type Album = Collection;

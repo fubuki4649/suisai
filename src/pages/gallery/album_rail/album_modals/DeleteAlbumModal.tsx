@@ -12,18 +12,16 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useCollections, useDarkMode, useSelectedCollection} from "../../../../components/GlobalContext.tsx";
-import {deleteCollection, getCollections} from "../../../../api/endpoints/collection.ts";
+import {deleteCollection, getCollections} from "../../../../api/endpoints/album.ts";
 import {Collection} from "../../../../api/models.ts";
-import {AlbumModalProps, CollectionModalProps} from "./props.ts";
+import {CollectionModalProps} from "./props.ts";
 
-export function DeleteAlbumModal(props: CollectionModalProps | AlbumModalProps) {
-  const collection = "collection" in props ? props.collection : props.album;
-
+export function DeleteAlbumModal({disclosure, collection}: CollectionModalProps) {
   const [darkMode] = useDarkMode();
   const [, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
 
-  const {isOpen, onOpenChange} = props.disclosure;
+  const {isOpen, onOpenChange} = disclosure;
   const [confirmText, setConfirmText] = useState("");
 
   // Event handler for delete button

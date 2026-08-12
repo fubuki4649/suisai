@@ -16,13 +16,17 @@ function Sidebar() {
   const [, setSelectedAssets] = useSelectedAssets();
 
   // Stores state for the modal dialogues
-  const [rightClickCollection, setRightClickCollection] = useState<Collection>(selectedCollection ?? collections[0]);
+  const [rightClickCollection, setRightClickCollection] = useState<Collection | null>(null);
 
   // Hook for selecting a collection
   const onCollectionSelect = (collection: Collection) => {
+    // Only reset asset selection when switching to a different collection
+    if (selectedCollection?.id !== collection.id) {
+      setSelectedAssets([]);
+    }
+
     // If collection has already been loaded, select collection
     if (collection.assets != null) {
-      setSelectedAssets([]);
       setSelectedCollection(collection);
     }
     // Otherwise, load collection (contents), then select collection
@@ -37,8 +41,7 @@ function Sidebar() {
         });
       }).then((assets) => {
         collection.assets = assets;
-        setSelectedAssets([]);
-        setSelectedCollection(collection);
+        setSelectedCollection({...collection, assets});
       });
     }
   };
@@ -91,7 +94,6 @@ const ShowCollection = ({
   moveCollectionDisclosure,
   deleteCollectionDisclosure,
 }: {
-  // Depth of the collection in the tree, used to render client-side decorations
   depth: number;
   collection: Collection;
   selectedCollection: Collection | null;
@@ -107,7 +109,6 @@ const ShowCollection = ({
     <li key={collection.id}>
       {/* Display Collection Button */}
       <AlbumButton
-        key={collection.id}
         expanded={expanded}
         collection={collection}
         selectedCollection={selectedCollection}

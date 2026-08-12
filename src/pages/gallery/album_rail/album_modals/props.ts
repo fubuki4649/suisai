@@ -5,8 +5,3 @@ export type CollectionModalProps = {
   disclosure: Disclosure;
   collection: Collection;
 };
-
-export type AlbumModalProps = {
-  disclosure: Disclosure;
-  album: Collection;
-};

@@ -1,23 +1,26 @@
-import React, {ReactNode, useEffect} from "react";
+import React, {useEffect} from "react";
+import {Outlet} from "react-router-dom";
 import {useCollections} from "../../components/GlobalContext.tsx";
 import {getCollections} from "../../api/endpoints/album.ts";
 import {Collection} from "../../api/models.ts";
 import Sidebar from "./album_rail/Sidebar.tsx";
 
-export default function Gallery ({ children }: { children: ReactNode }) {
-  const [, setCollections] = useCollections();
+export default function Gallery() {
+  const [collections, setCollections] = useCollections();
 
-  // Update collections on load
+  // Load collections on initial mount if empty
   useEffect(() => {
-    getCollections().then((collections: Collection[]) => {
-      setCollections(collections);
-    });
-  }, [setCollections]);
+    if (collections.length === 0) {
+      getCollections().then((fetchedCollections: Collection[]) => {
+        setCollections(fetchedCollections);
+      });
+    }
+  }, [collections.length, setCollections]);
 
   return (
     <div className="flex flex-row flex-grow overflow-y-auto">
       <Sidebar />
-      { children }
+      <Outlet />
     </div>
   );
 }

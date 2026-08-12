@@ -12,17 +12,15 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useCollections, useDarkMode} from "../../../../components/GlobalContext.tsx";
-import {getCollections, renameCollection} from "../../../../api/endpoints/collection.ts";
+import {getCollections, renameCollection} from "../../../../api/endpoints/album.ts";
 import {Collection} from "../../../../api/models.ts";
-import {AlbumModalProps, CollectionModalProps} from "./props.ts";
+import {CollectionModalProps} from "./props.ts";
 
-export function RenameAlbumModal(props: CollectionModalProps | AlbumModalProps) {
-  const collection = "collection" in props ? props.collection : props.album;
-
+export function RenameAlbumModal({disclosure, collection}: CollectionModalProps) {
   const [darkMode] = useDarkMode();
   const [, setCollections] = useCollections();
 
-  const {isOpen, onOpenChange} = props.disclosure;
+  const {isOpen, onOpenChange} = disclosure;
   const [newCollectionName, setNewCollectionName] = useState("");
 
   // Event handler for rename button
