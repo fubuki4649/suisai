@@ -16,7 +16,7 @@ import {
 } from "@heroui/react";
 import React, {useEffect, useState} from "react";
 import {useCollections, useDarkMode} from "../../../../components/GlobalContext.tsx";
-import {getCollections, getCollectionsFlat} from "../../../../api/endpoints/album.ts";
+import {getCollections, getCollectionsFlat} from "../../../../api/endpoints/collection.ts";
 import {Collection} from "../../../../api/models.ts";
 import {CollectionModalProps} from "./props.ts";
 import {reassignCollection, unfileCollection} from "../../../../api/endpoints/management.ts";

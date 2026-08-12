@@ -2,7 +2,7 @@ import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, Sp
 import {PlusIcon} from "@heroicons/react/20/solid";
 import React, {useState} from "react";
 import {useCollections, useDarkMode} from "../../../components/GlobalContext.tsx";
-import {createCollection, getCollections} from "../../../api/endpoints/album.ts";
+import {createCollection, getCollections} from "../../../api/endpoints/collection.ts";
 import {Collection} from "../../../api/models.ts";
 
 function NewAlbumBtn() {

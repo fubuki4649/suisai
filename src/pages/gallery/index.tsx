@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {Outlet} from "react-router-dom";
 import {useCollections} from "../../components/GlobalContext.tsx";
-import {getCollections} from "../../api/endpoints/album.ts";
+import {getCollections} from "../../api/endpoints/collection.ts";
 import {Collection} from "../../api/models.ts";
 import Sidebar from "./album_rail/Sidebar.tsx";
 

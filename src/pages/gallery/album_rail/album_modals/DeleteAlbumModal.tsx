@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import React, {useState} from "react";
 import {useCollections, useDarkMode, useSelectedCollection} from "../../../../components/GlobalContext.tsx";
-import {deleteCollection, getCollections} from "../../../../api/endpoints/album.ts";
+import {deleteCollection, getCollections} from "../../../../api/endpoints/collection.ts";
 import {Collection} from "../../../../api/models.ts";
 import {CollectionModalProps} from "./props.ts";
 
