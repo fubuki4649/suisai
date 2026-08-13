@@ -134,7 +134,7 @@ export function LightboxView() {
           <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
             <AssetGrid
               className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1"
-              cardWidth={150}
+              cardHeight={100}
               ref={filmstripScrollRef}
               allowCardZoom
             />

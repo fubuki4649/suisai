@@ -84,20 +84,22 @@ export function AssetCard(props: AssetCardProps) {
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
       className={cn(
         props.isSelected ? "border-1.5 border-primary-500" : "border-1 border-default-400",
-        "h-fit w-full flex-shrink-0"
+        "h-full w-auto flex-shrink-0 overflow-hidden"
       )}
     >
       {props.allowZoom ? (
         <ModalZoomImage
-          className="rounded-none object-contain w-full"
+          className="rounded-none object-contain h-full w-auto"
           alt={props.alt}
           src={props.previewUrl}
+          removeWrapper
         />
       ) : (
         <Image
-          className="rounded-none object-contain w-full"
+          className="rounded-none object-contain h-full w-auto"
           alt={props.alt}
           src={props.previewUrl}
+          removeWrapper
         />
       )}
     </Card>

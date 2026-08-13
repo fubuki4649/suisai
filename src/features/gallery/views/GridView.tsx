@@ -12,6 +12,7 @@ export function GridView() {
     <div className="flex flex-grow">
       <AssetGrid
         className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-5 p-5 grid-cols-auto"
+        cardHeight={200}
         allowCardZoom
       />
 
