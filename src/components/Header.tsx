@@ -40,11 +40,11 @@ export default function Header(props: HeaderProps) {
   return (
     <Navbar {...navbarProps}>
       {/* Left Content */}
-      <NavbarBrand>
-        <div className="rounded-full bg-foreground text-background">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </div>
-        <span className="ml-2 text-2xl font-medium">suisai</span>
+      <NavbarBrand className="cursor-pointer select-none" onClick={() => navigate("/gallery")}>
+        <img src="/suisai.svg" className="h-10 w-10 rounded-lg shadow-sm" alt="Suisai Logo" />
+        <span className="ml-1 text-2xl font-semibold tracking-tight text-foreground font-sans">
+          suisai
+        </span>
       </NavbarBrand>
 
       <NavbarContent className="flex-grow" />
