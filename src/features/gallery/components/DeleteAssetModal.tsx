@@ -43,7 +43,7 @@ export function DeleteAssetModal(disclosure: Disclosure) {
     };
 
     deleteAsset(selectedAssetIds, (code) => {
-      onError(code, "Failed to delete assets");
+      onError(code, "Failed to delete components");
     }).then(() => {
       onSuccess(`Successfully deleted ${selectedAssets.length} ${selectedAssets.length === 1 ? "asset" : "assets"}`);
     });

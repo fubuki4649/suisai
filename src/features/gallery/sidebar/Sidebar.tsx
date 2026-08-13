@@ -23,7 +23,7 @@ export function Sidebar() {
       setSelectedAssets([]);
     }
 
-    // If assets already loaded, just select
+    // If components already loaded, just select
     if (collection.assets != null) {
       setSelectedCollection(collection);
     } else {

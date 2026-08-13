@@ -77,13 +77,13 @@ export function MoveAssetModal(disclosure: Disclosure) {
 
     if (modalSelectedCollection!.id === "-1") {
       unfileAsset(selectedAssetIds, (code) => {
-        onError(code, "Failed to unfile assets");
+        onError(code, "Failed to unfile components");
       }).then(() => {
         onSuccess(`Successfully unfiled ${selectedAssets.length} assets`);
       });
     } else {
       reassignAsset(modalSelectedCollection!.id, selectedAssetIds, (code) => {
-        onError(code, "Failed to move assets");
+        onError(code, "Failed to move components");
       }).then(() => {
         onSuccess(`Successfully moved ${selectedAssets.length} assets to collection ${modalSelectedCollection?.label ?? "Unknown"} (ID: ${modalSelectedCollection?.id})`);
       });

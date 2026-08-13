@@ -1,8 +1,8 @@
 import React from "react";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
-import AssetGrid from "../assets/AssetGrid.tsx";
-import AssetActionsCard from "../assets/AssetActionsCard.tsx";
-import MetadataCardStack from "../assets/MetadataCardStack.tsx";
+import AssetGrid from "../components/AssetGrid.tsx";
+import AssetActionsCard from "../components/AssetActionsCard.tsx";
+import MetadataCardStack from "../components/MetadataCardStack.tsx";
 
 export function GridView() {
   const [selectedCollection] = useSelectedCollection();

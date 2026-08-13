@@ -1,8 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
-import AssetGrid from "../assets/AssetGrid.tsx";
-import AssetActionsCard from "../assets/AssetActionsCard.tsx";
+import AssetGrid from "../components/AssetGrid.tsx";
+import AssetActionsCard from "../components/AssetActionsCard.tsx";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
 import DataStrip from "./DataStrip.tsx";
 import {BACKEND_URL} from "../../../config.ts";

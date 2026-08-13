@@ -8,7 +8,7 @@ export async function getCollections(onHttpError: (code: number) => void = () =>
     // Get collections tree from the server
     const root = (await client.get<CollectionTree>("/collection/tree")).data;
 
-    // Convert CollectionTree nodes to Collection nodes and set assets to null for lazy loading
+    // Convert CollectionTree nodes to Collection nodes and set components to null for lazy loading
     const formatNode = (node: CollectionTree): Collection => {
       return {
         id: node.id,
@@ -56,10 +56,10 @@ export async function getCollectionsFlat(onHttpError: (code: number) => void = (
   })();
 }
 
-// Query the assets in a collection
+// Query the components in a collection
 export async function queryCollection(collectionId: string, onHttpError: (code: number) => void = () => undefined): Promise<Asset[]> {
   return withAxiosErrorHandling<Asset[]>([], onHttpError, async (): Promise<Asset[]> => {
-    // If the collection ID is "-1", query the unfiled assets endpoint. Otherwise, query the collection endpoint.
+    // If the collection ID is "-1", query the unfiled components endpoint. Otherwise, query the collection endpoint.
     if (collectionId === "-1") {
       return (await client.get<Asset[]>("/collection/unfiled/assets")).data;
     } else {
