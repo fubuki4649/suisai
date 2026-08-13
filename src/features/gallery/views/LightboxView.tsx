@@ -92,7 +92,7 @@ export function LightboxView() {
       <div className="flex flex-row flex-grow overflow-auto justify-center">
         {activeAsset ? (
           <>
-            <div className="flex flex-col justify-center select-none">
+            <div className="flex flex-col w-full justify-center select-none">
               <div className="flex flex-row max-h-full justify-center">
                 <ArrowLeftIcon
                   className="w-16 flex-shrink-0 h-full mx-10 text-default-500 hover:text-default-300 active:text-default-100 cursor-pointer transition-colors"
@@ -134,6 +134,7 @@ export function LightboxView() {
           <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
             <AssetGrid
               className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1"
+              cardWidth={150}
               cardHeight={100}
               ref={filmstripScrollRef}
               allowCardZoom

@@ -10,12 +10,14 @@ export interface AssetCardProps {
   previewUrl: string;
   isSelected: boolean;
   allowZoom: boolean;
+  isUniformFrame?: boolean;
 }
 
 export function AssetCard(props: AssetCardProps) {
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
   const selectedAssetsRef = useRef(selectedAssets);
+  const [isPortrait, setIsPortrait] = useState(false);
 
   // For undoing double clicks
   const [prevSelectedAssets, setPrevSelectedAssets] = useState<Asset[]>([]);
@@ -76,6 +78,13 @@ export function AssetCard(props: AssetCardProps) {
     }
   };
 
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (img.naturalWidth && img.naturalHeight) {
+      setIsPortrait(img.naturalHeight > img.naturalWidth);
+    }
+  };
+
   return (
     <Card
       isPressable
@@ -84,22 +93,37 @@ export function AssetCard(props: AssetCardProps) {
       shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
       className={cn(
         props.isSelected ? "border-1.5 border-primary-500" : "border-1 border-default-400",
-        "h-full w-auto flex-shrink-0 overflow-hidden"
+        props.isUniformFrame
+          ? "w-full h-full justify-center items-center bg-default-50 dark:bg-black/60"
+          : "h-full w-auto",
+        "flex-shrink-0 overflow-hidden"
       )}
     >
       {props.allowZoom ? (
         <ModalZoomImage
-          className="rounded-none object-contain h-full w-auto"
+          className={cn(
+            props.isUniformFrame
+              ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
+              : "object-contain h-full w-auto",
+            "rounded-none"
+          )}
           alt={props.alt}
           src={props.previewUrl}
           removeWrapper
+          onLoad={handleImageLoad}
         />
       ) : (
         <Image
-          className="rounded-none object-contain h-full w-auto"
+          className={cn(
+            props.isUniformFrame
+              ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
+              : "object-contain h-full w-auto",
+            "rounded-none"
+          )}
           alt={props.alt}
           src={props.previewUrl}
           removeWrapper
+          onLoad={handleImageLoad}
         />
       )}
     </Card>

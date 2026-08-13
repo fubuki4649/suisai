@@ -4,6 +4,7 @@ import {useSelectedCollection, useSelectedAssets} from "../../../context/Gallery
 import {BACKEND_URL} from "../../../config.ts";
 
 export interface AssetGridProps extends React.HTMLAttributes<HTMLUListElement> {
+  cardWidth?: number;
   cardHeight?: number;
   allowCardZoom?: boolean;
 }
@@ -18,6 +19,7 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
 
   const assets = selectedCollection?.assets;
   const targetHeight = props.cardHeight ?? 200;
+  const isUniform = props.cardWidth !== undefined;
 
   return (
     <>
@@ -26,7 +28,10 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
           {assets.map((asset) => (
             <li
               className="flex-shrink-0"
-              style={{ height: `${targetHeight}px` }}
+              style={{
+                height: `${targetHeight}px`,
+                width: isUniform ? `${props.cardWidth}px` : undefined,
+              }}
               key={asset.id}
             >
               <AssetCard
@@ -35,6 +40,7 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
                 previewUrl={`${BACKEND_URL}/thumbnail/${asset.hash}`}
                 isSelected={selectedAssetIds.has(asset.id)}
                 allowZoom={!!props.allowCardZoom}
+                isUniformFrame={isUniform}
               />
             </li>
           ))}
