@@ -2,7 +2,7 @@
 import React, {createContext, ReactNode, useContext, useState} from "react";
 import {Asset, Collection} from "../types/models.ts";
 
-type GlobalState = {
+type GalleryState = {
   collections: Collection[];
   setCollections: React.Dispatch<React.SetStateAction<Collection[]>>;
 
@@ -16,15 +16,15 @@ type GlobalState = {
   setSelectedAssets: React.Dispatch<React.SetStateAction<Asset[]>>;
 };
 
-const GlobalContext = createContext<GlobalState | undefined>(undefined);
+const GalleryContext = createContext<GalleryState | undefined>(undefined);
 
-export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
+export const GalleryContextProvider = ({ children }: { children: ReactNode }) => {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [darkMode, setDarkMode] = useState(true);
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
-  const store: GlobalState = {
+  const store: GalleryState = {
     collections,
     setCollections,
     darkMode,
@@ -36,36 +36,36 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   };
 
   return (
-    <GlobalContext.Provider value={store}>
+    <GalleryContext.Provider value={store}>
       {children}
-    </GlobalContext.Provider>
+    </GalleryContext.Provider>
   );
 };
 
-export const useGlobalContext = (): GlobalState => {
-  const context = useContext(GlobalContext);
+export const useGalleryContext = (): GalleryState => {
+  const context = useContext(GalleryContext);
   if (!context) {
-    throw new Error("useGlobalContext must be used within a GlobalContextProvider");
+    throw new Error("useGalleryContext must be used within a GalleryContextProvider");
   }
   return context;
 };
 
 export const useCollections = (): [Collection[], React.Dispatch<React.SetStateAction<Collection[]>>] => {
-  const { collections, setCollections } = useGlobalContext();
+  const { collections, setCollections } = useGalleryContext();
   return [collections, setCollections];
 };
 
 export const useDarkMode = (): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
-  const { darkMode, setDarkMode } = useGlobalContext();
+  const { darkMode, setDarkMode } = useGalleryContext();
   return [darkMode, setDarkMode];
 };
 
 export const useSelectedCollection = (): [Collection | null, React.Dispatch<React.SetStateAction<Collection | null>>] => {
-  const { selectedCollection, setSelectedCollection } = useGlobalContext();
+  const { selectedCollection, setSelectedCollection } = useGalleryContext();
   return [selectedCollection, setSelectedCollection];
 };
 
 export const useSelectedAssets = (): [Asset[], React.Dispatch<React.SetStateAction<Asset[]>>] => {
-  const { selectedAssets, setSelectedAssets } = useGlobalContext();
+  const { selectedAssets, setSelectedAssets } = useGalleryContext();
   return [selectedAssets, setSelectedAssets];
 };

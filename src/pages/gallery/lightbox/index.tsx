@@ -1,1 +1,0 @@
-export {default} from "../../../features/gallery/views/LightboxView.tsx";
