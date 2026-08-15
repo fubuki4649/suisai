@@ -1,5 +1,6 @@
-import React, {RefObject, useEffect, useRef, useState} from "react";
-import {Button, cn} from "@heroui/react";
+import React, {useState} from "react";
+import {createPortal} from "react-dom";
+import {Button, cn, Popover} from "@heroui/react";
 
 export interface RightClickItem {
   key: string;
@@ -21,81 +22,72 @@ export interface RightClickButtonProps {
 
 export default function RightClickButton(props: RightClickButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const buttonRef: RefObject<HTMLButtonElement | null> = useRef(null);
 
-  const openContextMenu = (e: MouseEvent) => {
-    if (buttonRef.current && buttonRef.current.contains(e.target as Node)) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const rect = buttonRef.current.getBoundingClientRect();
-      setMenuPosition({ x: rect.right + 4, y: rect.top });
-      setIsOpen(true);
-    }
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(true);
   };
-
-  const closeContextMenu = () => {
-    setIsOpen(false);
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("contextmenu", closeContextMenu);
-      document.addEventListener("click", closeContextMenu);
-    } else {
-      document.addEventListener("contextmenu", openContextMenu);
-    }
-
-    return () => {
-      document.removeEventListener("contextmenu", openContextMenu);
-      document.removeEventListener("contextmenu", closeContextMenu);
-      document.removeEventListener("click", closeContextMenu);
-    };
-  }, [isOpen]);
 
   return (
-    <div className="h-fit relative w-full overflow-hidden">
-      <Button
-        {...props.btnProps}
-        className={cn("w-full justify-start font-normal text-sm overflow-hidden", props.btnProps.className)}
-        ref={buttonRef}
-      >
-        {typeof props.btnProps.children === "string" ? (
-          <span className="truncate">{props.btnProps.children}</span>
-        ) : (
-          props.btnProps.children
+    <div className="h-fit w-full">
+      {isOpen && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-40 bg-backdrop backdrop-blur-sm transition-opacity duration-200"
+            onClick={() => setIsOpen(false)}
+          />,
+          document.body
         )}
-      </Button>
 
-      {isOpen && (
-        <div
-          className="fixed z-50 rounded-xl bg-surface border border-separator shadow-lg p-1 min-w-[140px] animate-in fade-in zoom-in-95 duration-100"
-          style={{ top: menuPosition.y, left: menuPosition.x }}
-          onClick={(e) => e.stopPropagation()}
+      <Popover
+        isOpen={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsOpen(false);
+          }
+        }}
+      >
+        <Button
+          {...props.btnProps}
+          className={cn("w-full justify-start font-normal text-sm overflow-hidden", props.btnProps.className)}
+          onContextMenu={handleContextMenu}
         >
-          <div className="flex flex-col gap-0.5">
-            {props.rightClickItems.map((item) => (
-              <button
-                key={item.key}
-                disabled={item.isDisabled}
-                className={cn(
-                  "flex items-center w-full px-3 py-1.5 text-sm rounded-lg text-left transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
-                  item.variant === "danger" || item.color === "danger"
-                    ? "text-danger hover:bg-danger/10 hover:text-danger font-medium"
-                    : "text-foreground hover:bg-default-100"
-                )}
-                onClick={(e) => {
-                  setIsOpen(false);
-                  if (item.onPress) item.onPress(e);
-                }}
-              >
-                {item.children}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+          {typeof props.btnProps.children === "string" ? (
+            <span className="truncate">{props.btnProps.children}</span>
+          ) : (
+            props.btnProps.children
+          )}
+        </Button>
+
+        <Popover.Content placement="right" offset={16} className="z-50">
+          <Popover.Arrow className="fill-surface" />
+          <Popover.Dialog className="p-1.5 min-w-[170px] bg-surface border border-separator rounded-2xl shadow-xl">
+            <div className="flex flex-col gap-0.5 w-full">
+              {props.rightClickItems.map((item) => (
+                <button
+                  key={item.key}
+                  disabled={item.isDisabled}
+                  className={cn(
+                    "group flex items-center gap-2.5 w-full px-3 py-2 text-sm rounded-xl text-left font-medium transition-all duration-150 cursor-pointer select-none",
+                    "active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none disabled:active:scale-100",
+                    item.variant === "danger" || item.color === "danger"
+                      ? "text-danger hover:bg-danger/15 hover:text-danger active:bg-danger/25"
+                      : "text-foreground hover:bg-accent/15 hover:text-accent active:bg-accent/25",
+                    item.className
+                  )}
+                  onClick={(e) => {
+                    setIsOpen(false);
+                    if (item.onPress) item.onPress(e);
+                  }}
+                >
+                  {item.children}
+                </button>
+              ))}
+            </div>
+          </Popover.Dialog>
+        </Popover.Content>
+      </Popover>
     </div>
   );
 }

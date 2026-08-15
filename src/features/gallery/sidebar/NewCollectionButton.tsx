@@ -65,8 +65,8 @@ export function NewCollectionButton() {
           <Icon icon="gravity-ui:plus" className="w-4 h-4 text-muted" />
         </Button>
         <Popover.Content placement="right" offset={16} className="z-50">
+          <Popover.Arrow className="fill-surface" />
           <Popover.Dialog className="p-4 w-80 space-y-3 bg-surface border border-separator rounded-2xl shadow-xl">
-            <Popover.Arrow />
             <div className="flex items-center justify-between">
               <Popover.Heading className="font-semibold text-sm text-foreground">New Collection</Popover.Heading>
               <Button

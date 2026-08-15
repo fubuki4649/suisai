@@ -17,6 +17,62 @@ export function Sidebar() {
 
   const [rightClickCollection, setRightClickCollection] = useState<Collection | null>(null);
 
+  // Set of expanded collection IDs - starts completely un-expanded on initial load
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  // Helper to gather all descendant collection IDs recursively
+  const getDescendantIds = useCallback((col: Collection): string[] => {
+    let ids: string[] = [col.id];
+    if (col.children) {
+      for (const child of col.children) {
+        ids = ids.concat(getDescendantIds(child));
+      }
+    }
+    return ids;
+  }, []);
+
+  // Expand single collection
+  const expandCollection = useCallback((id: string) => {
+    setExpandedIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  // Collapse a collection AND all its descendants recursively on double-click
+  const collapseCollectionRecursively = useCallback(
+    (col: Collection) => {
+      const toRemove = new Set(getDescendantIds(col));
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        toRemove.forEach((id) => next.delete(id));
+        return next;
+      });
+    },
+    [getDescendantIds]
+  );
+
+  // Toggle single collection expansion via chevron click
+  const toggleExpand = useCallback(
+    (col: Collection) => {
+      setExpandedIds((prev) => {
+        if (prev.has(col.id)) {
+          const toRemove = new Set(getDescendantIds(col));
+          const next = new Set(prev);
+          toRemove.forEach((id) => next.delete(id));
+          return next;
+        } else {
+          const next = new Set(prev);
+          next.add(col.id);
+          return next;
+        }
+      });
+    },
+    [getDescendantIds]
+  );
+
   // Resizable width state with localStorage persistence
   const [width, setWidth] = useState<number>(() => {
     const saved = localStorage.getItem("suisai_sidebar_width");
@@ -60,6 +116,11 @@ export function Sidebar() {
       setSelectedAssets([]);
     }
 
+    // Expand on click if it has children
+    if (collection.children && collection.children.length > 0) {
+      expandCollection(collection.id);
+    }
+
     // If assets already loaded, just select
     if (collection.assets != null) {
       setSelectedCollection(collection);
@@ -99,6 +160,9 @@ export function Sidebar() {
               depth={1}
               key={collection.id}
               collection={collection}
+              expandedIds={expandedIds}
+              toggleExpand={toggleExpand}
+              collapseCollectionRecursively={collapseCollectionRecursively}
               selectedCollection={selectedCollection}
               onCollectionSelect={onCollectionSelect}
               setRightClickCollection={setRightClickCollection}
@@ -130,6 +194,9 @@ export function Sidebar() {
 const ShowCollection = ({
   depth,
   collection,
+  expandedIds,
+  toggleExpand,
+  collapseCollectionRecursively,
   selectedCollection,
   onCollectionSelect,
   setRightClickCollection,
@@ -139,6 +206,9 @@ const ShowCollection = ({
 }: {
   depth: number;
   collection: Collection;
+  expandedIds: Set<string>;
+  toggleExpand: (col: Collection) => void;
+  collapseCollectionRecursively: (col: Collection) => void;
   selectedCollection: Collection | null;
   onCollectionSelect: (collection: Collection) => void;
   setRightClickCollection: (collection: Collection) => void;
@@ -146,18 +216,19 @@ const ShowCollection = ({
   moveCollectionDisclosure: Disclosure;
   deleteCollectionDisclosure: Disclosure;
 }): JSX.Element => {
-  const [expanded, setExpanded] = useState(true);
+  const isExpanded = expandedIds.has(collection.id);
   const hasChildren = Boolean(collection.children && collection.children.length > 0);
 
   return (
     <li key={collection.id} className="relative">
       <CollectionButton
-        expanded={expanded}
+        expanded={isExpanded}
         hasChildren={hasChildren}
         onToggleExpand={(e) => {
           e.stopPropagation();
-          setExpanded((prev) => !prev);
+          toggleExpand(collection);
         }}
+        onCollapseRecursively={collapseCollectionRecursively}
         collection={collection}
         selectedCollection={selectedCollection}
         onCollectionSelect={(col: Collection) => {
@@ -169,13 +240,16 @@ const ShowCollection = ({
         deleteCollectionDisclosure={deleteCollectionDisclosure}
       />
 
-      {expanded && hasChildren && (
+      {isExpanded && hasChildren && (
         <ul className="ml-3.5 pl-2 border-l border-separator/70 space-y-1 mt-1">
           {collection.children!.map((child) => (
             <ShowCollection
               depth={depth + 1}
               key={child.id}
               collection={child}
+              expandedIds={expandedIds}
+              toggleExpand={toggleExpand}
+              collapseCollectionRecursively={collapseCollectionRecursively}
               selectedCollection={selectedCollection}
               onCollectionSelect={onCollectionSelect}
               setRightClickCollection={setRightClickCollection}

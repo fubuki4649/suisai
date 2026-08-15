@@ -10,6 +10,7 @@ export interface CollectionButtonProps {
   expanded: boolean;
   hasChildren: boolean;
   onToggleExpand: (e: React.MouseEvent) => void;
+  onCollapseRecursively: (col: Collection) => void;
   selectedCollection: Collection | null;
   onCollectionSelect: (collection: Collection) => void;
   setRightClickCollection: (collection: Collection) => void;
@@ -23,6 +24,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
   expanded,
   hasChildren,
   onToggleExpand,
+  onCollapseRecursively,
   selectedCollection,
   onCollectionSelect,
   setRightClickCollection,
@@ -37,13 +39,18 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
     <RightClickButton
       btnProps={{
         className: cn(
-          "w-full px-2.5 py-1.5 text-sm justify-start rounded-xl transition-all overflow-hidden group",
+          "w-full px-2.5 py-2 text-sm justify-start rounded-xl transition-all overflow-hidden group select-none",
           isSelected
             ? "bg-accent/15 text-accent font-semibold shadow-xs"
             : "text-foreground/80 hover:text-foreground hover:bg-default-100/70"
         ),
         variant: isSelected ? "secondary" : "ghost",
         onPress: () => onCollectionSelect(collection),
+        onDoubleClick: () => {
+          if (hasChildren) {
+            onCollapseRecursively(collection);
+          }
+        },
         children: (
           <div className="flex items-center gap-1.5 w-full overflow-hidden">
             {hasChildren ? (
@@ -88,7 +95,12 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
       rightClickItems={[
         {
           key: "rename",
-          children: "Rename",
+          children: (
+            <>
+              <Icon icon="gravity-ui:pencil" className="w-4 h-4 text-muted group-hover:text-accent transition-colors shrink-0" />
+              <span className="flex-1">Rename</span>
+            </>
+          ),
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
@@ -97,7 +109,12 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
         },
         {
           key: "move",
-          children: "Move",
+          children: (
+            <>
+              <Icon icon="gravity-ui:folder-arrow-right" className="w-4 h-4 text-muted group-hover:text-accent transition-colors shrink-0" />
+              <span className="flex-1">Move</span>
+            </>
+          ),
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
@@ -108,7 +125,12 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
           key: "delete",
           className: "text-danger",
           color: "danger",
-          children: "Delete",
+          children: (
+            <>
+              <Icon icon="gravity-ui:trash-bin" className="w-4 h-4 text-danger transition-colors shrink-0" />
+              <span className="flex-1">Delete</span>
+            </>
+          ),
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
