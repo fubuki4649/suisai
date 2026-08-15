@@ -1,9 +1,3 @@
-export type Disclosure = {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  onOpenChange: () => void;
-  isControlled: boolean;
-  getButtonProps: (props?: any) => any;
-  getDisclosureProps: (props?: any) => any;
-};
+import type {useOverlayState} from "@heroui/react";
+
+export type Disclosure = ReturnType<typeof useOverlayState>;

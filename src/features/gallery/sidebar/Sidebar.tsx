@@ -1,4 +1,4 @@
-import {addToast, Spacer, useDisclosure} from "@heroui/react";
+import {toast, useOverlayState} from "@heroui/react";
 import React, {JSX, useState} from "react";
 import {useCollections, useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import NewCollectionButton from "./NewCollectionButton.tsx";
@@ -23,17 +23,13 @@ export function Sidebar() {
       setSelectedAssets([]);
     }
 
-    // If components already loaded, just select
+    // If assets already loaded, just select
     if (collection.assets != null) {
       setSelectedCollection(collection);
     } else {
       queryCollection(collection.id, () => {
-        addToast({
-          title: "Error",
+        toast.danger("Error", {
           description: `Failed to load the contents of collection ${collection.label} (ID ${collection.id})`,
-          color: "danger",
-          timeout: 5000,
-          shouldShowTimeoutProgress: true,
         });
       }).then((assets) => {
         collection.assets = assets;
@@ -42,9 +38,9 @@ export function Sidebar() {
     }
   };
 
-  const renameCollectionDisclosure: Disclosure = useDisclosure();
-  const moveCollectionDisclosure: Disclosure = useDisclosure();
-  const deleteCollectionDisclosure: Disclosure = useDisclosure();
+  const renameCollectionDisclosure: Disclosure = useOverlayState();
+  const moveCollectionDisclosure: Disclosure = useOverlayState();
+  const deleteCollectionDisclosure: Disclosure = useOverlayState();
 
   return (
     <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
@@ -73,7 +69,7 @@ export function Sidebar() {
           ))}
         </ul>
 
-        <Spacer className="h-0.5"/>
+        <div className="my-2" />
         <NewCollectionButton />
       </div>
     </div>

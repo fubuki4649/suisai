@@ -1,38 +1,37 @@
-import {cn, Image, ImageProps, Modal, ModalContent, useDisclosure} from "@heroui/react";
-import React from "react";
-import {useDarkMode} from "../context/GalleryContext.tsx";
+import {Modal, useOverlayState} from "@heroui/react";
+import React, {ImgHTMLAttributes} from "react";
+
+export interface ModalZoomImageProps extends ImgHTMLAttributes<HTMLImageElement> {
+  removeWrapper?: boolean;
+}
 
 // An Image component that expands into a fullscreen modal when double-clicked
-export default function ModalZoomImage(props: ImageProps) {
-  const [darkMode] = useDarkMode();
-  const {isOpen, onOpen, onClose} = useDisclosure();
+export default function ModalZoomImage(props: ModalZoomImageProps) {
+  const state = useOverlayState();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {removeWrapper, ...imgProps} = props;
 
   return (
     <>
-      <Image
-        {...props}
-        onDoubleClick={() => onOpen()}
+      <img
+        {...imgProps}
+        onDoubleClick={() => state.open()} alt="Image"
       />
 
-      <Modal
-        isOpen={isOpen}
-        backdrop="blur"
-        onClose={onClose}
-        className={cn(darkMode && "dark text-foreground")}
-        classNames={{
-          wrapper: "w-auto h-auto max-w-full max-h-full",
-          base: "w-auto h-auto max-w-full max-h-full bg-transparent shadow-none !m-0",
-          closeButton: "bg-content3 m-4",
-        }}
-        onClick={() => onClose()}
-      >
-        <ModalContent>
-          <img
-            className="h-full w-full object-contain"
-            src={props.src}
-            alt={props.alt}
-          />
-        </ModalContent>
+      <Modal state={state}>
+        <Modal.Backdrop variant="blur">
+          <Modal.Container size="full">
+            <Modal.Dialog className="bg-transparent shadow-none p-0 border-none flex items-center justify-center h-full w-full max-w-none">
+              <Modal.CloseTrigger className="absolute top-4 right-4 z-50 bg-surface/80 hover:bg-surface rounded-full p-2 text-foreground cursor-pointer" />
+              <img
+                className="max-h-[90vh] max-w-[90vw] object-contain cursor-pointer select-none"
+                src={props.src}
+                alt={props.alt}
+                onClick={() => state.close()}
+              />
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </>
   );

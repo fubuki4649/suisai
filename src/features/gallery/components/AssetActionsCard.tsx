@@ -1,17 +1,15 @@
-import {Button, Card, CardBody, CardHeader, cn, Tooltip, useDisclosure} from "@heroui/react";
-import {CheckCircleIcon, NoSymbolIcon, TrashIcon, TruckIcon} from "@heroicons/react/24/outline";
+import {Button, Card, cn, Tooltip, useOverlayState} from "@heroui/react";
+import {Icon} from "@iconify/react";
 import React from "react";
-import {useDarkMode, useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
+import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import MoveAssetModal from "./MoveAssetModal.tsx";
 import DeleteAssetModal from "./DeleteAssetModal.tsx";
-import {Disclosure} from "../../../types/disclosure.ts";
 
 export interface AssetActionsCardProps {
   vertical?: boolean;
 }
 
 export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
-  const [darkMode] = useDarkMode();
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
@@ -23,37 +21,68 @@ export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
     setSelectedAssets([]);
   };
 
-  const moveAssetDisclosure: Disclosure = useDisclosure();
-  const deleteAssetDisclosure: Disclosure = useDisclosure();
+  const moveAssetState = useOverlayState();
+  const deleteAssetState = useOverlayState();
 
   return (
     <>
-      <MoveAssetModal {...moveAssetDisclosure}/>
-      <DeleteAssetModal {...deleteAssetDisclosure}/>
+      <MoveAssetModal {...moveAssetState} />
+      <DeleteAssetModal {...deleteAssetState} />
 
-      <Card shadow="md" className="h-fit min-w-fit m-6 mt-auto select-none">
-        <CardHeader className="p-4">
-          <div className="flex flex-row justify-center w-full">
-            {!vertical && <h4 className="font-bold text-large mr-auto">Selected Assets</h4>}
-            <p className="text-default-600 opacity-90">({selectedAssets.length})</p>
+      <Card className="h-fit min-w-fit m-6 mt-auto select-none rounded-2xl bg-surface border border-separator shadow-md p-3.5">
+        <Card.Header>
+          <div className="flex flex-row items-center justify-center w-full">
+            {!vertical && <Card.Title className="font-medium text-base mr-auto">Selected Assets</Card.Title>}
+            <span className="text-sm text-muted">({selectedAssets.length})</span>
           </div>
-        </CardHeader>
-        <CardBody className="p-4 !pt-0">
-          <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full gap-4 justify-evenly")}>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Select All">
-              <Button isIconOnly className="p-1.5" aria-label="Select All" color="secondary" variant="light" onPress={selectAll}><CheckCircleIcon/></Button>
+        </Card.Header>
+        <Card.Content className="pt-0!">
+          <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full gap-2.5 justify-evenly")}>
+            <Tooltip delay={200}>
+              <Tooltip.Trigger>
+                <Button isIconOnly size="sm" variant="tertiary" aria-label="Select All" onPress={selectAll}>
+                  <Icon icon="gravity-ui:circle-check" className="w-5 h-5" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                <p>Select All</p>
+              </Tooltip.Content>
             </Tooltip>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Deselect All">
-              <Button isIconOnly className="p-1.5" aria-label="Deselect All" color="secondary" variant="light" onPress={deselectAll}><NoSymbolIcon/></Button>
+
+            <Tooltip delay={200}>
+              <Tooltip.Trigger>
+                <Button isIconOnly size="sm" variant="tertiary" aria-label="Deselect All" onPress={deselectAll}>
+                  <Icon icon="gravity-ui:circle-minus" className="w-5 h-5" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                <p>Deselect All</p>
+              </Tooltip.Content>
             </Tooltip>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Move To Collection">
-              <Button isIconOnly className="p-1.5" aria-label="Move To Collection" color="success" variant="flat" onPress={moveAssetDisclosure.onOpen}><TruckIcon/></Button>
+
+            <Tooltip delay={200}>
+              <Tooltip.Trigger>
+                <Button isIconOnly size="sm" variant="secondary" aria-label="Move To Collection" onPress={moveAssetState.open}>
+                  <Icon icon="gravity-ui:folder-arrow-right" className="w-5 h-5" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                <p>Move To Collection</p>
+              </Tooltip.Content>
             </Tooltip>
-            <Tooltip className={cn(darkMode && "dark text-foreground")} content="Delete Assets" color="danger">
-              <Button isIconOnly className="p-2" aria-label="Delete" color="danger" variant="shadow" onPress={deleteAssetDisclosure.onOpen}><TrashIcon/></Button>
+
+            <Tooltip delay={200}>
+              <Tooltip.Trigger>
+                <Button isIconOnly size="sm" variant="danger-soft" aria-label="Delete" onPress={deleteAssetState.open}>
+                  <Icon icon="gravity-ui:trash-bin" className="w-5 h-5" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                <p>Delete Assets</p>
+              </Tooltip.Content>
             </Tooltip>
           </div>
-        </CardBody>
+        </Card.Content>
       </Card>
     </>
   );

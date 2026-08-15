@@ -27,7 +27,7 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
         <ul className={props.className} ref={ref}>
           {assets.map((asset) => (
             <li
-              className="flex-shrink-0"
+              className="shrink-0"
               style={{
                 height: `${targetHeight}px`,
                 width: isUniform ? `${props.cardWidth}px` : undefined,
@@ -40,15 +40,15 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
                 previewUrl={`${BACKEND_URL}/thumbnail/${asset.hash}`}
                 isSelected={selectedAssetIds.has(asset.id)}
                 allowZoom={!!props.allowCardZoom}
-                isUniformFrame={isUniform}
+                forceConstWidth={isUniform}
               />
             </li>
           ))}
         </ul>
       ) : (
-        <div className="flex flex-wrap flex-grow justify-center items-center">
-          <p className="text-default-600 text-3xl">
-            {selectedCollection == null ? "No Collection Selected" : "Collection is Empty"}
+        <div className="flex flex-wrap grow justify-center items-center select-none">
+          <p className="text-muted text-3xl font-light tracking-wide">
+            {selectedCollection?.id == null ? "No Collection Selected" : "Collection is Empty"}
           </p>
         </div>
       )}

@@ -2,6 +2,7 @@ import React from "react";
 import {Collection} from "../../../types/models.ts";
 import RightClickButton from "../../../components/RightClickButton.tsx";
 import {Disclosure} from "../../../types/disclosure.ts";
+import {cn} from "@heroui/react";
 
 export interface CollectionButtonProps {
   collection: Collection;
@@ -25,14 +26,21 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
   deleteCollectionDisclosure,
 }) => {
   const isUnfiled = collection.id === "-1";
+  const isSelected = selectedCollection?.id === collection.id;
 
   return (
     <RightClickButton
       btnProps={{
-        className: "px-4 text-medium",
+        className: cn(
+          "px-3 py-2 text-sm justify-start rounded-xl transition-all",
+          isSelected
+            ? "bg-accent/15 text-accent font-semibold shadow-xs"
+            : expanded
+              ? "bg-default-100 text-foreground font-medium"
+              : "text-foreground/80 hover:text-foreground hover:bg-default-100/70"
+        ),
         children: collection.label,
-        color: "default",
-        variant: selectedCollection?.id === collection.id ? "faded" : (expanded ? "flat" : "light"),
+        variant: isSelected ? "secondary" : (expanded ? "secondary" : "ghost"),
         onPress: () => onCollectionSelect(collection),
       }}
       rightClickItems={[
@@ -42,7 +50,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
-            renameCollectionDisclosure.onOpen();
+            renameCollectionDisclosure.open();
           },
         },
         {
@@ -51,7 +59,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
-            moveCollectionDisclosure.onOpen();
+            moveCollectionDisclosure.open();
           },
         },
         {
@@ -62,7 +70,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
           isDisabled: isUnfiled,
           onPress: () => {
             setRightClickCollection(collection);
-            deleteCollectionDisclosure.onOpen();
+            deleteCollectionDisclosure.open();
           },
         },
       ]}

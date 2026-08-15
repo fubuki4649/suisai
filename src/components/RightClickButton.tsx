@@ -1,38 +1,45 @@
-import {RefObject, useEffect, useRef, useState} from "react";
-import {Button, ButtonProps, cn, Dropdown, DropdownItem, DropdownItemProps, DropdownMenu, DropdownTrigger} from "@heroui/react";
-import {useDarkMode} from "../context/GalleryContext.tsx";
+import React, {RefObject, useEffect, useRef, useState} from "react";
+import {Button, cn} from "@heroui/react";
+
+export interface RightClickItem {
+  key: string;
+  children: React.ReactNode;
+  isDisabled?: boolean;
+  className?: string;
+  variant?: "danger" | "default";
+  color?: string;
+  onPress?: (e?: React.MouseEvent) => void;
+}
 
 export interface RightClickButtonProps {
-  btnProps: ButtonProps;
-  rightClickItems: DropdownItemProps[];
+  btnProps: React.ComponentProps<typeof Button> & {
+    children?: React.ReactNode;
+    className?: string;
+    onPress?: (e?: any) => void;
+  };
+  rightClickItems: RightClickItem[];
 }
 
 export default function RightClickButton(props: RightClickButtonProps) {
-  const [darkMode] = useDarkMode();
-
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const buttonRef: RefObject<HTMLButtonElement | null> = useRef(null);
 
-  // Handle right-click
-  const openContextMenu = (e: MouseEvent | any) => {
+  const openContextMenu = (e: MouseEvent) => {
     if (buttonRef.current && buttonRef.current.contains(e.target as Node)) {
       e.preventDefault();
       e.stopPropagation();
 
       const rect = buttonRef.current.getBoundingClientRect();
-      setMenuPosition({ x: rect.right + 4, y: (rect.top + rect.bottom) / 2 });
+      setMenuPosition({ x: rect.right + 4, y: rect.top });
       setIsOpen(true);
     }
   };
 
-  const closeContextMenu = (e: MouseEvent | any) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const closeContextMenu = () => {
     setIsOpen(false);
   };
 
-  // Set up global event listeners
   useEffect(() => {
     if (isOpen) {
       document.addEventListener("contextmenu", closeContextMenu);
@@ -49,35 +56,41 @@ export default function RightClickButton(props: RightClickButtonProps) {
   }, [isOpen]);
 
   return (
-    <div className="h-fit">
-      <Button {...props.btnProps} fullWidth ref={buttonRef}>
+    <div className="h-fit relative">
+      <Button
+        {...props.btnProps}
+        className={cn("w-full justify-start font-normal text-sm", props.btnProps.className)}
+        ref={buttonRef}
+      >
         <span>{props.btnProps.children}</span>
       </Button>
 
       {isOpen && (
-        <div className="!m-0">
-          <Dropdown isOpen className={cn(darkMode && "dark text-foreground")} placement="right" backdrop="blur">
-            <DropdownTrigger>
-              {/* Invisible trigger */}
-              <div className="absolute" style={{ top: menuPosition.y, left: menuPosition.x }} />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Context Menu" variant="flat">
-              <>
-                {props.rightClickItems.map((item) => (
-                  <DropdownItem
-                    {...item}
-                    key={item.key}
-                    onPress={(e) => {
-                      setIsOpen(false);
-                      if (item.onPress) item.onPress(e);
-                    }}
-                  >
-                    {item.children}
-                  </DropdownItem>
-                ))}
-              </>
-            </DropdownMenu>
-          </Dropdown>
+        <div
+          className="fixed z-50 rounded-xl bg-surface border border-separator shadow-lg p-1 min-w-[140px] animate-in fade-in zoom-in-95 duration-100"
+          style={{ top: menuPosition.y, left: menuPosition.x }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-col gap-0.5">
+            {props.rightClickItems.map((item) => (
+              <button
+                key={item.key}
+                disabled={item.isDisabled}
+                className={cn(
+                  "flex items-center w-full px-3 py-1.5 text-sm rounded-lg text-left transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
+                  item.variant === "danger" || item.color === "danger"
+                    ? "text-danger hover:bg-danger/10 hover:text-danger font-medium"
+                    : "text-foreground hover:bg-default-100"
+                )}
+                onClick={(e) => {
+                  setIsOpen(false);
+                  if (item.onPress) item.onPress(e);
+                }}
+              >
+                {item.children}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

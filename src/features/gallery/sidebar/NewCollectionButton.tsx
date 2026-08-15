@@ -1,12 +1,19 @@
-import {addToast, Button, cn, Input, Popover, PopoverContent, PopoverTrigger, Spacer} from "@heroui/react";
-import {PlusIcon} from "@heroicons/react/20/solid";
 import React, {useState} from "react";
-import {useCollections, useDarkMode} from "../../../context/GalleryContext.tsx";
+import {createPortal} from "react-dom";
+import {
+  Button,
+  Input,
+  Label,
+  Popover,
+  TextField,
+  toast,
+} from "@heroui/react";
+import {Icon} from "@iconify/react";
+import {useCollections} from "../../../context/GalleryContext.tsx";
 import {createCollection, getCollections} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
 
 export function NewCollectionButton() {
-  const [darkMode] = useDarkMode();
   const [, setCollections] = useCollections();
   const [newCollectionName, setNewCollectionName] = useState("");
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
@@ -15,21 +22,14 @@ export function NewCollectionButton() {
   const onCreateButtonPress = () => {
     setPopoverIsOpen(false);
     createCollection(newCollectionName, null, (code) => {
-      addToast({
-        title: "Error",
+      toast.danger("Error", {
         description: "Failed to create collection with code " + code,
-        color: "danger",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
       });
     }).then(() => {
-      addToast({
-        title: "Success",
-        description: "Successfully created collection " + newCollectionName + "!",
-        color: "success",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
+      toast.success("Success", {
+        description: `Successfully created collection "${newCollectionName}"!`,
       });
+      setNewCollectionName("");
       getCollections().then((collections: Collection[]) => {
         setCollections(collections);
       });
@@ -38,49 +38,64 @@ export function NewCollectionButton() {
 
   return (
     <div className="h-fit w-full">
+      {popoverIsOpen && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-40 bg-backdrop backdrop-blur-sm transition-opacity duration-200"
+            onClick={() => {
+              setPopoverIsOpen(false);
+              setNewCollectionName("");
+            }}
+          />,
+          document.body
+        )}
+
       <Popover
-        className={cn(darkMode && "dark text-foreground")}
-        placement="right"
-        showArrow={true}
-        backdrop="blur"
         isOpen={popoverIsOpen}
         onOpenChange={(isOpen: boolean) => {
           setPopoverIsOpen(isOpen);
-          setNewCollectionName("");
+          if (!isOpen) setNewCollectionName("");
         }}
-        onClose={() => {setPopoverIsOpen(false);}}
       >
-        <PopoverTrigger>
-          <Button fullWidth className="text-medium" color="default" variant="ghost" endContent={<PlusIcon className="size-6"/>}>
-            <Spacer className="w-0"/>
-            <p className="font-semibold">Add Collection</p>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="px-1 py-2 w-80">
-            <div className="flex flex-row justify-between">
-              <div className="text-small font-bold">New Collection</div>
+        <Button
+          className="w-full justify-between text-sm font-medium"
+          variant="ghost"
+        >
+          <span className="font-semibold text-foreground">Add Collection</span>
+          <Icon icon="gravity-ui:plus" className="w-4 h-4 text-muted" />
+        </Button>
+        <Popover.Content placement="right" offset={16} className="z-50">
+          <Popover.Dialog className="p-4 w-80 space-y-3 bg-surface border border-separator rounded-2xl shadow-xl">
+            <Popover.Arrow />
+            <div className="flex items-center justify-between">
+              <Popover.Heading className="font-semibold text-sm text-foreground">New Collection</Popover.Heading>
               <Button
                 isDisabled={newCollectionName.trim().length === 0}
                 onPress={onCreateButtonPress}
-                className="mb-[-22px]"
-                color="primary"
+                variant="primary"
                 size="sm"
               >
-                {newCollectionName.trim().length === 0 ? "Name Cannot Be Blank" : "Create"}
+                Create
               </Button>
             </div>
-            <Input
-              label="Please choose a name"
+            <TextField
+              name="collection-name"
               value={newCollectionName}
-              onValueChange={setNewCollectionName}
-              type="text" size="sm"
-              placeholder="Collection Name"
-              color={cn(darkMode ? "default" : "primary") as "primary" | "default"}
-              labelPlacement="outside"
-            />
-          </div>
-        </PopoverContent>
+              onChange={setNewCollectionName}
+            >
+              <Label className="text-xs text-muted">Please choose a name</Label>
+              <Input
+                placeholder="Collection Name"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newCollectionName.trim().length > 0) {
+                    onCreateButtonPress();
+                  }
+                }}
+              />
+            </TextField>
+          </Popover.Dialog>
+        </Popover.Content>
       </Popover>
     </div>
   );

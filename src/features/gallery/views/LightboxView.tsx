@@ -1,10 +1,10 @@
 import React, {useEffect, useRef} from "react";
-import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/solid";
+import {Icon} from "@iconify/react";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import AssetGrid from "../components/AssetGrid.tsx";
 import AssetActionsCard from "../components/AssetActionsCard.tsx";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
-import DataStrip from "./DataStrip.tsx";
+import DataStrip from "../components/DataStrip.tsx";
 import {BACKEND_URL} from "../../../config.ts";
 
 export function LightboxView() {
@@ -87,27 +87,29 @@ export function LightboxView() {
   const activeAsset = selectedAssets[0];
 
   return (
-    <div className="flex flex-col flex-grow">
+    <div className="flex flex-col grow">
       {/* Lightbox Viewing Area */}
-      <div className="flex flex-row flex-grow overflow-auto justify-center">
+      <div className="flex flex-row grow overflow-auto justify-center">
         {activeAsset ? (
           <>
             <div className="flex flex-col w-full justify-center select-none">
-              <div className="flex flex-row max-h-full justify-center">
-                <ArrowLeftIcon
-                  className="w-16 flex-shrink-0 h-full mx-10 text-default-500 hover:text-default-300 active:text-default-100 cursor-pointer transition-colors"
+              <div className="flex flex-row max-h-full justify-center items-center">
+                <Icon
+                  icon="gravity-ui:chevron-left"
+                  className="w-12 h-12 shrink-0 mx-6 hover:text-foreground active:text-foreground/80 cursor-pointer transition-colors"
                   onClick={onPrev}
                 />
 
                 <ModalZoomImage
-                  className="object-scale-down rounded-none shadow-2xl"
+                  className="object-scale-down rounded-none shadow-2xl max-h-[75vh]"
                   alt={`${BACKEND_URL}/thumbnail/${activeAsset.hash}`}
                   src={`${BACKEND_URL}/thumbnail/${activeAsset.hash}`}
                   removeWrapper
                 />
 
-                <ArrowRightIcon
-                  className="w-16 flex-shrink-0 h-full mx-10 text-default-500 hover:text-default-300 active:text-default-100 cursor-pointer transition-colors"
+                <Icon
+                  icon="gravity-ui:chevron-right"
+                  className="w-12 h-12 shrink-0 mx-6 text-muted hover:text-foreground cursor-pointer transition-colors"
                   onClick={onNext}
                 />
               </div>
@@ -115,8 +117,8 @@ export function LightboxView() {
             <AssetActionsCard vertical />
           </>
         ) : (
-          <div className="flex flex-wrap flex-grow justify-center items-center">
-            <p className="text-default-600 text-3xl">
+          <div className="flex flex-wrap grow justify-center items-center select-none">
+            <p className="text-muted text-3xl font-light tracking-wide">
               {selectedCollection?.id == null
                 ? "No Collection Selected"
                 : selectedCollection?.assets?.length === 0
@@ -129,18 +131,18 @@ export function LightboxView() {
 
       {/* Filmstrip & DataStrip Area */}
       {(selectedCollection?.assets?.length ?? 0) !== 0 && (
-        <>
+        <div className="border-separator border-t shadow-md">
           <DataStrip />
-          <div className="grid grid-rows-1 bg-default-100" onWheel={onWheel}>
+          <div className="grid grid-rows-1 bg-surface" onWheel={onWheel}>
             <AssetGrid
-              className="flex flex-row w-full overflow-x-auto gap-5 p-5 pt-1"
+              className="flex flex-row w-full overflow-x-auto gap-4 p-4 pt-2"
               cardWidth={150}
               cardHeight={100}
               ref={filmstripScrollRef}
               allowCardZoom
             />
           </div>
-        </>
+        </div>
       )}
     </div>
   );

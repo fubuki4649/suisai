@@ -1,4 +1,4 @@
-import {Card, cn, Image, PressEvent} from "@heroui/react";
+import {Card, cn} from "@heroui/react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
@@ -10,7 +10,7 @@ export interface AssetCardProps {
   previewUrl: string;
   isSelected: boolean;
   allowZoom: boolean;
-  isUniformFrame?: boolean;
+  forceConstWidth?: boolean;
 }
 
 export function AssetCard(props: AssetCardProps) {
@@ -37,7 +37,7 @@ export function AssetCard(props: AssetCardProps) {
     selectedAssetsRef.current = selectedAssets;
   }, [selectedAssets]);
 
-  const onCardSelect = (cardId: string, e: PressEvent) => {
+  const onCardClick = (cardId: string, e: React.MouseEvent) => {
     // Handle multi-select
     if (e.ctrlKey || e.metaKey) {
       if (selectedAssetsRef.current.some((iter) => iter.id === cardId)) {
@@ -87,42 +87,40 @@ export function AssetCard(props: AssetCardProps) {
 
   return (
     <Card
-      isPressable
-      onPress={(e: PressEvent) => onCardSelect(props.id, e)}
-      onDoubleClick={undoSelectAssets}
-      shadow={cn(props.isSelected ? "lg" : "sm") as ("lg" | "sm")}
       className={cn(
-        props.isSelected ? "border-1.5 border-primary-500" : "border-1 border-default-400",
-        props.isUniformFrame
+        props.isSelected
+          ? "border-2 border-accent shadow-lg ring-2 ring-accent/30 dark:ring-accent/40"
+          : "border border-separator hover:border-1.5 hover:border-accent/60 hover:ring-2 hover:ring-accent/15 dark:hover:ring-accent/30",
+        props.forceConstWidth
           ? "w-full h-full justify-center items-center bg-default-50 dark:bg-black/60"
           : "h-full w-auto",
-        "flex-shrink-0 overflow-hidden"
+        "shadow-md shrink-0 overflow-hidden cursor-pointer transition-all select-none rounded-xl p-0! gap-0!"
       )}
+      onClick={(e) => onCardClick(props.id, e)}
+      onDoubleClick={undoSelectAssets}
     >
       {props.allowZoom ? (
         <ModalZoomImage
           className={cn(
-            props.isUniformFrame
+            props.forceConstWidth
               ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
               : "object-contain h-full w-auto",
-            "rounded-none"
+            "rounded-none select-none"
           )}
           alt={props.alt}
           src={props.previewUrl}
-          removeWrapper
           onLoad={handleImageLoad}
         />
       ) : (
-        <Image
+        <img
           className={cn(
-            props.isUniformFrame
+            props.forceConstWidth
               ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
               : "object-contain h-full w-auto",
-            "rounded-none"
+            "rounded-none select-none"
           )}
           alt={props.alt}
           src={props.previewUrl}
-          removeWrapper
           onLoad={handleImageLoad}
         />
       )}

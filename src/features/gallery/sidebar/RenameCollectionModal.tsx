@@ -1,17 +1,13 @@
-import {
-  addToast,
-  Button,
-  cn,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spacer,
-} from "@heroui/react";
 import React, {useState} from "react";
-import {useCollections, useDarkMode} from "../../../context/GalleryContext.tsx";
+import {
+  Button,
+  Input,
+  Label,
+  Modal,
+  TextField,
+  toast,
+} from "@heroui/react";
+import {useCollections} from "../../../context/GalleryContext.tsx";
 import {getCollections, renameCollection} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
 import {Disclosure} from "../../../types/disclosure.ts";
@@ -22,28 +18,17 @@ export interface RenameCollectionModalProps {
 }
 
 export function RenameCollectionModal({disclosure, collection}: RenameCollectionModalProps) {
-  const [darkMode] = useDarkMode();
   const [, setCollections] = useCollections();
-
-  const {isOpen, onOpenChange} = disclosure;
   const [newCollectionName, setNewCollectionName] = useState("");
 
   const onRenameCollection = () => {
     renameCollection(collection.id, newCollectionName, (code) => {
-      addToast({
-        title: "Error",
+      toast.danger("Error", {
         description: "Failed to rename collection with code " + code,
-        color: "danger",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
       });
     }).then(() => {
-      addToast({
-        title: "Success",
-        description: "Collection ID " + collection.id + " successfully renamed to " + newCollectionName + "!",
-        color: "success",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
+      toast.success("Success", {
+        description: `Collection "${collection.label}" successfully renamed to "${newCollectionName}"!`,
       });
       getCollections().then((collections: Collection[]) => {
         setCollections(collections);
@@ -52,60 +37,62 @@ export function RenameCollectionModal({disclosure, collection}: RenameCollection
   };
 
   return (
-    <Modal
-      className={cn(darkMode && "dark text-foreground")}
-      isDismissable={false}
-      isKeyboardDismissDisabled={true}
-      isOpen={isOpen}
-      onOpenChange={() => {
-        onOpenChange();
-        setNewCollectionName("");
-      }}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Rename Collection</ModalHeader>
-            <ModalBody>
-              <p>
-                You are about to modify the following collection. This action cannot be undone!
-              </p>
+    <Modal state={disclosure}>
+      <Modal.Backdrop variant="blur" isDismissable={false} isKeyboardDismissDisabled={true}>
+        <Modal.Container size="sm">
+          <Modal.Dialog>
+            {({close}) => (
+              <>
+                <Modal.CloseTrigger />
+                <Modal.Header>
+                  <Modal.Heading>Rename Collection</Modal.Heading>
+                </Modal.Header>
+                <Modal.Body className="space-y-3">
+                  <p className="text-sm text-foreground">
+                    You are about to modify the following collection:
+                  </p>
 
-              <Spacer className="h-1"/>
+                  <div className="rounded-xl bg-default-100 p-3 text-xs space-y-1">
+                    <p><span className="text-muted">Current Name:</span> <span className="font-medium">{collection.label}</span></p>
+                    <p><span className="text-muted">Collection ID:</span> <span className="font-mono">{collection.id}</span></p>
+                  </div>
 
-              <p>
-                Current Name : {collection.label}
-              </p>
-              <p>
-                Collection ID : {collection.id}
-              </p>
-
-              <Spacer className="h-1"/>
-
-              <Input
-                label="Please choose a new name"
-                value={newCollectionName}
-                onValueChange={setNewCollectionName}
-                type="text" size="sm"
-                placeholder="Collection Name"
-                labelPlacement="outside"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Cancel
-              </Button>
-              <Button
-                color="primary"
-                onPress={() => {onRenameCollection(); onClose();}}
-                isDisabled={newCollectionName.trim().length === 0}
-              >
-                Rename
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
+                  <TextField
+                    name="new-collection-name"
+                    value={newCollectionName}
+                    onChange={setNewCollectionName}
+                  >
+                    <Label className="text-xs font-medium text-foreground">Please choose a new name</Label>
+                    <Input
+                      placeholder="New Collection Name"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && newCollectionName.trim().length > 0) {
+                          onRenameCollection();
+                          setNewCollectionName("");
+                          close();
+                        }
+                      }}
+                    />
+                  </TextField>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="tertiary" onPress={() => { setNewCollectionName(""); close(); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onPress={() => { onRenameCollection(); setNewCollectionName(""); close(); }}
+                    isDisabled={newCollectionName.trim().length === 0}
+                  >
+                    Rename
+                  </Button>
+                </Modal.Footer>
+              </>
+            )}
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

@@ -1,17 +1,13 @@
-import {
-  addToast,
-  Button,
-  cn,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spacer,
-} from "@heroui/react";
 import React, {useState} from "react";
-import {useCollections, useDarkMode, useSelectedCollection} from "../../../context/GalleryContext.tsx";
+import {
+  Button,
+  Input,
+  Label,
+  Modal,
+  TextField,
+  toast,
+} from "@heroui/react";
+import {useCollections, useSelectedCollection} from "../../../context/GalleryContext.tsx";
 import {deleteCollection, getCollections} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
 import {Disclosure} from "../../../types/disclosure.ts";
@@ -22,30 +18,18 @@ export interface DeleteCollectionModalProps {
 }
 
 export function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalProps) {
-  const [darkMode] = useDarkMode();
   const [, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
-
-  const {isOpen, onOpenChange} = disclosure;
   const [confirmText, setConfirmText] = useState("");
 
-  // Event handler for delete button
   const onDeleteCollection = () => {
     deleteCollection(collection.id, (code) => {
-      addToast({
-        title: "Error",
+      toast.danger("Error", {
         description: "Failed to delete collection with code " + code,
-        color: "danger",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
       });
     }).then(() => {
-      addToast({
-        title: "Success",
-        description: "Collection ID " + collection.id + " successfully deleted!",
-        color: "success",
-        timeout: 5000,
-        shouldShowTimeoutProgress: true,
+      toast.success("Success", {
+        description: `Collection "${collection.label}" successfully deleted!`,
       });
       getCollections().then((collections: Collection[]) => {
         setCollections(collections);
@@ -57,60 +41,54 @@ export function DeleteCollectionModal({disclosure, collection}: DeleteCollection
   };
 
   return (
-    <Modal
-      className={cn(darkMode && "dark text-foreground")}
-      isDismissable={false}
-      isKeyboardDismissDisabled={true}
-      isOpen={isOpen}
-      onOpenChange={() => {
-        onOpenChange();
-        setConfirmText("");
-      }}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Delete Collection</ModalHeader>
-            <ModalBody>
-              <p>
-                You are about to DELETE the following collection. This action cannot be undone!
-              </p>
+    <Modal state={disclosure}>
+      <Modal.Backdrop variant="blur" isDismissable={false} isKeyboardDismissDisabled={true}>
+        <Modal.Container size="sm">
+          <Modal.Dialog>
+            {({close}) => (
+              <>
+                <Modal.CloseTrigger />
+                <Modal.Header>
+                  <Modal.Heading>Delete Collection</Modal.Heading>
+                </Modal.Header>
+                <Modal.Body className="space-y-3">
+                  <p className="text-sm text-foreground">
+                    You are about to <span className="font-semibold text-danger">DELETE</span> the following collection. This action cannot be undone!
+                  </p>
 
-              <Spacer className="h-1"/>
+                  <div className="rounded-xl bg-default-100 p-3 text-xs space-y-1">
+                    <p><span className="text-muted">Current Name:</span> <span className="font-medium">{collection.label}</span></p>
+                    <p><span className="text-muted">Collection ID:</span> <span className="font-mono">{collection.id}</span></p>
+                  </div>
 
-              <p>
-                Current Name : {collection.label}
-              </p>
-              <p>
-                Collection ID : {collection.id}
-              </p>
-
-              <Spacer className="h-1"/>
-
-              <Input
-                label="Please enter the collection ID to confirm deletion"
-                value={confirmText}
-                onValueChange={setConfirmText}
-                type="text" size="sm"
-                placeholder="Collection ID"
-                labelPlacement="outside"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Cancel
-              </Button>
-              <Button
-                color="primary"
-                onPress={() => {onDeleteCollection(); onClose();}}
-                isDisabled={confirmText !== collection.id}
-              >
-                Delete
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
+                  <TextField
+                    name="confirm-id"
+                    value={confirmText}
+                    onChange={setConfirmText}
+                  >
+                    <Label className="text-xs font-medium text-foreground">
+                      Please enter the collection ID to confirm deletion
+                    </Label>
+                    <Input placeholder={collection.id} />
+                  </TextField>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="tertiary" onPress={() => { setConfirmText(""); close(); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onPress={() => { onDeleteCollection(); setConfirmText(""); close(); }}
+                    isDisabled={confirmText !== collection.id}
+                  >
+                    Delete Collection
+                  </Button>
+                </Modal.Footer>
+              </>
+            )}
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }
