@@ -1,5 +1,5 @@
-import {toast, useOverlayState} from "@heroui/react";
-import React, {JSX, useState} from "react";
+import {cn, toast, useOverlayState} from "@heroui/react";
+import React, {JSX, useCallback, useState} from "react";
 import {useCollections, useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import NewCollectionButton from "./NewCollectionButton.tsx";
 import CollectionButton from "./CollectionButton.tsx";
@@ -16,6 +16,43 @@ export function Sidebar() {
   const [, setSelectedAssets] = useSelectedAssets();
 
   const [rightClickCollection, setRightClickCollection] = useState<Collection | null>(null);
+
+  // Resizable width state with localStorage persistence
+  const [width, setWidth] = useState<number>(() => {
+    const saved = localStorage.getItem("suisai_sidebar_width");
+    return saved ? Math.max(160, Math.min(500, parseInt(saved, 10))) : 240;
+  });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+
+      const startX = e.clientX;
+      const startWidth = width;
+
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        const newWidth = Math.min(Math.max(160, startWidth + (moveEvent.clientX - startX)), 500);
+        setWidth(newWidth);
+        localStorage.setItem("suisai_sidebar_width", newWidth.toString());
+      };
+
+      const onMouseUp = () => {
+        setIsDragging(false);
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+      };
+
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    },
+    [width]
+  );
 
   const onCollectionSelect = (collection: Collection) => {
     // Only clear asset selection when switching to a DIFFERENT collection
@@ -43,8 +80,11 @@ export function Sidebar() {
   const deleteCollectionDisclosure: Disclosure = useOverlayState();
 
   return (
-    <div className="flex flex-col min-w-fit bg-background/50 overflow-auto scrollbar-hide">
-      <div className="p-4 pt-2">
+    <aside
+      style={{ width: `${width}px` }}
+      className="relative flex flex-col shrink-0 bg-background/50 border-r border-separator h-full select-none"
+    >
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-2 scrollbar-hide">
         {rightClickCollection && (
           <>
             <RenameCollectionModal disclosure={renameCollectionDisclosure} collection={rightClickCollection} />
@@ -72,7 +112,18 @@ export function Sidebar() {
         <div className="my-2" />
         <NewCollectionButton />
       </div>
-    </div>
+
+      {/* Draggable Resize Handle */}
+      <div
+        onMouseDown={onMouseDown}
+        className={cn(
+          "absolute top-0 right-0 w-1.5 h-full cursor-col-resize z-20 transition-colors",
+          "hover:bg-accent/40 active:bg-accent",
+          isDragging && "bg-accent"
+        )}
+        title="Drag to resize sidebar"
+      />
+    </aside>
   );
 }
 
@@ -95,16 +146,21 @@ const ShowCollection = ({
   moveCollectionDisclosure: Disclosure;
   deleteCollectionDisclosure: Disclosure;
 }): JSX.Element => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
+  const hasChildren = Boolean(collection.children && collection.children.length > 0);
 
   return (
-    <li key={collection.id}>
+    <li key={collection.id} className="relative">
       <CollectionButton
         expanded={expanded}
+        hasChildren={hasChildren}
+        onToggleExpand={(e) => {
+          e.stopPropagation();
+          setExpanded((prev) => !prev);
+        }}
         collection={collection}
         selectedCollection={selectedCollection}
         onCollectionSelect={(col: Collection) => {
-          if (col.children && col.children.length > 0) setExpanded((prev) => !prev);
           onCollectionSelect(col);
         }}
         setRightClickCollection={setRightClickCollection}
@@ -113,28 +169,22 @@ const ShowCollection = ({
         deleteCollectionDisclosure={deleteCollectionDisclosure}
       />
 
-      {expanded && collection.children && collection.children.length > 0 && (
-        <div className="flex flex-row">
-          {Array(depth).fill(null).map((_, i) => (
-            <span key={i} className="self-stretch w-[2px] bg-default-300 dark:bg-default-200 mx-2 mt-1" />
+      {expanded && hasChildren && (
+        <ul className="ml-3.5 pl-2 border-l border-separator/70 space-y-1 mt-1">
+          {collection.children!.map((child) => (
+            <ShowCollection
+              depth={depth + 1}
+              key={child.id}
+              collection={child}
+              selectedCollection={selectedCollection}
+              onCollectionSelect={onCollectionSelect}
+              setRightClickCollection={setRightClickCollection}
+              renameCollectionDisclosure={renameCollectionDisclosure}
+              moveCollectionDisclosure={moveCollectionDisclosure}
+              deleteCollectionDisclosure={deleteCollectionDisclosure}
+            />
           ))}
-
-          <ul id={collection.id} className="flex-grow space-y-1 mt-1">
-            {collection.children.map((child) => (
-              <ShowCollection
-                depth={depth + 1}
-                key={child.id}
-                collection={child}
-                selectedCollection={selectedCollection}
-                onCollectionSelect={onCollectionSelect}
-                setRightClickCollection={setRightClickCollection}
-                renameCollectionDisclosure={renameCollectionDisclosure}
-                moveCollectionDisclosure={moveCollectionDisclosure}
-                deleteCollectionDisclosure={deleteCollectionDisclosure}
-              />
-            ))}
-          </ul>
-        </div>
+        </ul>
       )}
     </li>
   );

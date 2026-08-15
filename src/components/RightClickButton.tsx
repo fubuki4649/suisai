@@ -15,7 +15,6 @@ export interface RightClickButtonProps {
   btnProps: React.ComponentProps<typeof Button> & {
     children?: React.ReactNode;
     className?: string;
-    onPress?: (e?: any) => void;
   };
   rightClickItems: RightClickItem[];
 }
@@ -56,13 +55,17 @@ export default function RightClickButton(props: RightClickButtonProps) {
   }, [isOpen]);
 
   return (
-    <div className="h-fit relative">
+    <div className="h-fit relative w-full overflow-hidden">
       <Button
         {...props.btnProps}
-        className={cn("w-full justify-start font-normal text-sm", props.btnProps.className)}
+        className={cn("w-full justify-start font-normal text-sm overflow-hidden", props.btnProps.className)}
         ref={buttonRef}
       >
-        <span>{props.btnProps.children}</span>
+        {typeof props.btnProps.children === "string" ? (
+          <span className="truncate">{props.btnProps.children}</span>
+        ) : (
+          props.btnProps.children
+        )}
       </Button>
 
       {isOpen && (

@@ -58,7 +58,7 @@ export function NewCollectionButton() {
         }}
       >
         <Button
-          className="w-full justify-between text-sm font-medium"
+          className="w-full justify-between text-sm font-medium rounded-xl px-3 py-2 hover:bg-default-100/70"
           variant="ghost"
         >
           <span className="font-semibold text-foreground">Add Collection</span>
