@@ -1,6 +1,7 @@
 import {cn, Toast} from "@heroui/react";
 import React from "react";
 import Header from "./components/Header.tsx";
+import ServerOfflineModal from "./components/ServerOfflineModal.tsx";
 import {useIsDark} from "./context/GalleryContext.tsx";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import GalleryLayout from "./features/gallery/GalleryLayout.tsx";
@@ -13,6 +14,7 @@ function App() {
   return (
     <>
       <Toast.Provider placement="bottom" />
+      <ServerOfflineModal />
       <BrowserRouter>
         <main className={cn(isDark && "dark", "h-screen flex flex-col bg-background text-foreground")}>
           <Header />
