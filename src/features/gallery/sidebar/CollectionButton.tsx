@@ -86,7 +86,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
               )}
             />
 
-            <span className="truncate flex-1 text-left font-normal text-sm">
+            <span className="truncate text-left">
               {collection.label}
             </span>
           </div>

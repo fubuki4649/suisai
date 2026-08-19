@@ -1,6 +1,6 @@
 import {cn, toast, useOverlayState} from "@heroui/react";
 import React, {JSX, useCallback, useState} from "react";
-import {useCollections, useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
+import {useCollections, useSelectedAssets, useSelectedCollection} from "../../../context/GalleryContext.tsx";
 import NewCollectionButton from "./NewCollectionButton.tsx";
 import CollectionButton from "./CollectionButton.tsx";
 import RenameCollectionModal from "./RenameCollectionModal.tsx";
@@ -74,9 +74,15 @@ export function Sidebar() {
   );
 
   // Resizable width state with localStorage persistence
+  const MIN_SIDEBAR_WIDTH = 200;
+  const MAX_SIDEBAR_WIDTH = 500;
+  const DEFAULT_SIDEBAR_WIDTH = 240;
+
   const [width, setWidth] = useState<number>(() => {
     const saved = localStorage.getItem("suisai_sidebar_width");
-    return saved ? Math.max(160, Math.min(500, parseInt(saved, 10))) : 240;
+    return saved
+      ? Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, parseInt(saved, 10)))
+      : DEFAULT_SIDEBAR_WIDTH;
   });
   const [isDragging, setIsDragging] = useState(false);
 
@@ -89,7 +95,10 @@ export function Sidebar() {
       const startWidth = width;
 
       const onMouseMove = (moveEvent: MouseEvent) => {
-        const newWidth = Math.min(Math.max(160, startWidth + (moveEvent.clientX - startX)), 500);
+        const newWidth = Math.min(
+          Math.max(MIN_SIDEBAR_WIDTH, startWidth + (moveEvent.clientX - startX)),
+          MAX_SIDEBAR_WIDTH
+        );
         setWidth(newWidth);
         localStorage.setItem("suisai_sidebar_width", newWidth.toString());
       };
@@ -241,7 +250,7 @@ const ShowCollection = ({
       />
 
       {isExpanded && hasChildren && (
-        <ul className="ml-3.5 pl-2 border-l border-separator/70 space-y-1 mt-1">
+        <ul className="ml-4 pl-2 border-l border-separator mt-1">
           {collection.children!.map((child) => (
             <ShowCollection
               depth={depth + 1}

@@ -62,7 +62,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
 
         <Popover.Content placement="right" offset={16} className="z-50">
           <Popover.Arrow className="fill-surface" />
-          <Popover.Dialog className="p-1.5 min-w-[170px] bg-surface border border-separator rounded-2xl shadow-xl">
+          <Popover.Dialog className="p-1.5 min-w-32 bg-surface border border-separator rounded-2xl shadow-xl">
             <div className="flex flex-col gap-0.5 w-full">
               {props.rightClickItems.map((item) => (
                 <button

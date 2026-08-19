@@ -21,9 +21,19 @@ type GalleryState = {
 
 const GalleryContext = createContext<GalleryState | undefined>(undefined);
 
+export const THEME_STORAGE_KEY = "suisai_theme_mode";
+
 export const GalleryContextProvider = ({ children }: { children: ReactNode }) => {
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [themeMode, setThemeMode] = useState<ThemeMode>("auto");
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      if (saved === "light" || saved === "dark" || saved === "auto") {
+        return saved;
+      }
+    }
+    return "auto";
+  });
   const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
     if (typeof window !== "undefined" && window.matchMedia) {
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -32,6 +42,12 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
   });
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+    }
+  }, [themeMode]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;

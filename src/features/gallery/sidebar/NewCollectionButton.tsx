@@ -1,13 +1,6 @@
 import React, {useState} from "react";
 import {createPortal} from "react-dom";
-import {
-  Button,
-  Input,
-  Label,
-  Popover,
-  TextField,
-  toast,
-} from "@heroui/react";
+import {Button, Input, Label, Popover, TextField, toast,} from "@heroui/react";
 import {Icon} from "@iconify/react";
 import {useCollections} from "../../../context/GalleryContext.tsx";
 import {createCollection, getCollections} from "../../../api/collections.ts";
@@ -57,12 +50,9 @@ export function NewCollectionButton() {
           if (!isOpen) setNewCollectionName("");
         }}
       >
-        <Button
-          className="w-full justify-between text-sm font-medium rounded-xl px-3 py-2 hover:bg-default-100/70"
-          variant="ghost"
-        >
-          <span className="font-semibold text-foreground">Add Collection</span>
-          <Icon icon="gravity-ui:plus" className="w-4 h-4 text-muted" />
+        <Button className="w-full justify-between font-medium rounded-xl px-3 py-2" variant="secondary">
+          Add Collection
+          <Icon icon="gravity-ui:plus" className="w-4 h-4" />
         </Button>
         <Popover.Content placement="right" offset={16} className="z-50">
           <Popover.Arrow className="fill-surface" />

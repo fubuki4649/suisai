@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Separator, Tabs} from "@heroui/react";
+import {Separator, Tabs, Tooltip} from "@heroui/react";
 import {Icon} from "@iconify/react";
 import {ThemeMode, useThemeMode} from "../context/GalleryContext.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -59,9 +59,9 @@ export function Header() {
             </Tabs.ListContainer>
           </Tabs>
 
-          <Separator orientation="vertical" className="h-5" />
+          <Separator orientation="vertical" />
 
-          {/* Auto / Light / Dark Mode Circle Tabs (Icon only) */}
+          {/* Dark Mode Toggles */}
           <Tabs
             selectedKey={themeMode}
             onSelectionChange={(key) => setThemeMode(key as ThemeMode)}
@@ -73,7 +73,14 @@ export function Header() {
                   aria-label="Auto (system) mode"
                   className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
                 >
-                  <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
+                  <Tooltip delay={200}>
+                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                      <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      <p>Use System Theme</p>
+                    </Tooltip.Content>
+                  </Tooltip>
                   <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                 </Tabs.Tab>
                 <Tabs.Tab
@@ -81,7 +88,14 @@ export function Header() {
                   aria-label="Light mode"
                   className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
                 >
-                  <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
+                  <Tooltip delay={200}>
+                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                      <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      <p>Light Mode</p>
+                    </Tooltip.Content>
+                  </Tooltip>
                   <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                 </Tabs.Tab>
                 <Tabs.Tab
@@ -89,7 +103,14 @@ export function Header() {
                   aria-label="Dark mode"
                   className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
                 >
-                  <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
+                  <Tooltip delay={200}>
+                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                      <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      <p>Dark Mode</p>
+                    </Tooltip.Content>
+                  </Tooltip>
                   <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                 </Tabs.Tab>
               </Tabs.List>
@@ -166,7 +187,14 @@ export function Header() {
                     aria-label="Auto (system) mode"
                     className="flex items-center justify-center w-8 h-8 shrink-0 p-0 data-[selected=true]:text-foreground cursor-pointer rounded-full transition-colors"
                   >
-                    <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
+                    <Tooltip delay={200}>
+                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                        <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>
+                        <p>System</p>
+                      </Tooltip.Content>
+                    </Tooltip>
                     <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                   </Tabs.Tab>
                   <Tabs.Tab
@@ -174,7 +202,14 @@ export function Header() {
                     aria-label="Light mode"
                     className="flex items-center justify-center w-8 h-8 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
                   >
-                    <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
+                    <Tooltip delay={200}>
+                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                        <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>
+                        <p>Light</p>
+                      </Tooltip.Content>
+                    </Tooltip>
                     <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                   </Tabs.Tab>
                   <Tabs.Tab
@@ -182,7 +217,14 @@ export function Header() {
                     aria-label="Dark mode"
                     className="flex items-center justify-center w-8 h-8 shrink-0 p-0 data-[selected=true]:text-foreground cursor-pointer rounded-full transition-colors"
                   >
-                    <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
+                    <Tooltip delay={200}>
+                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                        <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>
+                        <p>Dark</p>
+                      </Tooltip.Content>
+                    </Tooltip>
                     <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
                   </Tabs.Tab>
                 </Tabs.List>
