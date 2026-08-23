@@ -18,7 +18,7 @@ export function GalleryLayout() {
   }, [collections.length, setCollections]);
 
   return (
-    <div className="flex flex-row flex-grow overflow-y-auto">
+    <div className="flex flex-row flex-grow min-h-0 overflow-hidden">
       <Sidebar />
       <Outlet />
     </div>

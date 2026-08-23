@@ -87,7 +87,7 @@ export function LightboxView() {
   const activeAsset = selectedAssets[0];
 
   return (
-    <div className="flex flex-col grow">
+    <div className="flex flex-col grow min-h-0">
       {/* Lightbox Viewing Area */}
       <div className="flex flex-row grow overflow-auto justify-center">
         {activeAsset ? (

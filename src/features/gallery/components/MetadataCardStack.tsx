@@ -1,3 +1,4 @@
+import {cn} from "@heroui/react";
 import React from "react";
 import {useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import MetadataCard, {MetadataCardProps} from "./MetadataCard.tsx";
@@ -6,7 +7,7 @@ export function MetadataCardStack() {
   const [selectedAssets] = useSelectedAssets();
 
   return (
-    <div className="relative w-80 m-5">
+    <div className={cn("relative", selectedAssets.length > 0 ? "w-68 m-5" : "w-0")}>
       {
         [...selectedAssets].reverse().map((asset, index) => {
           if (index > 3) return null;

@@ -9,15 +9,15 @@ export function GridView() {
   const [selectedAssets] = useSelectedAssets();
 
   return (
-    <div className="flex flex-grow">
+    <div className="flex flex-grow overflow-y-auto min-h-0">
       <AssetGrid
-        className="flex flex-wrap flex-grow overflow-auto scrollbar-hide content-start gap-5 p-5 grid-cols-auto"
+        className="flex flex-wrap flex-grow content-start gap-5 p-5 grid-cols-auto"
         cardHeight={200}
         allowCardZoom
       />
 
       {(selectedCollection?.assets?.length ?? 0) !== 0 && (
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between shrink-0 sticky top-0 h-full self-start">
           <MetadataCardStack />
           {selectedAssets.length !== 0 && <AssetActionsCard />}
         </div>

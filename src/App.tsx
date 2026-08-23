@@ -18,7 +18,7 @@ function App() {
       <BrowserRouter>
         <main className={cn(isDark && "dark", "h-screen flex flex-col bg-background text-foreground")}>
           <Header />
-          <div className="flex flex-row flex-grow overflow-y-auto">
+          <div className="flex flex-row flex-grow min-h-0 overflow-hidden">
             <Routes>
               <Route path="/" element={<Navigate to="/gallery" replace />} />
               <Route path="/gallery" element={<GalleryLayout />}>

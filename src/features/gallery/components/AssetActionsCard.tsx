@@ -1,4 +1,4 @@
-import {Button, Card, cn, Tooltip, useOverlayState} from "@heroui/react";
+import {Button, Card, Chip, cn, Tooltip, useOverlayState} from "@heroui/react";
 import {Icon} from "@iconify/react";
 import React from "react";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
@@ -29,18 +29,20 @@ export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
       <MoveAssetModal {...moveAssetState} />
       <DeleteAssetModal {...deleteAssetState} />
 
-      <Card className="h-fit min-w-fit m-6 mt-auto select-none rounded-2xl bg-surface border border-separator shadow-md p-3.5">
-        <Card.Header>
-          <div className="flex flex-row items-center justify-center w-full">
-            {!vertical && <Card.Title className="font-medium text-base mr-auto">Selected Assets</Card.Title>}
-            <span className="text-sm text-muted">({selectedAssets.length})</span>
+      <Card className={cn(vertical ? "h-fit min-w-fit m-3" : "h-fit w-68 m-5", "mt-auto select-none rounded-2xl bg-surface border border-separator shadow-lg p-3")}>
+        <Card.Header className="pb-2">
+          <div className={cn(vertical ? "justify-around" : "justify-between", "flex flex-row items-center w-full")}>
+            {!vertical && <span className="font-semibold text-foreground">Selected Assets</span>}
+            <Chip size="md" variant="soft" color="accent">
+              {selectedAssets.length}
+            </Chip>
           </div>
         </Card.Header>
         <Card.Content className="pt-0!">
-          <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full gap-2.5 justify-evenly")}>
+          <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full justify-around gap-3.5")}>
             <Tooltip delay={200}>
               <Tooltip.Trigger>
-                <Button isIconOnly size="sm" variant="tertiary" aria-label="Select All" onPress={selectAll}>
+                <Button isIconOnly size="lg" variant="tertiary" aria-label="Select All" onPress={selectAll}>
                   <Icon icon="gravity-ui:circle-check" className="w-5 h-5" />
                 </Button>
               </Tooltip.Trigger>
@@ -51,7 +53,7 @@ export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
 
             <Tooltip delay={200}>
               <Tooltip.Trigger>
-                <Button isIconOnly size="sm" variant="tertiary" aria-label="Deselect All" onPress={deselectAll}>
+                <Button isIconOnly size="lg" variant="tertiary" aria-label="Deselect All" onPress={deselectAll}>
                   <Icon icon="gravity-ui:circle-minus" className="w-5 h-5" />
                 </Button>
               </Tooltip.Trigger>
@@ -62,7 +64,7 @@ export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
 
             <Tooltip delay={200}>
               <Tooltip.Trigger>
-                <Button isIconOnly size="sm" variant="secondary" aria-label="Move To Collection" onPress={moveAssetState.open}>
+                <Button isIconOnly size="lg" variant="secondary" aria-label="Move To Collection" onPress={moveAssetState.open}>
                   <Icon icon="gravity-ui:folder-arrow-right" className="w-5 h-5" />
                 </Button>
               </Tooltip.Trigger>
@@ -73,7 +75,7 @@ export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
 
             <Tooltip delay={200}>
               <Tooltip.Trigger>
-                <Button isIconOnly size="sm" variant="danger-soft" aria-label="Delete" onPress={deleteAssetState.open}>
+                <Button isIconOnly size="lg" variant="danger-soft" aria-label="Delete" onPress={deleteAssetState.open}>
                   <Icon icon="gravity-ui:trash-bin" className="w-5 h-5" />
                 </Button>
               </Tooltip.Trigger>
