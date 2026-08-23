@@ -93,18 +93,19 @@ export function Sidebar() {
 
       const startX = e.clientX;
       const startWidth = width;
+      let finalWidth = startWidth;
 
       const onMouseMove = (moveEvent: MouseEvent) => {
-        const newWidth = Math.min(
+        finalWidth = Math.min(
           Math.max(MIN_SIDEBAR_WIDTH, startWidth + (moveEvent.clientX - startX)),
           MAX_SIDEBAR_WIDTH
         );
-        setWidth(newWidth);
-        localStorage.setItem("suisai_sidebar_width", newWidth.toString());
+        setWidth(finalWidth);
       };
 
       const onMouseUp = () => {
         setIsDragging(false);
+        localStorage.setItem("suisai_sidebar_width", finalWidth.toString());
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
         document.body.style.cursor = "";

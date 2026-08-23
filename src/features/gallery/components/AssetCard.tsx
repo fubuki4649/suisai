@@ -63,7 +63,13 @@ export function AssetCard(props: AssetCardProps) {
             Math.min(lastSelectedIndex, newlySelectedIndex),
             Math.max(lastSelectedIndex, newlySelectedIndex) + 1
           );
-          selectAssets(slice ? selectedAssetsRef.current.concat(slice) : selectedAssetsRef.current);
+          if (slice) {
+            const map = new Map(selectedAssetsRef.current.map((item) => [item.id, item]));
+            for (const item of slice) {
+              map.set(item.id, item);
+            }
+            selectAssets(Array.from(map.values()));
+          }
         }
       }
     }
@@ -101,6 +107,8 @@ export function AssetCard(props: AssetCardProps) {
     >
       {props.allowZoom ? (
         <ModalZoomImage
+          loading="lazy"
+          decoding="async"
           className={cn(
             props.forceConstWidth
               ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
@@ -113,6 +121,8 @@ export function AssetCard(props: AssetCardProps) {
         />
       ) : (
         <img
+          loading="lazy"
+          decoding="async"
           className={cn(
             props.forceConstWidth
               ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")

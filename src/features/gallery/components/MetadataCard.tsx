@@ -54,31 +54,36 @@ function MetaItem({
 }
 
 export function MetadataCard(props: MetadataCardProps) {
-  const dateOptions: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: props.photo_timezone || undefined,
-  };
+  const { formattedDate, formattedTime } = React.useMemo(() => {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: props.photo_timezone || undefined,
+    };
 
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: props.photo_timezone || undefined,
-  });
+    const timeFormatter = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: props.photo_timezone || undefined,
+    });
 
-  const tzFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZoneName: "short",
-    timeZone: props.photo_timezone || undefined,
-  });
+    const tzFormatter = new Intl.DateTimeFormat("en-US", {
+      timeZoneName: "short",
+      timeZone: props.photo_timezone || undefined,
+    });
 
-  const tzName = tzFormatter.formatToParts(props.photo_date).find((p) => p.type === "timeZoneName")?.value;
-  const formattedDate = props.photo_date.toLocaleDateString("en-US", dateOptions);
-  const formattedTime = tzName
-    ? `${timeFormatter.format(props.photo_date)} (${tzName})`
-    : timeFormatter.format(props.photo_date);
+    const tzName = tzFormatter.formatToParts(props.photo_date).find((p) => p.type === "timeZoneName")?.value;
+    const dateStr = props.photo_date.toLocaleDateString("en-US", dateOptions);
+    const timeStr = tzName
+      ? `${timeFormatter.format(props.photo_date)} (${tzName})`
+      : timeFormatter.format(props.photo_date);
+
+    return { formattedDate: dateStr, formattedTime: timeStr };
+  }, [props.photo_date, props.photo_timezone]);
+
   const megapixels = ((props.resolution_width * props.resolution_height) / 1_000_000).toFixed(1);
   const sizeMB = (props.size_on_disk / 1024).toFixed(2);
   const fileFormat = props.mime_type?.replace(/^image\//i, "").toUpperCase() || "IMAGE";

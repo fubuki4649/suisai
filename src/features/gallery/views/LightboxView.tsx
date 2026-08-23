@@ -27,11 +27,11 @@ export function LightboxView() {
   const CARD_GAP = 16; // gap-4 is 16px
   const SCROLL_AMOUNT = CARD_WIDTH + CARD_GAP;
 
-  const onPrev = () => {
-    const assets = selectedCollection?.assets;
+  const onPrev = React.useCallback(() => {
+    const assets = selectedCollectionRef.current?.assets;
     if (!assets || assets.length === 0) return;
 
-    const currentId = selectedAssets[0]?.id;
+    const currentId = selectedAssetsRef.current[0]?.id;
     const idx = assets.findIndex((a) => a.id === currentId);
 
     if (idx > 0) {
@@ -42,13 +42,13 @@ export function LightboxView() {
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
     }
-  };
+  }, [setSelectedAssets]);
 
-  const onNext = () => {
-    const assets = selectedCollection?.assets;
+  const onNext = React.useCallback(() => {
+    const assets = selectedCollectionRef.current?.assets;
     if (!assets || assets.length === 0) return;
 
-    const currentId = selectedAssets[0]?.id;
+    const currentId = selectedAssetsRef.current[0]?.id;
     const idx = assets.findIndex((a) => a.id === currentId);
 
     if (idx >= 0 && idx + 1 < assets.length) {
@@ -59,7 +59,7 @@ export function LightboxView() {
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
     }
-  };
+  }, [setSelectedAssets]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -77,7 +77,7 @@ export function LightboxView() {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  });
+  }, [onPrev, onNext]);
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();

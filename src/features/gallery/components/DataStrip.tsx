@@ -6,25 +6,34 @@ export function DataStrip() {
   const [selectedAssets] = useSelectedAssets();
   const lastSelectedAsset = selectedAssets[selectedAssets.length - 1];
 
-  const timestamp = lastSelectedAsset && new Date(lastSelectedAsset.photo_date);
-  const dateOptions: Intl.DateTimeFormatOptions | undefined = lastSelectedAsset ? {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: lastSelectedAsset.photo_timezone,
-  } : undefined;
+  const { formattedDate, formattedTime } = React.useMemo(() => {
+    if (!lastSelectedAsset) return { formattedDate: "", formattedTime: "" };
 
-  const timeOptions: Intl.DateTimeFormatOptions | undefined = lastSelectedAsset ? {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: lastSelectedAsset.photo_timezone,
-    timeZoneName: "short",
-  } : undefined;
+    const timestamp = new Date(lastSelectedAsset.photo_date);
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: lastSelectedAsset.photo_timezone || undefined,
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: lastSelectedAsset.photo_timezone || undefined,
+      timeZoneName: "short",
+    };
+
+    return {
+      formattedDate: timestamp.toLocaleDateString("en-US", dateOptions),
+      formattedTime: timestamp.toLocaleTimeString("en-US", timeOptions),
+    };
+  }, [lastSelectedAsset]);
 
   return (
     <div className={cn(lastSelectedAsset ? "pt-1.5 pb-0.5" : "py-1", "flex flex-row justify-center items-center gap-10 bg-surface text-foreground transition-all")}>
-      { lastSelectedAsset && timestamp && (
+      { lastSelectedAsset && (
         <>
           <div className="flex flex-row gap-8 justify-center items-center">
             <span className="flex items-center gap-2">
@@ -33,8 +42,8 @@ export function DataStrip() {
             </span>
             <span className="flex items-center gap-2">
               <span className="text-xs text-muted">Date/Time</span>
-              <span className="text-md font-bold">{timestamp.toLocaleDateString("en-US", dateOptions)}</span>
-              <span className="text-sm font-medium text-muted">{timestamp.toLocaleTimeString("en-US", timeOptions)}</span>
+              <span className="text-md font-bold">{formattedDate}</span>
+              <span className="text-sm font-medium text-muted">{formattedTime}</span>
             </span>
             <span className="flex items-center gap-2">
               <span className="text-xs text-muted">Focal Length</span>

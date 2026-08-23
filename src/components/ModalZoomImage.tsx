@@ -14,25 +14,30 @@ export default function ModalZoomImage(props: ModalZoomImageProps) {
   return (
     <>
       <img
+        loading="lazy"
+        decoding="async"
+        alt="Image"
         {...imgProps}
-        onDoubleClick={() => state.open()} alt="Image"
+        onDoubleClick={() => state.open()}
       />
 
-      <Modal state={state}>
-        <Modal.Backdrop variant="blur">
-          <Modal.Container size="full">
-            <Modal.Dialog className="bg-transparent shadow-none p-0 border-none flex items-center justify-center h-full w-full max-w-none">
-              <Modal.CloseTrigger className="absolute top-4 right-4 z-50 bg-surface/80 hover:bg-surface rounded-full p-2 text-foreground cursor-pointer" />
-              <img
-                className="max-h-[90vh] max-w-[90vw] object-contain cursor-pointer select-none"
-                src={props.src}
-                alt={props.alt}
-                onClick={() => state.close()}
-              />
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      {state.isOpen && (
+        <Modal state={state}>
+          <Modal.Backdrop variant="blur">
+            <Modal.Container size="full">
+              <Modal.Dialog className="bg-transparent shadow-none p-0 border-none flex items-center justify-center h-full w-full max-w-none">
+                <Modal.CloseTrigger className="absolute top-4 right-4 z-50 bg-surface/80 hover:bg-surface rounded-full p-2 text-foreground cursor-pointer" />
+                <img
+                  className="max-h-[90vh] max-w-[90vw] object-contain cursor-pointer select-none"
+                  src={props.src}
+                  alt={props.alt}
+                  onClick={() => state.close()}
+                />
+              </Modal.Dialog>
+            </Modal.Container>
+          </Modal.Backdrop>
+        </Modal>
+      )}
     </>
   );
 }

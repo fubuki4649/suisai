@@ -63,8 +63,13 @@ export const ServerHealthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const value = React.useMemo<ServerHealthState>(
+    () => ({ isOffline, setIsOffline, isChecking, retryConnection }),
+    [isOffline, isChecking, retryConnection]
+  );
+
   return (
-    <ServerHealthContext.Provider value={{ isOffline, setIsOffline, isChecking, retryConnection }}>
+    <ServerHealthContext.Provider value={value}>
       {children}
     </ServerHealthContext.Provider>
   );

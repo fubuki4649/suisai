@@ -1,30 +1,40 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import React, {createContext, ReactNode, useContext, useEffect, useMemo, useState} from "react";
 import {Asset, Collection} from "../types/models.ts";
 
 export type ThemeMode = "light" | "dark" | "auto";
 
-type GalleryState = {
-  collections: Collection[];
-  setCollections: React.Dispatch<React.SetStateAction<Collection[]>>;
-
+export type ThemeState = {
   themeMode: ThemeMode;
   setThemeMode: React.Dispatch<React.SetStateAction<ThemeMode>>;
   isDark: boolean;
+};
 
+export type CollectionsState = {
+  collections: Collection[];
+  setCollections: React.Dispatch<React.SetStateAction<Collection[]>>;
   selectedCollection: Collection | null;
   setSelectedCollection: React.Dispatch<React.SetStateAction<Collection | null>>;
+};
 
+export type AssetSelectionState = {
   selectedAssets: Asset[];
   setSelectedAssets: React.Dispatch<React.SetStateAction<Asset[]>>;
 };
 
-const GalleryContext = createContext<GalleryState | undefined>(undefined);
+export type GalleryState = ThemeState & CollectionsState & AssetSelectionState;
+
+const ThemeContext = createContext<ThemeState | undefined>(undefined);
+const CollectionsContext = createContext<CollectionsState | undefined>(undefined);
+const AssetSelectionContext = createContext<AssetSelectionState | undefined>(undefined);
 
 export const THEME_STORAGE_KEY = "suisai_theme_mode";
 
 export const GalleryContextProvider = ({ children }: { children: ReactNode }) => {
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(THEME_STORAGE_KEY);
@@ -34,14 +44,13 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
     }
     return "auto";
   });
+
   const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
     if (typeof window !== "undefined" && window.matchMedia) {
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
     return true;
   });
-  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
-  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -72,59 +81,90 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
     }
   }, [isDark]);
 
-  const store: GalleryState = {
-    collections,
-    setCollections,
-    themeMode,
-    setThemeMode,
-    isDark,
-    selectedCollection,
-    setSelectedCollection,
-    selectedAssets,
-    setSelectedAssets,
-  };
+  const themeValue = useMemo<ThemeState>(
+    () => ({ themeMode, setThemeMode, isDark }),
+    [themeMode, isDark]
+  );
+
+  const collectionsValue = useMemo<CollectionsState>(
+    () => ({ collections, setCollections, selectedCollection, setSelectedCollection }),
+    [collections, selectedCollection]
+  );
+
+  const selectionValue = useMemo<AssetSelectionState>(
+    () => ({ selectedAssets, setSelectedAssets }),
+    [selectedAssets]
+  );
 
   return (
-    <GalleryContext.Provider value={store}>
-      {children}
-    </GalleryContext.Provider>
+    <ThemeContext.Provider value={themeValue}>
+      <CollectionsContext.Provider value={collectionsValue}>
+        <AssetSelectionContext.Provider value={selectionValue}>
+          {children}
+        </AssetSelectionContext.Provider>
+      </CollectionsContext.Provider>
+    </ThemeContext.Provider>
   );
 };
 
-export const useGalleryContext = (): GalleryState => {
-  const context = useContext(GalleryContext);
+export const useThemeState = (): ThemeState => {
+  const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useGalleryContext must be used within a GalleryContextProvider");
+    throw new Error("useThemeState must be used within a GalleryContextProvider");
   }
   return context;
 };
 
+export const useCollectionsState = (): CollectionsState => {
+  const context = useContext(CollectionsContext);
+  if (!context) {
+    throw new Error("useCollectionsState must be used within a GalleryContextProvider");
+  }
+  return context;
+};
+
+export const useAssetSelectionState = (): AssetSelectionState => {
+  const context = useContext(AssetSelectionContext);
+  if (!context) {
+    throw new Error("useAssetSelectionState must be used within a GalleryContextProvider");
+  }
+  return context;
+};
+
+export const useGalleryContext = (): GalleryState => {
+  const theme = useThemeState();
+  const collections = useCollectionsState();
+  const selection = useAssetSelectionState();
+  return { ...theme, ...collections, ...selection };
+};
+
 export const useCollections = (): [Collection[], React.Dispatch<React.SetStateAction<Collection[]>>] => {
-  const { collections, setCollections } = useGalleryContext();
+  const { collections, setCollections } = useCollectionsState();
   return [collections, setCollections];
 };
 
 export const useThemeMode = (): [ThemeMode, React.Dispatch<React.SetStateAction<ThemeMode>>] => {
-  const { themeMode, setThemeMode } = useGalleryContext();
+  const { themeMode, setThemeMode } = useThemeState();
   return [themeMode, setThemeMode];
 };
 
 export const useIsDark = (): boolean => {
-  const { isDark } = useGalleryContext();
+  const { isDark } = useThemeState();
   return isDark;
 };
 
 export const useDarkMode = (): [boolean, React.Dispatch<React.SetStateAction<ThemeMode>>] => {
-  const { isDark, setThemeMode } = useGalleryContext();
+  const { isDark, setThemeMode } = useThemeState();
   return [isDark, setThemeMode];
 };
 
 export const useSelectedCollection = (): [Collection | null, React.Dispatch<React.SetStateAction<Collection | null>>] => {
-  const { selectedCollection, setSelectedCollection } = useGalleryContext();
+  const { selectedCollection, setSelectedCollection } = useCollectionsState();
   return [selectedCollection, setSelectedCollection];
 };
 
 export const useSelectedAssets = (): [Asset[], React.Dispatch<React.SetStateAction<Asset[]>>] => {
-  const { selectedAssets, setSelectedAssets } = useGalleryContext();
+  const { selectedAssets, setSelectedAssets } = useAssetSelectionState();
   return [selectedAssets, setSelectedAssets];
 };
+
