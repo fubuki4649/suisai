@@ -23,6 +23,10 @@ export function LightboxView() {
     selectedAssetsRef.current = selectedAssets;
   }, [selectedAssets]);
 
+  const CARD_WIDTH = 150;
+  const CARD_GAP = 16; // gap-4 is 16px
+  const SCROLL_AMOUNT = CARD_WIDTH + CARD_GAP;
+
   const onPrev = () => {
     const assets = selectedCollection?.assets;
     if (!assets || assets.length === 0) return;
@@ -32,12 +36,11 @@ export function LightboxView() {
 
     if (idx > 0) {
       setSelectedAssets([assets[idx - 1]]);
+      if (filmstripScrollRef.current) {
+        filmstripScrollRef.current.scrollLeft -= SCROLL_AMOUNT;
+      }
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
-    }
-
-    if (filmstripScrollRef.current) {
-      filmstripScrollRef.current.scrollLeft -= 170;
     }
   };
 
@@ -50,12 +53,11 @@ export function LightboxView() {
 
     if (idx >= 0 && idx + 1 < assets.length) {
       setSelectedAssets([assets[idx + 1]]);
+      if (filmstripScrollRef.current) {
+        filmstripScrollRef.current.scrollLeft += SCROLL_AMOUNT;
+      }
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
-    }
-
-    if (filmstripScrollRef.current) {
-      filmstripScrollRef.current.scrollLeft += 170;
     }
   };
 
@@ -136,7 +138,7 @@ export function LightboxView() {
           <div className="grid grid-rows-1 bg-surface" onWheel={onWheel}>
             <AssetGrid
               className="flex flex-row w-full overflow-x-auto gap-4 p-4 pt-2"
-              cardWidth={150}
+              cardWidth={CARD_WIDTH}
               cardHeight={100}
               ref={filmstripScrollRef}
               allowCardZoom
