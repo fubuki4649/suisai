@@ -8,7 +8,7 @@ import {
   toast,
 } from "@heroui/react";
 import {useCollections, useSelectedCollection} from "../../../context/GalleryContext.tsx";
-import {deleteCollection, getCollections} from "../../../api/collections.ts";
+import {deleteCollection, getCollections, queryCollection} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
 import {Disclosure} from "../../../types/disclosure.ts";
 
@@ -28,14 +28,23 @@ export function DeleteCollectionModal({disclosure, collection}: DeleteCollection
         description: "Failed to delete collection with code " + code,
       });
     }).then(() => {
-      toast.success("Success", {
-        description: `Collection "${collection.label}" successfully deleted!`,
-      });
-      getCollections().then((collections: Collection[]) => {
-        setCollections(collections);
-      });
       if (selectedCollection?.id === collection.id) {
-        setSelectedCollection(null);
+        getCollections().then((collections: Collection[]) => {
+          setCollections(collections);
+          const unfiled = collections.find((c) => c.id === "-1") ?? collections[0];
+          if (unfiled) {
+            queryCollection(unfiled.id).then((assets) => {
+              unfiled.assets = assets;
+              setSelectedCollection({...unfiled, assets});
+            });
+          } else {
+            setSelectedCollection(null);
+          }
+        });
+      } else {
+        getCollections().then((collections: Collection[]) => {
+          setCollections(collections);
+        });
       }
     });
   };
