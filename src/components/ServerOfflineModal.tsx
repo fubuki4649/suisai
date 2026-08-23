@@ -18,6 +18,8 @@ export function ServerOfflineModal() {
     }
   };
 
+  if (!isOffline) return null;
+
   return (
     <Modal isOpen={isOffline}>
       <Modal.Backdrop

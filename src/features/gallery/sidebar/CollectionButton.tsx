@@ -19,7 +19,7 @@ export interface CollectionButtonProps {
   deleteCollectionDisclosure: Disclosure;
 }
 
-export const CollectionButton: React.FC<CollectionButtonProps> = ({
+export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
   collection,
   expanded,
   hasChildren,
@@ -140,6 +140,6 @@ export const CollectionButton: React.FC<CollectionButtonProps> = ({
       ]}
     />
   );
-};
+});
 
 export default CollectionButton;

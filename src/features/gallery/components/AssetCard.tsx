@@ -1,8 +1,6 @@
 import {Card, cn} from "@heroui/react";
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
+import React, {useState} from "react";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
-import {Asset} from "../../../types/models.ts";
 
 export interface AssetCardProps {
   id: string;
@@ -11,78 +9,11 @@ export interface AssetCardProps {
   isSelected: boolean;
   allowZoom: boolean;
   forceConstWidth?: boolean;
+  onSelect?: (id: string, e: React.MouseEvent) => void;
 }
 
-export function AssetCard(props: AssetCardProps) {
-  const [selectedCollection] = useSelectedCollection();
-  const [selectedAssets, setSelectedAssets] = useSelectedAssets();
-  const selectedAssetsRef = useRef(selectedAssets);
+export const AssetCard = React.memo(function AssetCard(props: AssetCardProps) {
   const [isPortrait, setIsPortrait] = useState(false);
-
-  // For undoing double clicks
-  const [prevSelectedAssets, setPrevSelectedAssets] = useState<Asset[]>([]);
-  const [prevSelectedAssets2, setPrevSelectedAssets2] = useState<Asset[]>([]);
-
-  const selectAssets = useCallback((newSelectedAssets: Asset[]) => {
-    setPrevSelectedAssets2(prevSelectedAssets);
-    setPrevSelectedAssets(selectedAssets);
-    setSelectedAssets(newSelectedAssets);
-  }, [prevSelectedAssets, selectedAssets, setSelectedAssets]);
-
-  const undoSelectAssets = useCallback(() => {
-    setSelectedAssets(prevSelectedAssets2);
-  }, [prevSelectedAssets2, setSelectedAssets]);
-
-  useEffect(() => {
-    selectedAssetsRef.current = selectedAssets;
-  }, [selectedAssets]);
-
-  const onCardClick = (cardId: string, e: React.MouseEvent) => {
-    // Handle multi-select
-    if (e.ctrlKey || e.metaKey) {
-      if (selectedAssetsRef.current.some((iter) => iter.id === cardId)) {
-        selectAssets(selectedAssetsRef.current.filter((iter) => iter.id !== cardId));
-      } else {
-        const newlySelected = selectedCollection?.assets?.find((iter) => iter.id === cardId);
-        selectAssets(newlySelected ? selectedAssetsRef.current.concat(newlySelected) : selectedAssetsRef.current);
-      }
-    }
-    // Handle continuous shift-select
-    else if (e.shiftKey) {
-      if (selectedAssetsRef.current.length === 0) {
-        const newlySelectedAsset = selectedCollection?.assets?.find((iter) => iter.id === cardId);
-        selectAssets(newlySelectedAsset ? [newlySelectedAsset] : []);
-      } else {
-        const lastSelectedIndex = selectedCollection?.assets?.findIndex(
-          (iter) => iter.id === selectedAssetsRef.current[selectedAssetsRef.current.length - 1].id
-        );
-        const newlySelectedIndex = selectedCollection?.assets?.findIndex((iter) => iter.id === cardId);
-
-        if (lastSelectedIndex !== undefined && lastSelectedIndex !== -1 && newlySelectedIndex !== undefined && newlySelectedIndex !== -1) {
-          const slice = selectedCollection?.assets?.slice(
-            Math.min(lastSelectedIndex, newlySelectedIndex),
-            Math.max(lastSelectedIndex, newlySelectedIndex) + 1
-          );
-          if (slice) {
-            const map = new Map(selectedAssetsRef.current.map((item) => [item.id, item]));
-            for (const item of slice) {
-              map.set(item.id, item);
-            }
-            selectAssets(Array.from(map.values()));
-          }
-        }
-      }
-    }
-    // Handle single select / toggle
-    else {
-      if (selectedAssetsRef.current.some((asset) => asset.id === cardId) && selectedAssetsRef.current.length === 1) {
-        selectAssets(selectedAssetsRef.current.filter((item) => item.id !== cardId));
-      } else {
-        const newlySelected = selectedCollection?.assets?.find((asset) => asset.id === cardId);
-        selectAssets(newlySelected ? [newlySelected] : selectedAssetsRef.current);
-      }
-    }
-  };
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -102,8 +33,7 @@ export function AssetCard(props: AssetCardProps) {
           : "h-full w-auto",
         "shadow-md shrink-0 overflow-hidden cursor-pointer transition-all select-none rounded-xl p-0! gap-0!"
       )}
-      onClick={(e) => onCardClick(props.id, e)}
-      onDoubleClick={undoSelectAssets}
+      onClick={(e) => props.onSelect?.(props.id, e)}
     >
       {props.allowZoom ? (
         <ModalZoomImage
@@ -136,6 +66,6 @@ export function AssetCard(props: AssetCardProps) {
       )}
     </Card>
   );
-}
+});
 
 export default AssetCard;
