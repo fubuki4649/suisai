@@ -17,7 +17,7 @@ export interface RenameCollectionModalProps {
   collection: Collection;
 }
 
-export function RenameCollectionModal({disclosure, collection}: RenameCollectionModalProps) {
+function RenameCollectionModal({disclosure, collection}: RenameCollectionModalProps) {
   const [, setCollections] = useCollections();
   const [newCollectionName, setNewCollectionName] = useState("");
 

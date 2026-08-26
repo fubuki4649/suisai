@@ -9,7 +9,7 @@ export interface AssetActionsCardProps {
   vertical?: boolean;
 }
 
-export function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
+function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 

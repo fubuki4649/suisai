@@ -17,7 +17,7 @@ export interface DeleteCollectionModalProps {
   collection: Collection;
 }
 
-export function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalProps) {
+function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalProps) {
   const [, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const [confirmText, setConfirmText] = useState("");
@@ -28,9 +28,9 @@ export function DeleteCollectionModal({disclosure, collection}: DeleteCollection
         description: "Failed to delete collection with code " + code,
       });
     }).then(() => {
-      if (selectedCollection?.id === collection.id) {
-        getCollections().then((collections: Collection[]) => {
-          setCollections(collections);
+      getCollections().then((collections: Collection[]) => {
+        setCollections(collections);
+        if (selectedCollection?.id === collection.id) {
           const unfiled = collections.find((c) => c.id === "-1") ?? collections[0];
           if (unfiled) {
             queryCollection(unfiled.id).then((assets) => {
@@ -40,12 +40,8 @@ export function DeleteCollectionModal({disclosure, collection}: DeleteCollection
           } else {
             setSelectedCollection(null);
           }
-        });
-      } else {
-        getCollections().then((collections: Collection[]) => {
-          setCollections(collections);
-        });
-      }
+        }
+      });
     });
   };
 

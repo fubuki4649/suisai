@@ -10,7 +10,18 @@ import {Disclosure} from "../../../types/disclosure.ts";
 import {queryCollection} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
 
-export function Sidebar() {
+// Helper to gather all descendant collection IDs recursively
+function getDescendantIds(col: Collection): string[] {
+  let ids: string[] = [col.id];
+  if (col.children) {
+    for (const child of col.children) {
+      ids = ids.concat(getDescendantIds(child));
+    }
+  }
+  return ids;
+}
+
+function Sidebar() {
   const [collections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const [, setSelectedAssets] = useSelectedAssets();
@@ -19,17 +30,6 @@ export function Sidebar() {
 
   // Set of expanded collection IDs - starts completely un-expanded on initial load
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-
-  // Helper to gather all descendant collection IDs recursively
-  const getDescendantIds = useCallback((col: Collection): string[] => {
-    let ids: string[] = [col.id];
-    if (col.children) {
-      for (const child of col.children) {
-        ids = ids.concat(getDescendantIds(child));
-      }
-    }
-    return ids;
-  }, []);
 
   // Expand single collection
   const expandCollection = useCallback((id: string) => {
@@ -51,7 +51,7 @@ export function Sidebar() {
         return next;
       });
     },
-    [getDescendantIds]
+    []
   );
 
   // Toggle single collection expansion via chevron click
@@ -70,7 +70,7 @@ export function Sidebar() {
         }
       });
     },
-    [getDescendantIds]
+    []
   );
 
   // Resizable width state with localStorage persistence
@@ -120,7 +120,7 @@ export function Sidebar() {
     [width]
   );
 
-  const onCollectionSelect = (collection: Collection) => {
+  const onCollectionSelect = useCallback((collection: Collection) => {
     // Only clear asset selection when switching to a DIFFERENT collection
     if (selectedCollection?.id !== collection.id) {
       setSelectedAssets([]);
@@ -144,7 +144,7 @@ export function Sidebar() {
         setSelectedCollection({...collection, assets});
       });
     }
-  };
+  }, [selectedCollection, setSelectedAssets, expandCollection, setSelectedCollection]);
 
   const renameCollectionDisclosure: Disclosure = useOverlayState();
   const moveCollectionDisclosure: Disclosure = useOverlayState();

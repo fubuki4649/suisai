@@ -29,8 +29,16 @@ export const ServerHealthProvider = ({ children }: { children: ReactNode }) => {
 
   // Check health on initial mount
   useEffect(() => {
-    retryConnection();
-  }, [retryConnection]);
+    let active = true;
+    checkBackendHealth().then((isHealthy) => {
+      if (active && !isHealthy) {
+        setIsOffline(true);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // When offline, periodically ping /meow every 3 seconds to auto-recover once backend is up
   useEffect(() => {

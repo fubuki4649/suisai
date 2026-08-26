@@ -1,17 +1,106 @@
-import React, {useState} from "react";
-import {Separator, Tabs, Tooltip} from "@heroui/react";
-import {Icon} from "@iconify/react";
-import {ThemeMode, useThemeMode} from "../context/GalleryContext.tsx";
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { cn, Separator, Tabs, Tooltip } from "@heroui/react";
+import { Icon } from "@iconify/react";
+import { ThemeMode, useThemeMode } from "../context/GalleryContext.tsx";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [themeMode, setThemeMode] = useThemeMode();
+const INDICATOR_CLASS = "rounded-full bg-surface shadow-xs";
+const ICON_CLASS = "w-4 h-4 shrink-0";
 
+const THEME_TABS = [
+  { id: "auto" as ThemeMode,   icon: "gravity-ui:display", ariaLabel: "Auto (system) mode" },
+  { id: "light" as ThemeMode,  icon: "gravity-ui:sun",     ariaLabel: "Light mode"          },
+  { id: "dark" as ThemeMode,   icon: "gravity-ui:moon",    ariaLabel: "Dark mode"           },
+] as const;
+
+const THEME_TOOLTIPS: Record<ThemeMode, { desktop: string; mobile: string }> = {
+  auto:  { desktop: "Use System Theme", mobile: "System" },
+  light: { desktop: "Light Mode",       mobile: "Light"  },
+  dark:  { desktop: "Dark Mode",        mobile: "Dark"   },
+};
+
+function ViewModeTabs({ mobile, onAfterChange }: { mobile?: boolean; onAfterChange?: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
-
   const isLightbox = location.pathname === "/gallery/lightbox";
+
+  const tabClass = mobile
+    ? "flex-1 flex items-center justify-center gap-1.5 h-8 px-4 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors"
+    : "flex items-center gap-1.5 px-3.5 h-7 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors";
+
+  return (
+    <Tabs
+      selectedKey={isLightbox ? "lightbox" : "gallery"}
+      onSelectionChange={(key) => {
+        if (key === "lightbox") navigate("/gallery/lightbox");
+        else navigate("/gallery");
+        onAfterChange?.();
+      }}
+    >
+      <Tabs.ListContainer
+        className={cn(
+          "rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50",
+          mobile && "w-full"
+        )}
+      >
+        <Tabs.List
+          aria-label="View Mode"
+          className={cn("flex items-center p-0", mobile && "w-full")}
+        >
+          <Tabs.Tab id="gallery" className={tabClass}>
+            <Icon icon="gravity-ui:layout-cells-large" className={ICON_CLASS} />
+            <span>Gallery</span>
+            <Tabs.Indicator className={INDICATOR_CLASS} />
+          </Tabs.Tab>
+          <Tabs.Tab id="lightbox" className={tabClass}>
+            <Icon icon="gravity-ui:filmstrip" className={ICON_CLASS} />
+            <span>Lightbox</span>
+            <Tabs.Indicator className={INDICATOR_CLASS} />
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs.ListContainer>
+    </Tabs>
+  );
+}
+
+function ThemeToggleTabs({ mobile }: { mobile?: boolean }) {
+  const [themeMode, setThemeMode] = useThemeMode();
+  const btnSizeClass = mobile ? "w-8 h-8" : "w-7 h-7";
+
+  return (
+    <Tabs
+      selectedKey={themeMode}
+      onSelectionChange={(key) => setThemeMode(key as ThemeMode)}
+    >
+      <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50">
+        <Tabs.List aria-label="Color Theme" className="flex items-center p-0">
+          {THEME_TABS.map(({ id, icon, ariaLabel }) => (
+            <Tabs.Tab
+              key={id}
+              id={id}
+              aria-label={ariaLabel}
+              className={`flex items-center justify-center ${btnSizeClass} shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors`}
+            >
+              <Tooltip delay={200}>
+                <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
+                  <Icon icon={icon} className={ICON_CLASS} />
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                  <p>{mobile ? THEME_TOOLTIPS[id].mobile : THEME_TOOLTIPS[id].desktop}</p>
+                </Tooltip.Content>
+              </Tooltip>
+              <Tabs.Indicator className={INDICATOR_CLASS} />
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
+      </Tabs.ListContainer>
+    </Tabs>
+  );
+}
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/80 backdrop-blur-md">
@@ -29,93 +118,9 @@ export function Header() {
 
         {/* Desktop Controls */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Gallery / Lightbox Pill Tabs */}
-          <Tabs
-            selectedKey={isLightbox ? "lightbox" : "gallery"}
-            onSelectionChange={(key) => {
-              if (key === "lightbox") navigate("/gallery/lightbox");
-              else navigate("/gallery");
-            }}
-          >
-            <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50">
-              <Tabs.List aria-label="View Mode" className="flex items-center p-0">
-                <Tabs.Tab
-                  id="gallery"
-                  className="flex items-center gap-1.5 px-3.5 h-7 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors"
-                >
-                  <Icon icon="gravity-ui:layout-cells-large" className="w-4 h-4 shrink-0" />
-                  <span>Gallery</span>
-                  <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                </Tabs.Tab>
-                <Tabs.Tab
-                  id="lightbox"
-                  className="flex items-center gap-1.5 px-3.5 h-7 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors"
-                >
-                  <Icon icon="gravity-ui:filmstrip" className="w-4 h-4 shrink-0" />
-                  <span>Lightbox</span>
-                  <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                </Tabs.Tab>
-              </Tabs.List>
-            </Tabs.ListContainer>
-          </Tabs>
-
+          <ViewModeTabs />
           <Separator orientation="vertical" />
-
-          {/* Dark Mode Toggles */}
-          <Tabs
-            selectedKey={themeMode}
-            onSelectionChange={(key) => setThemeMode(key as ThemeMode)}
-          >
-            <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50">
-              <Tabs.List aria-label="Color Theme" className="flex items-center p-0">
-                <Tabs.Tab
-                  id="auto"
-                  aria-label="Auto (system) mode"
-                  className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
-                >
-                  <Tooltip delay={200}>
-                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                      <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                      <p>Use System Theme</p>
-                    </Tooltip.Content>
-                  </Tooltip>
-                  <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                </Tabs.Tab>
-                <Tabs.Tab
-                  id="light"
-                  aria-label="Light mode"
-                  className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
-                >
-                  <Tooltip delay={200}>
-                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                      <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                      <p>Light Mode</p>
-                    </Tooltip.Content>
-                  </Tooltip>
-                  <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                </Tabs.Tab>
-                <Tabs.Tab
-                  id="dark"
-                  aria-label="Dark mode"
-                  className="flex items-center justify-center w-7 h-7 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
-                >
-                  <Tooltip delay={200}>
-                    <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                      <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                      <p>Dark Mode</p>
-                    </Tooltip.Content>
-                  </Tooltip>
-                  <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                </Tabs.Tab>
-              </Tabs.List>
-            </Tabs.ListContainer>
-          </Tabs>
+          <ThemeToggleTabs />
         </div>
 
         {/* Mobile Menu Toggle Button */}
@@ -139,102 +144,17 @@ export function Header() {
         <div className="border-t border-separator bg-background/95 p-4 md:hidden flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <span className="text-xs text-muted font-semibold uppercase tracking-wider">View</span>
-            <Tabs
-              selectedKey={isLightbox ? "lightbox" : "gallery"}
-              onSelectionChange={(key) => {
-                if (key === "lightbox") navigate("/gallery/lightbox");
-                else navigate("/gallery");
-                setIsMenuOpen(false);
-              }}
-            >
-              <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 w-full border border-separator/50">
-                <Tabs.List aria-label="View Mode" className="flex items-center w-full p-0">
-                  <Tabs.Tab
-                    id="gallery"
-                    className="flex-1 flex items-center justify-center gap-1.5 h-8 px-4 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors"
-                  >
-                    <Icon icon="gravity-ui:layout-cells-large" className="w-4 h-4 shrink-0" />
-                    <span>Gallery</span>
-                    <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                  </Tabs.Tab>
-                  <Tabs.Tab
-                    id="lightbox"
-                    className="flex-1 flex items-center justify-center gap-1.5 h-8 px-4 text-sm font-medium text-muted cursor-pointer rounded-full transition-colors"
-                  >
-                    <Icon icon="gravity-ui:filmstrip" className="w-4 h-4 shrink-0" />
-                    <span>Lightbox</span>
-                    <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                  </Tabs.Tab>
-                </Tabs.List>
-              </Tabs.ListContainer>
-            </Tabs>
+            <ViewModeTabs mobile onAfterChange={() => setIsMenuOpen(false)} />
           </div>
 
           <Separator />
 
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted font-semibold uppercase tracking-wider">Theme</span>
-            <Tabs
-              selectedKey={themeMode}
-              onSelectionChange={(key) => {
-                setThemeMode(key as ThemeMode);
-              }}
-            >
-              <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50">
-                <Tabs.List aria-label="Color Theme" className="flex items-center p-0">
-                  <Tabs.Tab
-                    id="auto"
-                    aria-label="Auto (system) mode"
-                    className="flex items-center justify-center w-8 h-8 shrink-0 p-0 data-[selected=true]:text-foreground cursor-pointer rounded-full transition-colors"
-                  >
-                    <Tooltip delay={200}>
-                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                        <Icon icon="gravity-ui:display" className="w-4 h-4 shrink-0" />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>
-                        <p>System</p>
-                      </Tooltip.Content>
-                    </Tooltip>
-                    <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                  </Tabs.Tab>
-                  <Tabs.Tab
-                    id="light"
-                    aria-label="Light mode"
-                    className="flex items-center justify-center w-8 h-8 shrink-0 p-0 text-muted cursor-pointer rounded-full transition-colors"
-                  >
-                    <Tooltip delay={200}>
-                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                        <Icon icon="gravity-ui:sun" className="w-4 h-4 shrink-0" />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>
-                        <p>Light</p>
-                      </Tooltip.Content>
-                    </Tooltip>
-                    <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                  </Tabs.Tab>
-                  <Tabs.Tab
-                    id="dark"
-                    aria-label="Dark mode"
-                    className="flex items-center justify-center w-8 h-8 shrink-0 p-0 data-[selected=true]:text-foreground cursor-pointer rounded-full transition-colors"
-                  >
-                    <Tooltip delay={200}>
-                      <Tooltip.Trigger className="w-full h-full flex items-center justify-center">
-                        <Icon icon="gravity-ui:moon" className="w-4 h-4 shrink-0" />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>
-                        <p>Dark</p>
-                      </Tooltip.Content>
-                    </Tooltip>
-                    <Tabs.Indicator className="rounded-full bg-surface shadow-xs" />
-                  </Tabs.Tab>
-                </Tabs.List>
-              </Tabs.ListContainer>
-            </Tabs>
+            <ThemeToggleTabs mobile />
           </div>
         </div>
       )}
     </nav>
   );
 }
-
-export default Header;

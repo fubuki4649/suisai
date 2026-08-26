@@ -4,7 +4,7 @@ import {Icon} from "@iconify/react";
 import {useServerHealth} from "../context/ServerHealthContext.tsx";
 import {BACKEND_URL} from "../config.ts";
 
-export function ServerOfflineModal() {
+function ServerOfflineModal() {
   const {isOffline, isChecking, retryConnection} = useServerHealth();
   const [retryFailed, setRetryFailed] = useState(false);
 
@@ -34,7 +34,7 @@ export function ServerOfflineModal() {
                 <Icon icon="gravity-ui:triangle-exclamation-fill" className="w-5 h-5" />
               </div>
               <div>
-                <Modal.Heading className="text-lg font-semibold text-foreground text-center">
+                <Modal.Heading className="text-lg font-semibold text-foreground">
                   Server Offline
                 </Modal.Heading>
                 <p className="text-xs text-muted text-center">

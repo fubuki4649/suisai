@@ -1,5 +1,5 @@
-import {Card, cn} from "@heroui/react";
-import React, {useState} from "react";
+import { Card, cn } from "@heroui/react";
+import React, { useState } from "react";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
 
 export interface AssetCardProps {
@@ -22,6 +22,24 @@ export const AssetCard = React.memo(function AssetCard(props: AssetCardProps) {
     }
   };
 
+  const imgClass = cn(
+    props.forceConstWidth
+      ? isPortrait
+        ? "object-contain max-h-full max-w-full"
+        : "object-cover w-full h-full"
+      : "object-contain h-full w-auto",
+    "rounded-none select-none"
+  );
+
+  const imgProps = {
+    loading: "lazy" as const,
+    decoding: "async" as const,
+    className: imgClass,
+    alt: props.alt,
+    src: props.previewUrl,
+    onLoad: handleImageLoad,
+  };
+
   return (
     <Card
       className={cn(
@@ -36,33 +54,9 @@ export const AssetCard = React.memo(function AssetCard(props: AssetCardProps) {
       onClick={(e) => props.onSelect?.(props.id, e)}
     >
       {props.allowZoom ? (
-        <ModalZoomImage
-          loading="lazy"
-          decoding="async"
-          className={cn(
-            props.forceConstWidth
-              ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
-              : "object-contain h-full w-auto",
-            "rounded-none select-none"
-          )}
-          alt={props.alt}
-          src={props.previewUrl}
-          onLoad={handleImageLoad}
-        />
+        <ModalZoomImage {...imgProps} />
       ) : (
-        <img
-          loading="lazy"
-          decoding="async"
-          className={cn(
-            props.forceConstWidth
-              ? (isPortrait ? "object-contain max-h-full max-w-full" : "object-cover w-full h-full")
-              : "object-contain h-full w-auto",
-            "rounded-none select-none"
-          )}
-          alt={props.alt}
-          src={props.previewUrl}
-          onLoad={handleImageLoad}
-        />
+        <img {...imgProps} />
       )}
     </Card>
   );

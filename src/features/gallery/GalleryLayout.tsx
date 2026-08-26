@@ -5,7 +5,7 @@ import {getCollections, queryCollection} from "../../api/collections.ts";
 import {Collection} from "../../types/models.ts";
 import Sidebar from "./sidebar/Sidebar.tsx";
 
-export function GalleryLayout() {
+function GalleryLayout() {
   const [collections, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
 

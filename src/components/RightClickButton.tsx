@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {createPortal} from "react-dom";
 import {Button, cn, Popover} from "@heroui/react";
+import BackdropPortal from "./BackdropPortal.tsx";
 
 export interface RightClickItem {
   key: string;
@@ -8,7 +8,6 @@ export interface RightClickItem {
   isDisabled?: boolean;
   className?: string;
   variant?: "danger" | "default";
-  color?: string;
   onPress?: (e?: React.MouseEvent) => void;
 }
 
@@ -31,14 +30,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
 
   return (
     <div className="h-fit w-full">
-      {isOpen && typeof document !== "undefined" &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-40 bg-backdrop backdrop-blur-sm transition-opacity duration-200"
-            onClick={() => setIsOpen(false)}
-          />,
-          document.body
-        )}
+      {isOpen && <BackdropPortal onDismiss={() => setIsOpen(false)} />}
 
       <Popover
         isOpen={isOpen}
@@ -72,7 +64,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
                     className={cn(
                       "group flex items-center gap-2.5 w-full px-3 py-2 text-sm rounded-xl text-left font-medium transition-all duration-150 cursor-pointer select-none",
                       "active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none disabled:active:scale-100",
-                      item.variant === "danger" || item.color === "danger"
+                      item.variant === "danger"
                         ? "text-danger hover:bg-danger/15 hover:text-danger active:bg-danger/25"
                         : "text-foreground hover:bg-accent/15 hover:text-accent active:bg-accent/25",
                       item.className

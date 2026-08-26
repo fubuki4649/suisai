@@ -1,8 +1,7 @@
-import {cn, Toast} from "@heroui/react";
+import {Toast} from "@heroui/react";
 import React, {Suspense, lazy} from "react";
 import Header from "./components/Header.tsx";
 import ServerOfflineModal from "./components/ServerOfflineModal.tsx";
-import {useIsDark} from "./context/GalleryContext.tsx";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import GalleryLayout from "./features/gallery/GalleryLayout.tsx";
 
@@ -10,14 +9,13 @@ const GridView = lazy(() => import("./features/gallery/views/GridView.tsx"));
 const LightboxView = lazy(() => import("./features/gallery/views/LightboxView.tsx"));
 
 function App() {
-  const isDark = useIsDark();
 
   return (
     <>
       <Toast.Provider placement="bottom" />
       <ServerOfflineModal />
       <BrowserRouter>
-        <main className={cn(isDark && "dark", "h-screen flex flex-col bg-background text-foreground")}>
+        <main className="h-screen flex flex-col bg-background text-foreground">
           <Header />
           <div className="flex flex-row flex-grow min-h-0 overflow-hidden">
             <Suspense fallback={<div className="flex flex-grow items-center justify-center" />}>

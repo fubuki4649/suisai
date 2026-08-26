@@ -1,12 +1,12 @@
 import React, {useState} from "react";
-import {createPortal} from "react-dom";
 import {Button, Input, Label, Popover, TextField, toast,} from "@heroui/react";
 import {Icon} from "@iconify/react";
 import {useCollections} from "../../../context/GalleryContext.tsx";
 import {createCollection, getCollections} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
+import BackdropPortal from "../../../components/BackdropPortal.tsx";
 
-export function NewCollectionButton() {
+function NewCollectionButton() {
   const [, setCollections] = useCollections();
   const [newCollectionName, setNewCollectionName] = useState("");
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
@@ -31,17 +31,7 @@ export function NewCollectionButton() {
 
   return (
     <div className="h-fit w-full">
-      {popoverIsOpen && typeof document !== "undefined" &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-40 bg-backdrop backdrop-blur-sm transition-opacity duration-200"
-            onClick={() => {
-              setPopoverIsOpen(false);
-              setNewCollectionName("");
-            }}
-          />,
-          document.body
-        )}
+      {popoverIsOpen && <BackdropPortal onDismiss={() => { setPopoverIsOpen(false); setNewCollectionName(""); }} />}
 
       <Popover
         isOpen={popoverIsOpen}

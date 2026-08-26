@@ -4,7 +4,7 @@ import AssetGrid from "../components/AssetGrid.tsx";
 import AssetActionsCard from "../components/AssetActionsCard.tsx";
 import MetadataCardStack from "../components/MetadataCardStack.tsx";
 
-export function GridView() {
+function GridView() {
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets] = useSelectedAssets();
 

@@ -34,7 +34,7 @@ function MetaItem({
         size="lg"
         variant="secondary"
         color="accent"
-        className="w-8 h-8 p-0 flex items-center justify-center rounded-lg shrink-0 mt-0.5"
+        className="w-8 h-8 p-0 flex items-center justify-center rounded-lg shrink-0"
       >
         <Icon icon={icon} className="w-4 h-4" />
       </Chip>
@@ -53,7 +53,7 @@ function MetaItem({
   );
 }
 
-export function MetadataCard(props: MetadataCardProps) {
+function MetadataCard(props: MetadataCardProps) {
   const { formattedDate, formattedTime } = React.useMemo(() => {
     const dateOptions: Intl.DateTimeFormatOptions = {
       weekday: "short",
@@ -63,25 +63,26 @@ export function MetadataCard(props: MetadataCardProps) {
       timeZone: props.photo_timezone || undefined,
     };
 
-    const timeFormatter = new Intl.DateTimeFormat("en-US", {
+    const formatter = new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
       timeZone: props.photo_timezone || undefined,
-    });
-
-    const tzFormatter = new Intl.DateTimeFormat("en-US", {
       timeZoneName: "short",
-      timeZone: props.photo_timezone || undefined,
     });
 
-    const tzName = tzFormatter.formatToParts(props.photo_date).find((p) => p.type === "timeZoneName")?.value;
-    const dateStr = props.photo_date.toLocaleDateString("en-US", dateOptions);
-    const timeStr = tzName
-      ? `${timeFormatter.format(props.photo_date)} (${tzName})`
-      : timeFormatter.format(props.photo_date);
+    const parts = formatter.formatToParts(props.photo_date);
+    const tzName = parts.find((p) => p.type === "timeZoneName")?.value;
+    const timeOnly = parts
+      .filter((p) => ["hour", "minute", "literal", "dayPeriod"].includes(p.type))
+      .map((p) => p.value)
+      .join("")
+      .trim();
 
-    return { formattedDate: dateStr, formattedTime: timeStr };
+    return {
+      formattedDate: props.photo_date.toLocaleDateString("en-US", dateOptions),
+      formattedTime: tzName ? `${timeOnly} (${tzName})` : timeOnly,
+    };
   }, [props.photo_date, props.photo_timezone]);
 
   const megapixels = ((props.resolution_width * props.resolution_height) / 1_000_000).toFixed(1);

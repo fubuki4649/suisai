@@ -41,16 +41,6 @@ function ZoomViewerModal({
   });
   const pinchStartRef = useRef<{initialDistance: number; initialScale: number; centerPoint: Point} | null>(null);
 
-  // Reset zoom and pan whenever modal opens or closes
-  useEffect(() => {
-    if (isOpen) {
-      setScale(1);
-      setPosition({x: 0, y: 0});
-      setIsDragging(false);
-      activePointersRef.current.clear();
-      pinchStartRef.current = null;
-    }
-  }, [isOpen]);
 
   // Clamp translation based on scaled dimensions
   const clampPosition = useCallback((targetX: number, targetY: number, targetScale: number): Point => {
@@ -382,7 +372,6 @@ function ZoomViewerModal({
           style={{
             transform: `translate3d(${position.x}px, ${position.y}px, 0px) scale(${scale})`,
             transition: isDragging ? "none" : "transform 0.15s cubic-bezier(0.2, 0, 0, 1)",
-            transformOrigin: "center center",
           }}
           src={src}
           alt={alt}

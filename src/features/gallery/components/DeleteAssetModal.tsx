@@ -4,7 +4,7 @@ import {Button, Modal, toast} from "@heroui/react";
 import {Disclosure} from "../../../types/disclosure.ts";
 import {deleteAsset} from "../../../api/assets.ts";
 
-export function DeleteAssetModal(disclosure: Disclosure) {
+function DeleteAssetModal(disclosure: Disclosure) {
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
 

@@ -5,9 +5,13 @@ import AssetGrid from "../components/AssetGrid.tsx";
 import AssetActionsCard from "../components/AssetActionsCard.tsx";
 import ModalZoomImage from "../../../components/ModalZoomImage.tsx";
 import DataStrip from "../components/DataStrip.tsx";
+import EmptyState from "../../../components/EmptyState.tsx";
 import {BACKEND_URL} from "../../../config.ts";
+const CARD_WIDTH = 150;
+const CARD_GAP = 16; // gap-4 is 16px
+const SCROLL_AMOUNT = CARD_WIDTH + CARD_GAP;
 
-export function LightboxView() {
+function LightboxView() {
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
@@ -23,10 +27,6 @@ export function LightboxView() {
     selectedAssetsRef.current = selectedAssets;
   }, [selectedAssets]);
 
-  const CARD_WIDTH = 150;
-  const CARD_GAP = 16; // gap-4 is 16px
-  const SCROLL_AMOUNT = CARD_WIDTH + CARD_GAP;
-
   const onPrev = React.useCallback(() => {
     const assets = selectedCollectionRef.current?.assets;
     if (!assets || assets.length === 0) return;
@@ -36,9 +36,7 @@ export function LightboxView() {
 
     if (idx > 0) {
       setSelectedAssets([assets[idx - 1]]);
-      if (filmstripScrollRef.current) {
-        filmstripScrollRef.current.scrollLeft -= SCROLL_AMOUNT;
-      }
+      filmstripScrollRef.current?.scrollBy({ left: -SCROLL_AMOUNT, behavior: "smooth" });
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
     }
@@ -53,9 +51,7 @@ export function LightboxView() {
 
     if (idx >= 0 && idx + 1 < assets.length) {
       setSelectedAssets([assets[idx + 1]]);
-      if (filmstripScrollRef.current) {
-        filmstripScrollRef.current.scrollLeft += SCROLL_AMOUNT;
-      }
+      filmstripScrollRef.current?.scrollBy({ left: SCROLL_AMOUNT, behavior: "smooth" });
     } else if (idx === -1 && assets.length > 0) {
       setSelectedAssets([assets[0]]);
     }
@@ -119,15 +115,15 @@ export function LightboxView() {
             <AssetActionsCard vertical />
           </>
         ) : (
-          <div className="flex flex-wrap grow justify-center items-center select-none">
-            <p className="text-muted text-3xl font-light tracking-wide">
-              {selectedCollection?.id == null
+          <EmptyState
+            message={
+              selectedCollection?.id == null
                 ? "No Collection Selected"
                 : selectedCollection?.assets?.length === 0
                 ? "Collection is Empty"
-                : "No Asset Selected"}
-            </p>
-          </div>
+                : "No Asset Selected"
+            }
+          />
         )}
       </div>
 

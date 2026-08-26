@@ -123,8 +123,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
         },
         {
           key: "delete",
-          className: "text-danger",
-          color: "danger",
+          variant: "danger",
           children: (
             <>
               <Icon icon="gravity-ui:trash-bin" className="w-4 h-4 text-danger transition-colors shrink-0" />

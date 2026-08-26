@@ -2,10 +2,7 @@ import {useCollections, useSelectedCollection, useSelectedAssets} from "../../..
 import React, {useEffect, useState} from "react";
 import {
   Button,
-  Label,
-  ListBox,
   Modal,
-  Select,
   toast
 } from "@heroui/react";
 import {Collection} from "../../../types/models.ts";
@@ -13,8 +10,9 @@ import {Disclosure} from "../../../types/disclosure.ts";
 import {reassignAsset, unfileAsset} from "../../../api/management.ts";
 import {getCollectionsFlat} from "../../../api/collections.ts";
 import {findCollectionByID} from "../../../utils/tree.ts";
+import CollectionPicker from "./CollectionPicker.tsx";
 
-export function MoveAssetModal(disclosure: Disclosure) {
+function MoveAssetModal(disclosure: Disclosure) {
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const [collections] = useCollections();
@@ -90,33 +88,11 @@ export function MoveAssetModal(disclosure: Disclosure) {
                     Moving {selectedAssets.length} {selectedAssets.length === 1 ? "asset" : "assets"} to the following collection:
                   </p>
 
-                  <Select
-                    placeholder="Select Destination Collection"
-                    value={modalSelectedCollection?.id ?? null}
-                    onChange={(key) => {
-                      const selected = collectionList.find((c) => c.id === key) ?? null;
-                      setModalSelectedCollection(selected);
-                    }}
-                  >
-                    <Label className="text-sm font-medium text-foreground">Destination Collection</Label>
-                    <Select.Trigger className="w-full">
-                      <Select.Value />
-                      <Select.Indicator />
-                    </Select.Trigger>
-                    <Select.Popover className="max-h-60 overflow-y-auto">
-                      <ListBox>
-                        {collectionList.map((item) => (
-                          <ListBox.Item key={item.id} id={item.id} textValue={`${item.label} (${item.id})`}>
-                            <div className="flex flex-col">
-                              <span className="text-sm font-medium">{item.label}</span>
-                              <span className="text-xs text-muted">ID: {item.id}</span>
-                            </div>
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
-                        ))}
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
+                  <CollectionPicker
+                    collections={collectionList}
+                    value={modalSelectedCollection}
+                    onChange={setModalSelectedCollection}
+                  />
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="tertiary" onPress={() => { setModalSelectedCollection(null); close(); }}>

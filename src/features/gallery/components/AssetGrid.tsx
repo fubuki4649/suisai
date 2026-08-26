@@ -2,6 +2,7 @@ import React, {forwardRef, useMemo} from "react";
 import AssetCard from "./AssetCard.tsx";
 import {useSelectedCollection, useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import {BACKEND_URL} from "../../../config.ts";
+import EmptyState from "../../../components/EmptyState.tsx";
 
 export interface AssetGridProps extends React.HTMLAttributes<HTMLUListElement> {
   cardWidth?: number;
@@ -95,11 +96,9 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
           ))}
         </ul>
       ) : (
-        <div className="flex flex-wrap grow justify-center items-center select-none">
-          <p className="text-muted text-3xl font-light tracking-wide">
-            {selectedCollection?.id == null ? "No Collection Selected" : "Collection is Empty"}
-          </p>
-        </div>
+        <EmptyState
+          message={selectedCollection?.id == null ? "No Collection Selected" : "Collection is Empty"}
+        />
       )}
     </>
   );

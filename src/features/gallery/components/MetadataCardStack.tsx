@@ -1,9 +1,8 @@
-import {cn} from "@heroui/react";
 import React from "react";
 import {useSelectedAssets} from "../../../context/GalleryContext.tsx";
 import MetadataCard, {MetadataCardProps} from "./MetadataCard.tsx";
 
-export function MetadataCardStack() {
+function MetadataCardStack() {
   const [selectedAssets] = useSelectedAssets();
 
   if (selectedAssets.length === 0) {

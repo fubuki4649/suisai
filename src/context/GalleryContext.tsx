@@ -22,7 +22,7 @@ export type AssetSelectionState = {
   setSelectedAssets: React.Dispatch<React.SetStateAction<Asset[]>>;
 };
 
-export type GalleryState = ThemeState & CollectionsState & AssetSelectionState;
+
 
 const ThemeContext = createContext<ThemeState | undefined>(undefined);
 const CollectionsContext = createContext<CollectionsState | undefined>(undefined);
@@ -131,12 +131,6 @@ export const useAssetSelectionState = (): AssetSelectionState => {
   return context;
 };
 
-export const useGalleryContext = (): GalleryState => {
-  const theme = useThemeState();
-  const collections = useCollectionsState();
-  const selection = useAssetSelectionState();
-  return { ...theme, ...collections, ...selection };
-};
 
 export const useCollections = (): [Collection[], React.Dispatch<React.SetStateAction<Collection[]>>] => {
   const { collections, setCollections } = useCollectionsState();
@@ -148,15 +142,6 @@ export const useThemeMode = (): [ThemeMode, React.Dispatch<React.SetStateAction<
   return [themeMode, setThemeMode];
 };
 
-export const useIsDark = (): boolean => {
-  const { isDark } = useThemeState();
-  return isDark;
-};
-
-export const useDarkMode = (): [boolean, React.Dispatch<React.SetStateAction<ThemeMode>>] => {
-  const { isDark, setThemeMode } = useThemeState();
-  return [isDark, setThemeMode];
-};
 
 export const useSelectedCollection = (): [Collection | null, React.Dispatch<React.SetStateAction<Collection | null>>] => {
   const { selectedCollection, setSelectedCollection } = useCollectionsState();
