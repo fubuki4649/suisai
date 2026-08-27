@@ -10,6 +10,7 @@ export interface AssetCardProps {
   allowZoom: boolean;
   forceConstWidth?: boolean;
   onSelect?: (id: string, e: React.MouseEvent) => void;
+  onDoubleClick?: () => void;
 }
 
 export const AssetCard = React.memo(function AssetCard(props: AssetCardProps) {
@@ -52,6 +53,7 @@ export const AssetCard = React.memo(function AssetCard(props: AssetCardProps) {
         "shadow-md shrink-0 overflow-hidden cursor-pointer transition-all select-none rounded-xl p-0! gap-0!"
       )}
       onClick={(e) => props.onSelect?.(props.id, e)}
+      onDoubleClick={props.onDoubleClick}
     >
       {props.allowZoom ? (
         <ModalZoomImage {...imgProps} />

@@ -70,6 +70,39 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
     [selectedCollection?.assets, selectedAssets, setSelectedAssets]
   );
 
+  // Pending single-click timer — cancelled if a dblclick fires first
+  const clickTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCardClickDebounced = React.useCallback(
+    (cardId: string, e: React.MouseEvent) => {
+      // Modifier-key clicks (ctrl/shift multi-select) are always instant
+      if (e.ctrlKey || e.metaKey || e.shiftKey) {
+        handleCardClick(cardId, e);
+        return;
+      }
+
+      // Snapshot the event fields we need before React nullifies the synthetic event
+      const snapshot = { ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey };
+
+      if (clickTimerRef.current !== null) {
+        clearTimeout(clickTimerRef.current);
+      }
+      clickTimerRef.current = setTimeout(() => {
+        clickTimerRef.current = null;
+        handleCardClick(cardId, { ...snapshot } as React.MouseEvent);
+      }, 220);
+    },
+    [handleCardClick]
+  );
+
+  const handleCardDoubleClick = React.useCallback(() => {
+    // Cancel the pending single-click so it doesn't fire after the zoom modal opens
+    if (clickTimerRef.current !== null) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
+  }, []);
+
   return (
     <>
       {assets && assets.length > 0 ? (
@@ -90,7 +123,8 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
                 isSelected={selectedAssetIds.has(asset.id)}
                 allowZoom={!!props.allowCardZoom}
                 forceConstWidth={isUniform}
-                onSelect={handleCardClick}
+                onSelect={handleCardClickDebounced}
+                onDoubleClick={handleCardDoubleClick}
               />
             </li>
           ))}
