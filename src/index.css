@@ -1,9 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@heroui/styles";
 
 button:focus,
-button:focus-visible {
-    outline: none;
-    box-shadow: none;
+button:focus-visible,
+[role="tab"]:focus,
+[role="tab"]:focus-visible,
+[data-focus-visible="true"] {
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-shadow: none !important;
+    --tw-ring-offset-shadow: none !important;
 }
