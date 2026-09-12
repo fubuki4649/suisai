@@ -34,11 +34,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
 
       <Popover
         isOpen={isOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setIsOpen(false);
-          }
-        }}
+        onOpenChange={(open) => { if (!open) setIsOpen(false); }}
       >
         <Button
           {...props.btnProps}
@@ -69,10 +65,7 @@ export default function RightClickButton(props: RightClickButtonProps) {
                         : "text-foreground hover:bg-accent/15 hover:text-accent active:bg-accent/25",
                       item.className
                     )}
-                    onClick={(e) => {
-                      setIsOpen(false);
-                      if (item.onPress) item.onPress(e);
-                    }}
+                    onClick={(e) => { setIsOpen(false); item.onPress?.(e); }}
                   >
                     {item.children}
                   </button>

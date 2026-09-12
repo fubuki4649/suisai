@@ -15,6 +15,25 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 8;
 const DOUBLE_CLICK_SCALE = 2.5;
 
+function ActionTooltipButton({
+  tooltip,
+  children,
+  ...buttonProps
+}: React.ComponentProps<typeof Button> & { tooltip: string }) {
+  return (
+    <Tooltip delay={200}>
+      <Tooltip.Trigger>
+        <Button size="sm" variant="tertiary" {...buttonProps}>
+          {children}
+        </Button>
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        <p>{tooltip}</p>
+      </Tooltip.Content>
+    </Tooltip>
+  );
+}
+
 function ZoomViewerModal({
   isOpen,
   onClose,
@@ -91,13 +110,8 @@ function ZoomViewerModal({
     }
   }, [clampPosition, position.x, position.y, scale]);
 
-  const zoomIn = useCallback(() => {
-    zoomTo(scale * 1.3);
-  }, [scale, zoomTo]);
-
-  const zoomOut = useCallback(() => {
-    zoomTo(scale / 1.3);
-  }, [scale, zoomTo]);
+  const zoomIn  = useCallback(() => zoomTo(scale * 1.3), [scale, zoomTo]);
+  const zoomOut = useCallback(() => zoomTo(scale / 1.3), [scale, zoomTo]);
 
   const resetZoom = useCallback(() => {
     setScale(1);
@@ -107,6 +121,13 @@ function ZoomViewerModal({
   // Keyboard navigation & shortcuts
   useEffect(() => {
     if (!isOpen) return;
+
+    const PAN_DELTAS: Record<string, [number, number]> = {
+      ArrowLeft: [50, 0],
+      ArrowRight: [-50, 0],
+      ArrowUp: [0, 50],
+      ArrowDown: [0, -50],
+    };
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "+" || e.key === "=") {
@@ -118,18 +139,10 @@ function ZoomViewerModal({
       } else if (e.key === "0") {
         e.preventDefault();
         resetZoom();
-      } else if (e.key === "ArrowLeft" && scale > 1) {
+      } else if (scale > 1 && e.key in PAN_DELTAS) {
         e.preventDefault();
-        setPosition((prev) => clampPosition(prev.x + 50, prev.y, scale));
-      } else if (e.key === "ArrowRight" && scale > 1) {
-        e.preventDefault();
-        setPosition((prev) => clampPosition(prev.x - 50, prev.y, scale));
-      } else if (e.key === "ArrowUp" && scale > 1) {
-        e.preventDefault();
-        setPosition((prev) => clampPosition(prev.x, prev.y + 50, scale));
-      } else if (e.key === "ArrowDown" && scale > 1) {
-        e.preventDefault();
-        setPosition((prev) => clampPosition(prev.x, prev.y - 50, scale));
+        const [dx, dy] = PAN_DELTAS[e.key];
+        setPosition((prev) => clampPosition(prev.x + dx, prev.y + dy, scale));
       }
     }
 
@@ -260,97 +273,58 @@ function ZoomViewerModal({
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/80 dark:bg-surface/85 backdrop-blur-md border border-separator shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <Tooltip delay={200}>
-          <Tooltip.Trigger>
-            <Button
-              isIconOnly
-              size="sm"
-              variant="tertiary"
-              aria-label="Zoom Out"
-              onPress={zoomOut}
-              isDisabled={scale <= MIN_SCALE}
-            >
-              <Icon icon="gravity-ui:minus" className="w-4 h-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Zoom Out (-)</p>
-          </Tooltip.Content>
-        </Tooltip>
+        <ActionTooltipButton
+          isIconOnly
+          aria-label="Zoom Out"
+          onPress={zoomOut}
+          isDisabled={scale <= MIN_SCALE}
+          tooltip="Zoom Out (-)"
+        >
+          <Icon icon="gravity-ui:minus" className="w-4 h-4" />
+        </ActionTooltipButton>
 
-        <Tooltip delay={200}>
-          <Tooltip.Trigger>
-            <Button
-              size="sm"
-              variant="ghost"
-              aria-label="Reset Zoom Level"
-              onPress={resetZoom}
-              className="text-xs font-mono font-medium px-2 h-8 min-w-14"
-            >
-              {Math.round(scale * 100)}%
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Reset to 100% (0)</p>
-          </Tooltip.Content>
-        </Tooltip>
+        <ActionTooltipButton
+          variant="ghost"
+          aria-label="Reset Zoom Level"
+          onPress={resetZoom}
+          className="text-xs font-mono font-medium px-2 h-8 min-w-14"
+          tooltip="Reset to 100% (0)"
+        >
+          {Math.round(scale * 100)}%
+        </ActionTooltipButton>
 
-        <Tooltip delay={200}>
-          <Tooltip.Trigger>
-            <Button
-              isIconOnly
-              size="sm"
-              variant="tertiary"
-              aria-label="Zoom In"
-              onPress={zoomIn}
-              isDisabled={scale >= MAX_SCALE}
-            >
-              <Icon icon="gravity-ui:plus" className="w-4 h-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Zoom In (+)</p>
-          </Tooltip.Content>
-        </Tooltip>
+        <ActionTooltipButton
+          isIconOnly
+          aria-label="Zoom In"
+          onPress={zoomIn}
+          isDisabled={scale >= MAX_SCALE}
+          tooltip="Zoom In (+)"
+        >
+          <Icon icon="gravity-ui:plus" className="w-4 h-4" />
+        </ActionTooltipButton>
 
         <Separator orientation="vertical" className="h-5 mx-1" />
 
-        <Tooltip delay={200}>
-          <Tooltip.Trigger>
-            <Button
-              isIconOnly
-              size="sm"
-              variant="tertiary"
-              aria-label="Fit to Screen"
-              onPress={resetZoom}
-              isDisabled={scale === 1 && position.x === 0 && position.y === 0}
-            >
-              <Icon icon="gravity-ui:arrow-rotate-left" className="w-4 h-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Fit to Screen (0)</p>
-          </Tooltip.Content>
-        </Tooltip>
+        <ActionTooltipButton
+          isIconOnly
+          aria-label="Fit to Screen"
+          onPress={resetZoom}
+          isDisabled={scale === 1 && position.x === 0 && position.y === 0}
+          tooltip="Fit to Screen (0)"
+        >
+          <Icon icon="gravity-ui:arrow-rotate-left" className="w-4 h-4" />
+        </ActionTooltipButton>
 
         <Separator orientation="vertical" className="h-5 mx-1" />
 
-        <Tooltip delay={200}>
-          <Tooltip.Trigger>
-            <Button
-              isIconOnly
-              size="sm"
-              variant="tertiary"
-              aria-label="Close Viewer"
-              onPress={onClose}
-            >
-              <Icon icon="gravity-ui:xmark" className="w-4 h-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Close (Esc)</p>
-          </Tooltip.Content>
-        </Tooltip>
+        <ActionTooltipButton
+          isIconOnly
+          aria-label="Close Viewer"
+          onPress={onClose}
+          tooltip="Close (Esc)"
+        >
+          <Icon icon="gravity-ui:xmark" className="w-4 h-4" />
+        </ActionTooltipButton>
       </div>
 
       {/* Interactive viewport area */}
@@ -395,7 +369,7 @@ export default function ModalZoomImage(props: ModalZoomImageProps) {
         decoding="async"
         alt="Image"
         {...imgProps}
-        onDoubleClick={() => state.open()}
+        onDoubleClick={state.open}
       />
 
       {state.isOpen && (
@@ -405,7 +379,7 @@ export default function ModalZoomImage(props: ModalZoomImageProps) {
               <Modal.Dialog className="bg-transparent shadow-none p-0 border-none flex items-center justify-center h-full w-full max-w-none">
                 <ZoomViewerModal
                   isOpen={state.isOpen}
-                  onClose={() => state.close()}
+                  onClose={state.close}
                   src={props.src}
                   alt={props.alt}
                 />

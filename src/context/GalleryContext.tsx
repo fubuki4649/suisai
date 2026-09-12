@@ -36,35 +36,23 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(THEME_STORAGE_KEY);
-      if (saved === "light" || saved === "dark" || saved === "auto") {
-        return saved;
-      }
-    }
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved === "light" || saved === "dark" || saved === "auto") return saved;
     return "auto";
   });
 
-  const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
-    if (typeof window !== "undefined" && window.matchMedia) {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-    return true;
-  });
+  const [systemIsDark, setSystemIsDark] = useState<boolean>(
+    () => window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? true
+  );
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(THEME_STORAGE_KEY, themeMode);
-    }
+    localStorage.setItem(THEME_STORAGE_KEY, themeMode);
   }, [themeMode]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
+    if (!window.matchMedia) return;
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e: MediaQueryListEvent) => {
-      setSystemIsDark(e.matches);
-    };
-
+    const onChange = (e: MediaQueryListEvent) => setSystemIsDark(e.matches);
     mql.addEventListener("change", onChange);
     return () => mql.removeEventListener("change", onChange);
   }, []);
@@ -72,13 +60,7 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
   const isDark = themeMode === "auto" ? systemIsDark : themeMode === "dark";
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      if (isDark) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    }
+    document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
 
   const themeValue = useMemo<ThemeState>(
@@ -109,25 +91,19 @@ export const GalleryContextProvider = ({ children }: { children: ReactNode }) =>
 
 export const useThemeState = (): ThemeState => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useThemeState must be used within a GalleryContextProvider");
-  }
+  if (!context) throw new Error("useThemeState must be used within a GalleryContextProvider");
   return context;
 };
 
 export const useCollectionsState = (): CollectionsState => {
   const context = useContext(CollectionsContext);
-  if (!context) {
-    throw new Error("useCollectionsState must be used within a GalleryContextProvider");
-  }
+  if (!context) throw new Error("useCollectionsState must be used within a GalleryContextProvider");
   return context;
 };
 
 export const useAssetSelectionState = (): AssetSelectionState => {
   const context = useContext(AssetSelectionContext);
-  if (!context) {
-    throw new Error("useAssetSelectionState must be used within a GalleryContextProvider");
-  }
+  if (!context) throw new Error("useAssetSelectionState must be used within a GalleryContextProvider");
   return context;
 };
 

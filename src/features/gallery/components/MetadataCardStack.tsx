@@ -1,6 +1,6 @@
 import React from "react";
 import {useSelectedAssets} from "../../../context/GalleryContext.tsx";
-import MetadataCard, {MetadataCardProps} from "./MetadataCard.tsx";
+import MetadataCard from "./MetadataCard.tsx";
 
 function MetadataCardStack() {
   const [selectedAssets] = useSelectedAssets();
@@ -18,11 +18,6 @@ function MetadataCardStack() {
         const offset = index * 20;
         const scale = 1 - index * 0.02;
 
-        const cardProps: MetadataCardProps = {
-          ...asset,
-          photo_date: new Date(asset.photo_date),
-        };
-
         return (
           <div
             className="absolute top-0 left-0 w-full transition-all"
@@ -33,7 +28,7 @@ function MetadataCardStack() {
               opacity: index === 0 ? 1 : 0.8,
             }}
           >
-            <MetadataCard {...cardProps} />
+            <MetadataCard {...asset} photo_date={new Date(asset.photo_date)} />
           </div>
         );
       })}

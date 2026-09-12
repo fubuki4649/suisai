@@ -9,16 +9,14 @@ export function withAxiosErrorHandling<T extends Exclude<unknown, void>>(
     try {
       return await fn(...args);
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error("HTTP error", error.response.status);
-          onHttpError(error.response.status);
-          throw error;
-        } else {
-          console.error("Axios error", error.message);
-        }
-      } else {
+      if (!axios.isAxiosError(error)) {
         console.error("Unknown error", error);
+      } else if (error.response) {
+        console.error("HTTP error", error.response.status);
+        onHttpError(error.response.status);
+        throw error;
+      } else {
+        console.error("Axios error", error.message);
       }
 
       return fallback;

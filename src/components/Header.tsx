@@ -8,16 +8,15 @@ const INDICATOR_CLASS = "rounded-full bg-surface shadow-xs";
 const ICON_CLASS = "w-4 h-4 shrink-0";
 
 const THEME_TABS = [
-  { id: "auto" as ThemeMode,   icon: "gravity-ui:display", ariaLabel: "Auto (system) mode" },
-  { id: "light" as ThemeMode,  icon: "gravity-ui:sun",     ariaLabel: "Light mode"          },
-  { id: "dark" as ThemeMode,   icon: "gravity-ui:moon",    ariaLabel: "Dark mode"           },
+  { id: "auto" as ThemeMode,  icon: "gravity-ui:display", ariaLabel: "Auto (system) mode", desktop: "Use System Theme", mobile: "System" },
+  { id: "light" as ThemeMode, icon: "gravity-ui:sun",     ariaLabel: "Light mode",          desktop: "Light Mode",       mobile: "Light"  },
+  { id: "dark" as ThemeMode,  icon: "gravity-ui:moon",    ariaLabel: "Dark mode",           desktop: "Dark Mode",        mobile: "Dark"   },
 ] as const;
 
-const THEME_TOOLTIPS: Record<ThemeMode, { desktop: string; mobile: string }> = {
-  auto:  { desktop: "Use System Theme", mobile: "System" },
-  light: { desktop: "Light Mode",       mobile: "Light"  },
-  dark:  { desktop: "Dark Mode",        mobile: "Dark"   },
-};
+const VIEW_TABS = [
+  { id: "gallery",  label: "Gallery",  icon: "gravity-ui:layout-cells-large" },
+  { id: "lightbox", label: "Lightbox", icon: "gravity-ui:filmstrip" },
+] as const;
 
 function ViewModeTabs({ mobile, onAfterChange }: { mobile?: boolean; onAfterChange?: () => void }) {
   const location = useLocation();
@@ -32,8 +31,7 @@ function ViewModeTabs({ mobile, onAfterChange }: { mobile?: boolean; onAfterChan
     <Tabs
       selectedKey={isLightbox ? "lightbox" : "gallery"}
       onSelectionChange={(key) => {
-        if (key === "lightbox") navigate("/gallery/lightbox");
-        else navigate("/gallery");
+        navigate(key === "lightbox" ? "/gallery/lightbox" : "/gallery");
         onAfterChange?.();
       }}
     >
@@ -47,16 +45,13 @@ function ViewModeTabs({ mobile, onAfterChange }: { mobile?: boolean; onAfterChan
           aria-label="View Mode"
           className={cn("flex items-center p-0", mobile && "w-full")}
         >
-          <Tabs.Tab id="gallery" className={tabClass}>
-            <Icon icon="gravity-ui:layout-cells-large" className={ICON_CLASS} />
-            <span>Gallery</span>
-            <Tabs.Indicator className={INDICATOR_CLASS} />
-          </Tabs.Tab>
-          <Tabs.Tab id="lightbox" className={tabClass}>
-            <Icon icon="gravity-ui:filmstrip" className={ICON_CLASS} />
-            <span>Lightbox</span>
-            <Tabs.Indicator className={INDICATOR_CLASS} />
-          </Tabs.Tab>
+          {VIEW_TABS.map(({ id, label, icon }) => (
+            <Tabs.Tab key={id} id={id} className={tabClass}>
+              <Icon icon={icon} className={ICON_CLASS} />
+              <span>{label}</span>
+              <Tabs.Indicator className={INDICATOR_CLASS} />
+            </Tabs.Tab>
+          ))}
         </Tabs.List>
       </Tabs.ListContainer>
     </Tabs>
@@ -74,7 +69,7 @@ function ThemeToggleTabs({ mobile }: { mobile?: boolean }) {
     >
       <Tabs.ListContainer className="rounded-full bg-default-100 dark:bg-default-50/10 p-0.5 border border-separator/50">
         <Tabs.List aria-label="Color Theme" className="flex items-center p-0">
-          {THEME_TABS.map(({ id, icon, ariaLabel }) => (
+          {THEME_TABS.map(({ id, icon, ariaLabel, desktop, mobile: mobileLabel }) => (
             <Tabs.Tab
               key={id}
               id={id}
@@ -86,7 +81,7 @@ function ThemeToggleTabs({ mobile }: { mobile?: boolean }) {
                   <Icon icon={icon} className={ICON_CLASS} />
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  <p>{mobile ? THEME_TOOLTIPS[id].mobile : THEME_TOOLTIPS[id].desktop}</p>
+                  <p>{mobile ? mobileLabel : desktop}</p>
                 </Tooltip.Content>
               </Tooltip>
               <Tabs.Indicator className={INDICATOR_CLASS} />

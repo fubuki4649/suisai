@@ -24,45 +24,23 @@ function MoveCollectionModal({disclosure, collection}: MoveCollectionModalProps)
   const [modalSelectedCollection, setModalSelectedCollection] = useState<Collection | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      getCollectionsFlat().then((result) => {
-        setCollectionList(result.filter((c) => c.id !== collection.id));
-      });
-    }
+    if (isOpen) getCollectionsFlat().then((r) => setCollectionList(r.filter((c) => c.id !== collection.id)));
   }, [isOpen, collection.id]);
 
-  const onMoveCollection = () => {
+  const onMoveCollection = async () => {
     if (!modalSelectedCollection) return;
-
-    const onSuccess = (message: string) => {
-      toast.success("Success", {
-        description: message,
-      });
-
-      getCollections().then((collections: Collection[]) => {
-        setCollections(collections);
-      });
-    };
-
-    const onError = (code: number, message: string) => {
-      toast.danger("Error", {
-        description: message + " (Code: " + code + ")",
-      });
-    };
-
-    if (modalSelectedCollection.id === "-1") {
-      unfileCollection([collection.id], (code) => {
-        onError(code, "Failed to move collection");
-      }).then(() => {
-        onSuccess(`Successfully moved ${collection.label} to root`);
-      });
-    } else {
-      reassignCollection(modalSelectedCollection.id, [collection.id], (code) => {
-        onError(code, "Failed to move collection");
-      }).then(() => {
-        onSuccess(`Successfully moved ${collection.label} to ${modalSelectedCollection.label}`);
-      });
-    }
+    const onError = (code: number, msg: string) =>
+      toast.danger("Error", {description: `${msg} (Code: ${code})`});
+    try {
+      if (modalSelectedCollection.id === "-1") {
+        await unfileCollection([collection.id], (code) => onError(code, "Failed to move collection"));
+        toast.success("Success", {description: `Successfully moved ${collection.label} to root`});
+      } else {
+        await reassignCollection(modalSelectedCollection.id, [collection.id], (code) => onError(code, "Failed to move collection"));
+        toast.success("Success", {description: `Successfully moved ${collection.label} to ${modalSelectedCollection.label}`});
+      }
+      setCollections(await getCollections());
+    } catch { /* HTTP errors reported above; network errors surfaced by ServerHealth */ }
   };
 
   return (

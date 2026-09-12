@@ -16,21 +16,16 @@ function DeleteAssetModal(disclosure: Disclosure) {
         description: message,
       });
 
-      if (selectedCollection && selectedCollection.assets) {
-        selectedCollection.assets = selectedCollection.assets.filter((a) => {
-          return !selectedAssetIds.includes(a.id);
-        });
-        setSelectedCollection({...selectedCollection});
+      if (selectedCollection?.assets) {
+        const kept = selectedCollection.assets.filter((a) => !selectedAssetIds.includes(a.id));
+        setSelectedCollection({...selectedCollection, assets: kept});
       }
 
       setSelectedAssets([]);
     };
 
-    const onError = (code: number, message: string) => {
-      toast.danger("Error", {
-        description: message + " (Code: " + code + ")",
-      });
-    };
+    const onError = (code: number, message: string) =>
+      toast.danger("Error", {description: `${message} (Code: ${code})`});
 
     deleteAsset(selectedAssetIds, (code) => {
       onError(code, "Failed to delete assets");

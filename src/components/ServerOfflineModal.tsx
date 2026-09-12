@@ -11,11 +11,8 @@ function ServerOfflineModal() {
   const handleRetry = async () => {
     setRetryFailed(false);
     const recovered = await retryConnection();
-    if (!recovered) {
-      setRetryFailed(true);
-    } else {
-      window.location.reload();
-    }
+    if (recovered) window.location.reload();
+    else setRetryFailed(true);
   };
 
   if (!isOffline) return null;

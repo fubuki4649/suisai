@@ -22,27 +22,22 @@ function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalPr
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const [confirmText, setConfirmText] = useState("");
 
-  const onDeleteCollection = () => {
-    deleteCollection(collection.id, (code) => {
-      toast.danger("Error", {
-        description: "Failed to delete collection with code " + code,
-      });
-    }).then(() => {
-      getCollections().then((collections: Collection[]) => {
-        setCollections(collections);
-        if (selectedCollection?.id === collection.id) {
-          const unfiled = collections.find((c) => c.id === "-1") ?? collections[0];
-          if (unfiled) {
-            queryCollection(unfiled.id).then((assets) => {
-              unfiled.assets = assets;
-              setSelectedCollection({...unfiled, assets});
-            });
-          } else {
-            setSelectedCollection(null);
-          }
+  const onDeleteCollection = async () => {
+    try {
+      await deleteCollection(collection.id, (code) =>
+        toast.danger("Error", {description: "Failed to delete collection with code " + code})
+      );
+      const updated = await getCollections();
+      setCollections(updated);
+      if (selectedCollection?.id === collection.id) {
+        const unfiled = updated.find((c) => c.id === "-1") ?? updated[0];
+        if (unfiled) {
+          setSelectedCollection({...unfiled, assets: await queryCollection(unfiled.id)});
+        } else {
+          setSelectedCollection(null);
         }
-      });
-    });
+      }
+    } catch { /* HTTP errors reported above; network errors surfaced by ServerHealth */ }
   };
 
   return (

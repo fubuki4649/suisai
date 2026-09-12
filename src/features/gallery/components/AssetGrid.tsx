@@ -14,64 +14,57 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
-  const selectedAssetIds = useMemo(() => {
-    return new Set(selectedAssets.map((asset) => asset.id));
-  }, [selectedAssets]);
+  const selectedAssetIds = useMemo(() => new Set(selectedAssets.map((a) => a.id)), [selectedAssets]);
 
   const assets = selectedCollection?.assets;
   const targetHeight = props.cardHeight ?? 200;
   const isUniform = props.cardWidth !== undefined;
 
+  // Pending single-click timer — cancelled if a dblclick fires first
+  const clickTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearClickTimer = React.useCallback(() => {
+    if (clickTimerRef.current !== null) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
+  }, []);
+
   const handleCardClick = React.useCallback(
     (cardId: string, e: React.MouseEvent) => {
       const assetList = selectedCollection?.assets ?? [];
+      const targetAsset = assetList.find((item) => item.id === cardId);
+      if (!targetAsset) return;
 
-      // Handle multi-select
+      // Handle multi-select (Ctrl / Cmd)
       if (e.ctrlKey || e.metaKey) {
-        if (selectedAssets.some((item) => item.id === cardId)) {
-          setSelectedAssets(selectedAssets.filter((item) => item.id !== cardId));
-        } else {
-          const newlySelected = assetList.find((item) => item.id === cardId);
-          if (newlySelected) {
-            setSelectedAssets([...selectedAssets, newlySelected]);
-          }
-        }
+        setSelectedAssets((prev) =>
+          prev.some((item) => item.id === cardId)
+            ? prev.filter((item) => item.id !== cardId)
+            : [...prev, targetAsset]
+        );
+        return;
       }
-      // Handle continuous shift-select
-      else if (e.shiftKey) {
-        if (selectedAssets.length === 0) {
-          const newlySelected = assetList.find((item) => item.id === cardId);
-          setSelectedAssets(newlySelected ? [newlySelected] : []);
-        } else {
-          const lastSelected = selectedAssets[selectedAssets.length - 1];
-          const lastIdx = assetList.findIndex((item) => item.id === lastSelected.id);
-          const newIdx = assetList.findIndex((item) => item.id === cardId);
 
-          if (lastIdx !== -1 && newIdx !== -1) {
-            const slice = assetList.slice(Math.min(lastIdx, newIdx), Math.max(lastIdx, newIdx) + 1);
-            const map = new Map(selectedAssets.map((item) => [item.id, item]));
-            for (const item of slice) {
-              map.set(item.id, item);
-            }
-            setSelectedAssets(Array.from(map.values()));
-          }
+      // Handle continuous shift-select
+      if (e.shiftKey && selectedAssets.length > 0) {
+        const lastIdx = assetList.findIndex((item) => item.id === selectedAssets[selectedAssets.length - 1].id);
+        const newIdx = assetList.findIndex((item) => item.id === cardId);
+
+        if (lastIdx !== -1 && newIdx !== -1) {
+          const slice = assetList.slice(Math.min(lastIdx, newIdx), Math.max(lastIdx, newIdx) + 1);
+          const map = new Map(selectedAssets.map((item) => [item.id, item]));
+          slice.forEach((item) => map.set(item.id, item));
+          setSelectedAssets(Array.from(map.values()));
+          return;
         }
       }
-      // Handle single select / toggle
-      else {
-        if (selectedAssets.length === 1 && selectedAssets[0].id === cardId) {
-          setSelectedAssets([]);
-        } else {
-          const newlySelected = assetList.find((item) => item.id === cardId);
-          setSelectedAssets(newlySelected ? [newlySelected] : []);
-        }
-      }
+
+      // Single select / toggle off if already the sole selected asset
+      const isSoleSelected = selectedAssets.length === 1 && selectedAssets[0].id === cardId;
+      setSelectedAssets(isSoleSelected ? [] : [targetAsset]);
     },
     [selectedCollection?.assets, selectedAssets, setSelectedAssets]
   );
-
-  // Pending single-click timer — cancelled if a dblclick fires first
-  const clickTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleCardClickDebounced = React.useCallback(
     (cardId: string, e: React.MouseEvent) => {
@@ -83,25 +76,21 @@ export const AssetGrid = forwardRef<HTMLUListElement, AssetGridProps>((props, re
 
       // Snapshot the event fields we need before React nullifies the synthetic event
       const snapshot = { ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey };
-
-      if (clickTimerRef.current !== null) {
-        clearTimeout(clickTimerRef.current);
-      }
+      clearClickTimer();
       clickTimerRef.current = setTimeout(() => {
         clickTimerRef.current = null;
         handleCardClick(cardId, { ...snapshot } as React.MouseEvent);
       }, 220);
     },
-    [handleCardClick]
+    [handleCardClick, clearClickTimer]
   );
 
   const handleCardDoubleClick = React.useCallback(() => {
     // Cancel the pending single-click so it doesn't fire after the zoom modal opens
-    if (clickTimerRef.current !== null) {
-      clearTimeout(clickTimerRef.current);
-      clickTimerRef.current = null;
-    }
-  }, []);
+    clearClickTimer();
+  }, [clearClickTimer]);
+
+  React.useEffect(() => clearClickTimer, [clearClickTimer]);
 
   return (
     <>

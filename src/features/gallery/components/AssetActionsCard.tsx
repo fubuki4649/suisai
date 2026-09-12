@@ -13,16 +13,18 @@ function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
   const [selectedCollection] = useSelectedCollection();
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
 
-  const selectAll = () => {
-    setSelectedAssets(selectedCollection?.assets ?? []);
-  };
-
-  const deselectAll = () => {
-    setSelectedAssets([]);
-  };
+  const selectAll   = () => setSelectedAssets(selectedCollection?.assets ?? []);
+  const deselectAll = () => setSelectedAssets([]);
 
   const moveAssetState = useOverlayState();
   const deleteAssetState = useOverlayState();
+
+  const actions = [
+    { label: "Select All", icon: "gravity-ui:circle-check", variant: "tertiary" as const, onPress: selectAll },
+    { label: "Deselect All", icon: "gravity-ui:circle-minus", variant: "tertiary" as const, onPress: deselectAll },
+    { label: "Move To Collection", icon: "gravity-ui:folder-arrow-right", variant: "secondary" as const, onPress: moveAssetState.open },
+    { label: "Delete Assets", ariaLabel: "Delete", icon: "gravity-ui:trash-bin", variant: "danger-soft" as const, onPress: deleteAssetState.open },
+  ];
 
   return (
     <>
@@ -40,49 +42,18 @@ function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
         </Card.Header>
         <Card.Content className="pt-0!">
           <div className={cn(vertical ? "flex-col" : "flex-row", "flex w-full justify-around gap-3.5")}>
-            <Tooltip delay={200}>
-              <Tooltip.Trigger>
-                <Button isIconOnly size="lg" variant="tertiary" aria-label="Select All" onPress={selectAll}>
-                  <Icon icon="gravity-ui:circle-check" className="w-5 h-5" />
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p>Select All</p>
-              </Tooltip.Content>
-            </Tooltip>
-
-            <Tooltip delay={200}>
-              <Tooltip.Trigger>
-                <Button isIconOnly size="lg" variant="tertiary" aria-label="Deselect All" onPress={deselectAll}>
-                  <Icon icon="gravity-ui:circle-minus" className="w-5 h-5" />
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p>Deselect All</p>
-              </Tooltip.Content>
-            </Tooltip>
-
-            <Tooltip delay={200}>
-              <Tooltip.Trigger>
-                <Button isIconOnly size="lg" variant="secondary" aria-label="Move To Collection" onPress={moveAssetState.open}>
-                  <Icon icon="gravity-ui:folder-arrow-right" className="w-5 h-5" />
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p>Move To Collection</p>
-              </Tooltip.Content>
-            </Tooltip>
-
-            <Tooltip delay={200}>
-              <Tooltip.Trigger>
-                <Button isIconOnly size="lg" variant="danger-soft" aria-label="Delete" onPress={deleteAssetState.open}>
-                  <Icon icon="gravity-ui:trash-bin" className="w-5 h-5" />
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p>Delete Assets</p>
-              </Tooltip.Content>
-            </Tooltip>
+            {actions.map(({ label, ariaLabel, icon, variant, onPress }) => (
+              <Tooltip key={label} delay={200}>
+                <Tooltip.Trigger>
+                  <Button isIconOnly size="lg" variant={variant} aria-label={ariaLabel ?? label} onPress={onPress}>
+                    <Icon icon={icon} className="w-5 h-5" />
+                  </Button>
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                  <p>{label}</p>
+                </Tooltip.Content>
+              </Tooltip>
+            ))}
           </div>
         </Card.Content>
       </Card>

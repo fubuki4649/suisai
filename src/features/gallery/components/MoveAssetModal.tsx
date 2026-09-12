@@ -9,24 +9,20 @@ import {Collection} from "../../../types/models.ts";
 import {Disclosure} from "../../../types/disclosure.ts";
 import {reassignAsset, unfileAsset} from "../../../api/management.ts";
 import {getCollectionsFlat} from "../../../api/collections.ts";
-import {findCollectionByID} from "../../../utils/tree.ts";
+import {updateCollectionInTree} from "../../../utils/tree.ts";
 import CollectionPicker from "./CollectionPicker.tsx";
 
 function MoveAssetModal(disclosure: Disclosure) {
   const [selectedAssets, setSelectedAssets] = useSelectedAssets();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
-  const [collections] = useCollections();
+  const [, setCollections] = useCollections();
   const [collectionList, setCollectionList] = useState<Collection[]>([]);
 
   const {isOpen} = disclosure;
   const [modalSelectedCollection, setModalSelectedCollection] = useState<Collection | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      getCollectionsFlat().then((result) => {
-        setCollectionList(result);
-      });
-    }
+    if (isOpen) getCollectionsFlat().then(setCollectionList);
   }, [isOpen]);
 
   const onMoveAssets = () => {
@@ -34,42 +30,33 @@ function MoveAssetModal(disclosure: Disclosure) {
     const selectedAssetIds = selectedAssets.map((asset) => asset.id);
 
     const onSuccess = (message: string) => {
-      toast.success("Success", {
-        description: message,
-      });
+      toast.success("Success", { description: message });
 
-      if (selectedCollection && selectedCollection.assets) {
-        selectedCollection.assets = selectedCollection.assets.filter((a) => {
-          return !selectedAssetIds.includes(a.id);
-        });
-        setSelectedCollection({...selectedCollection});
+      if (selectedCollection?.assets) {
+        const kept = selectedCollection.assets.filter((a) => !selectedAssetIds.includes(a.id));
+        setSelectedCollection({...selectedCollection, assets: kept});
       }
 
       setSelectedAssets([]);
 
-      const destCollection = findCollectionByID(modalSelectedCollection.id, collections);
-      if (destCollection) destCollection.assets = null;
+      if (modalSelectedCollection.id !== "-1") {
+        setCollections((prev) => updateCollectionInTree(prev, modalSelectedCollection.id, (c) => ({...c, assets: null})));
+      }
     };
 
-    const onError = (code: number, message: string) => {
-      toast.danger("Error", {
-        description: message + " (Code: " + code + ")",
-      });
-    };
+    const onError = (code: number, message: string) =>
+      toast.danger("Error", {description: `${message} (Code: ${code})`});
 
-    if (modalSelectedCollection.id === "-1") {
-      unfileAsset(selectedAssetIds, (code) => {
-        onError(code, "Failed to unfile assets");
-      }).then(() => {
-        onSuccess(`Successfully unfiled ${selectedAssets.length} assets`);
-      });
-    } else {
-      reassignAsset(modalSelectedCollection.id, selectedAssetIds, (code) => {
-        onError(code, "Failed to move assets");
-      }).then(() => {
-        onSuccess(`Successfully moved ${selectedAssets.length} assets to collection ${modalSelectedCollection.label} (ID: ${modalSelectedCollection.id})`);
-      });
-    }
+    const isUnfiling = modalSelectedCollection.id === "-1";
+    const movePromise = isUnfiling
+      ? unfileAsset(selectedAssetIds, (code) => onError(code, "Failed to unfile assets"))
+      : reassignAsset(modalSelectedCollection.id, selectedAssetIds, (code) => onError(code, "Failed to move assets"));
+
+    const successMsg = isUnfiling
+      ? `Successfully unfiled ${selectedAssets.length} assets`
+      : `Successfully moved ${selectedAssets.length} assets to collection ${modalSelectedCollection.label} (ID: ${modalSelectedCollection.id})`;
+
+    movePromise.then(() => onSuccess(successMsg));
   };
 
   return (

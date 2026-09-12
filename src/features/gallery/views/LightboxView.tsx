@@ -19,67 +19,41 @@ function LightboxView() {
   const selectedCollectionRef = useRef(selectedCollection);
   const filmstripScrollRef = useRef<HTMLUListElement>(null);
 
-  useEffect(() => {
-    selectedCollectionRef.current = selectedCollection;
-  }, [selectedCollection]);
+  useEffect(() => { selectedCollectionRef.current = selectedCollection; }, [selectedCollection]);
+  useEffect(() => { selectedAssetsRef.current = selectedAssets; }, [selectedAssets]);
 
-  useEffect(() => {
-    selectedAssetsRef.current = selectedAssets;
-  }, [selectedAssets]);
+  const stepAsset = React.useCallback(
+    (direction: -1 | 1) => {
+      const assets = selectedCollectionRef.current?.assets;
+      if (!assets || assets.length === 0) return;
 
-  const onPrev = React.useCallback(() => {
-    const assets = selectedCollectionRef.current?.assets;
-    if (!assets || assets.length === 0) return;
+      const currentId = selectedAssetsRef.current[0]?.id;
+      const idx = assets.findIndex((a) => a.id === currentId);
+      const targetIdx = idx === -1 ? 0 : idx + direction;
 
-    const currentId = selectedAssetsRef.current[0]?.id;
-    const idx = assets.findIndex((a) => a.id === currentId);
-
-    if (idx > 0) {
-      setSelectedAssets([assets[idx - 1]]);
-      filmstripScrollRef.current?.scrollBy({ left: -SCROLL_AMOUNT, behavior: "smooth" });
-    } else if (idx === -1 && assets.length > 0) {
-      setSelectedAssets([assets[0]]);
-    }
-  }, [setSelectedAssets]);
-
-  const onNext = React.useCallback(() => {
-    const assets = selectedCollectionRef.current?.assets;
-    if (!assets || assets.length === 0) return;
-
-    const currentId = selectedAssetsRef.current[0]?.id;
-    const idx = assets.findIndex((a) => a.id === currentId);
-
-    if (idx >= 0 && idx + 1 < assets.length) {
-      setSelectedAssets([assets[idx + 1]]);
-      filmstripScrollRef.current?.scrollBy({ left: SCROLL_AMOUNT, behavior: "smooth" });
-    } else if (idx === -1 && assets.length > 0) {
-      setSelectedAssets([assets[0]]);
-    }
-  }, [setSelectedAssets]);
+      if (targetIdx >= 0 && targetIdx < assets.length) {
+        setSelectedAssets([assets[targetIdx]]);
+        filmstripScrollRef.current?.scrollBy({ left: direction * SCROLL_AMOUNT, behavior: "smooth" });
+      }
+    },
+    [setSelectedAssets]
+  );
 
   // Keyboard navigation
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault();
-        onPrev();
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        onNext();
+        stepAsset(e.key === "ArrowLeft" ? -1 : 1);
       }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
     };
-  }, [onPrev, onNext]);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [stepAsset]);
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    if (filmstripScrollRef.current) {
-      filmstripScrollRef.current.scrollLeft += e.deltaY;
-    }
+    if (filmstripScrollRef.current) filmstripScrollRef.current.scrollLeft += e.deltaY;
   };
 
   const activeAsset = selectedAssets[0];
@@ -95,12 +69,12 @@ function LightboxView() {
                 <Icon
                   icon="gravity-ui:chevron-left"
                   className="w-12 h-12 shrink-0 mx-6 hover:text-foreground active:text-foreground/80 cursor-pointer transition-colors"
-                  onClick={onPrev}
+                  onClick={() => stepAsset(-1)}
                 />
 
                 <ModalZoomImage
                   className="object-scale-down rounded-none shadow-2xl max-h-[75vh]"
-                  alt={`${BACKEND_URL}/thumbnail/${activeAsset.hash}`}
+                  alt={activeAsset.file_name}
                   src={`${BACKEND_URL}/thumbnail/${activeAsset.hash}`}
                   removeWrapper
                 />
@@ -108,7 +82,7 @@ function LightboxView() {
                 <Icon
                   icon="gravity-ui:chevron-right"
                   className="w-12 h-12 shrink-0 mx-6 text-muted hover:text-foreground cursor-pointer transition-colors"
-                  onClick={onNext}
+                  onClick={() => stepAsset(1)}
                 />
               </div>
             </div>

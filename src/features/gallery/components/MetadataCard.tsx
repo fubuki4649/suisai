@@ -39,9 +39,7 @@ function MetaItem({
         <Icon icon={icon} className="w-4 h-4" />
       </Chip>
       <div className="flex flex-col min-w-0 flex-1">
-        <span className="text-xs font-medium tracking-wider text-muted">
-          {label}
-        </span>
+        <span className="text-xs font-medium tracking-wider text-muted">{label}</span>
         <span
           className="text-sm font-medium text-foreground truncate tabular-nums leading-snug select-text"
           title={typeof value === "string" ? value : undefined}
@@ -53,25 +51,37 @@ function MetaItem({
   );
 }
 
+function MetaSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <>
+      <Separator className="my-1" />
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium text-muted tracking-wider">{title}</p>
+        {children}
+      </div>
+    </>
+  );
+}
+
 function MetadataCard(props: MetadataCardProps) {
   const { formattedDate, formattedTime } = React.useMemo(() => {
-    const dateOptions: Intl.DateTimeFormatOptions = {
+    const timeZone = props.photo_timezone || undefined;
+    const formattedDate = props.photo_date.toLocaleDateString("en-US", {
       weekday: "short",
       year: "numeric",
       month: "long",
       day: "numeric",
-      timeZone: props.photo_timezone || undefined,
-    };
+      timeZone,
+    });
 
-    const formatter = new Intl.DateTimeFormat("en-US", {
+    const parts = new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-      timeZone: props.photo_timezone || undefined,
+      timeZone,
       timeZoneName: "short",
-    });
+    }).formatToParts(props.photo_date);
 
-    const parts = formatter.formatToParts(props.photo_date);
     const tzName = parts.find((p) => p.type === "timeZoneName")?.value;
     const timeOnly = parts
       .filter((p) => ["hour", "minute", "literal", "dayPeriod"].includes(p.type))
@@ -80,13 +90,13 @@ function MetadataCard(props: MetadataCardProps) {
       .trim();
 
     return {
-      formattedDate: props.photo_date.toLocaleDateString("en-US", dateOptions),
+      formattedDate,
       formattedTime: tzName ? `${timeOnly} (${tzName})` : timeOnly,
     };
   }, [props.photo_date, props.photo_timezone]);
 
   const megapixels = ((props.resolution_width * props.resolution_height) / 1_000_000).toFixed(1);
-  const sizeMB = (props.size_on_disk / 1024).toFixed(2);
+  const sizeMB = (props.size_on_disk / (1024 * 1024)).toFixed(2);
   const fileFormat = props.mime_type?.replace(/^image\//i, "").toUpperCase() || "IMAGE";
 
   return (
@@ -112,41 +122,23 @@ function MetadataCard(props: MetadataCardProps) {
         </div>
       </div>
 
-      <Separator className="my-1" />
-
-      {/* Category: Exposure */}
-      <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium text-muted tracking-wider">
-          Exposure
-        </p>
+      <MetaSection title="Exposure">
         <div className="grid grid-cols-2 gap-2.5">
           <MetaItem icon="gravity-ui:target" label="Focal" value={`${props.focal_length} mm`} />
           <MetaItem icon="gravity-ui:aperture" label="Aperture" value={`ƒ/${props.aperture.toFixed(1)}`} />
           <MetaItem icon="gravity-ui:stopwatch" label="Shutter" value={props.shutter_speed} />
           <MetaItem icon="gravity-ui:sliders" label="ISO" value={props.iso} />
         </div>
-      </div>
+      </MetaSection>
 
-      <Separator className="my-1" />
-
-      {/* Category: Equipment */}
-      <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium text-muted tracking-wider">
-          Equipment
-        </p>
+      <MetaSection title="Equipment">
         <div className="flex flex-col gap-2.5">
           <MetaItem icon="gravity-ui:camera" label="Camera" value={props.camera_model || "Unknown Camera"} />
           <MetaItem icon="gravity-ui:circles-concentric" label="Lens" value={props.lens_model || "Unknown Lens"} />
         </div>
-      </div>
+      </MetaSection>
 
-      <Separator className="my-1" />
-
-      {/* Category: Details */}
-      <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium text-muted tracking-wider">
-          Details
-        </p>
+      <MetaSection title="Details">
         <div className="flex flex-col gap-2.5">
           <MetaItem icon="gravity-ui:calendar" label="Date" value={formattedDate} />
           <MetaItem icon="gravity-ui:clock" label="Time" value={formattedTime} />
@@ -154,7 +146,7 @@ function MetadataCard(props: MetadataCardProps) {
             <MetaItem icon="gravity-ui:layers" label="Shutter Count" value={props.shutter_count.toLocaleString()} />
           )}
         </div>
-      </div>
+      </MetaSection>
     </Card>
   );
 }

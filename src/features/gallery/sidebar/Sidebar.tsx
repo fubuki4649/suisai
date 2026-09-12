@@ -1,5 +1,5 @@
 import {cn, toast, useOverlayState} from "@heroui/react";
-import React, {JSX, useCallback, useState} from "react";
+import React, {JSX, useCallback, useEffect, useRef, useState} from "react";
 import {useCollections, useSelectedAssets, useSelectedCollection} from "../../../context/GalleryContext.tsx";
 import NewCollectionButton from "./NewCollectionButton.tsx";
 import CollectionButton from "./CollectionButton.tsx";
@@ -9,20 +9,10 @@ import MoveCollectionModal from "./MoveCollectionModal.tsx";
 import {Disclosure} from "../../../types/disclosure.ts";
 import {queryCollection} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
-
-// Helper to gather all descendant collection IDs recursively
-function getDescendantIds(col: Collection): string[] {
-  let ids: string[] = [col.id];
-  if (col.children) {
-    for (const child of col.children) {
-      ids = ids.concat(getDescendantIds(child));
-    }
-  }
-  return ids;
-}
+import {getCollectionDescendantIds, updateCollectionInTree} from "../../../utils/tree.ts";
 
 function Sidebar() {
-  const [collections] = useCollections();
+  const [collections, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
   const [, setSelectedAssets] = useSelectedAssets();
 
@@ -33,45 +23,31 @@ function Sidebar() {
 
   // Expand single collection
   const expandCollection = useCallback((id: string) => {
+    setExpandedIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+  }, []);
+
+  // Collapse a collection AND all its descendants recursively on double-click
+  const collapseCollectionRecursively = useCallback((col: Collection) => {
+    const descendantIds = getCollectionDescendantIds(col);
     setExpandedIds((prev) => {
-      if (prev.has(id)) return prev;
       const next = new Set(prev);
-      next.add(id);
+      descendantIds.forEach((id) => next.delete(id));
       return next;
     });
   }, []);
 
-  // Collapse a collection AND all its descendants recursively on double-click
-  const collapseCollectionRecursively = useCallback(
-    (col: Collection) => {
-      const toRemove = new Set(getDescendantIds(col));
-      setExpandedIds((prev) => {
-        const next = new Set(prev);
-        toRemove.forEach((id) => next.delete(id));
-        return next;
-      });
-    },
-    []
-  );
-
   // Toggle single collection expansion via chevron click
-  const toggleExpand = useCallback(
-    (col: Collection) => {
-      setExpandedIds((prev) => {
-        if (prev.has(col.id)) {
-          const toRemove = new Set(getDescendantIds(col));
-          const next = new Set(prev);
-          toRemove.forEach((id) => next.delete(id));
-          return next;
-        } else {
-          const next = new Set(prev);
-          next.add(col.id);
-          return next;
-        }
-      });
-    },
-    []
-  );
+  const toggleExpand = useCallback((col: Collection) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(col.id)) {
+        getCollectionDescendantIds(col).forEach((id) => next.delete(id));
+      } else {
+        next.add(col.id);
+      }
+      return next;
+    });
+  }, []);
 
   // Resizable width state with localStorage persistence
   const MIN_SIDEBAR_WIDTH = 200;
@@ -85,6 +61,17 @@ function Sidebar() {
       : DEFAULT_SIDEBAR_WIDTH;
   });
   const [isDragging, setIsDragging] = useState(false);
+  const activeResizeListenersRef = useRef<{onMouseMove: (e: MouseEvent) => void; onMouseUp: () => void} | null>(null);
+
+  // Clean up resize listeners if the sidebar unmounts while a drag is in progress
+  useEffect(() => () => {
+    if (activeResizeListenersRef.current) {
+      window.removeEventListener("mousemove", activeResizeListenersRef.current.onMouseMove);
+      window.removeEventListener("mouseup", activeResizeListenersRef.current.onMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    }
+  }, []);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -110,8 +97,10 @@ function Sidebar() {
         window.removeEventListener("mouseup", onMouseUp);
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
+        activeResizeListenersRef.current = null;
       };
 
+      activeResizeListenersRef.current = {onMouseMove, onMouseUp};
       document.body.style.cursor = "col-resize";
       document.body.style.userSelect = "none";
       window.addEventListener("mousemove", onMouseMove);
@@ -140,11 +129,11 @@ function Sidebar() {
           description: `Failed to load the contents of collection ${collection.label} (ID ${collection.id})`,
         });
       }).then((assets) => {
-        collection.assets = assets;
+        setCollections((prev) => updateCollectionInTree(prev, collection.id, (col) => ({...col, assets})));
         setSelectedCollection({...collection, assets});
       });
     }
-  }, [selectedCollection, setSelectedAssets, expandCollection, setSelectedCollection]);
+  }, [selectedCollection, setSelectedAssets, expandCollection, setSelectedCollection, setCollections]);
 
   const renameCollectionDisclosure: Disclosure = useOverlayState();
   const moveCollectionDisclosure: Disclosure = useOverlayState();
@@ -241,9 +230,7 @@ const ShowCollection = ({
         onCollapseRecursively={collapseCollectionRecursively}
         collection={collection}
         selectedCollection={selectedCollection}
-        onCollectionSelect={(col: Collection) => {
-          onCollectionSelect(col);
-        }}
+        onCollectionSelect={onCollectionSelect}
         setRightClickCollection={setRightClickCollection}
         renameCollectionDisclosure={renameCollectionDisclosure}
         moveCollectionDisclosure={moveCollectionDisclosure}

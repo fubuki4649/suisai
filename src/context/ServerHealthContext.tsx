@@ -30,27 +30,16 @@ export const ServerHealthProvider = ({ children }: { children: ReactNode }) => {
   // Check health on initial mount
   useEffect(() => {
     let active = true;
-    checkBackendHealth().then((isHealthy) => {
-      if (active && !isHealthy) {
-        setIsOffline(true);
-      }
-    });
-    return () => {
-      active = false;
-    };
+    checkBackendHealth().then((isHealthy) => { if (active && !isHealthy) setIsOffline(true); });
+    return () => { active = false; };
   }, []);
 
   // When offline, periodically ping /meow every 3 seconds to auto-recover once backend is up
   useEffect(() => {
     if (!isOffline) return;
-
     const interval = setInterval(async () => {
-      const isHealthy = await checkBackendHealth();
-      if (isHealthy) {
-        setIsOffline(false);
-      }
+      if (await checkBackendHealth()) setIsOffline(false);
     }, 3000);
-
     return () => clearInterval(interval);
   }, [isOffline]);
 
@@ -59,16 +48,11 @@ export const ServerHealthProvider = ({ children }: { children: ReactNode }) => {
     const interceptor = client.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (!error.response && error.code !== "ERR_CANCELED") {
-          setIsOffline(true);
-        }
+        if (!error.response && error.code !== "ERR_CANCELED") setIsOffline(true);
         return Promise.reject(error);
       }
     );
-
-    return () => {
-      client.interceptors.response.eject(interceptor);
-    };
+    return () => client.interceptors.response.eject(interceptor);
   }, []);
 
   const value = React.useMemo<ServerHealthState>(
@@ -85,8 +69,6 @@ export const ServerHealthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useServerHealth = (): ServerHealthState => {
   const context = useContext(ServerHealthContext);
-  if (!context) {
-    throw new Error("useServerHealth must be used within a ServerHealthProvider");
-  }
+  if (!context) throw new Error("useServerHealth must be used within a ServerHealthProvider");
   return context;
 };

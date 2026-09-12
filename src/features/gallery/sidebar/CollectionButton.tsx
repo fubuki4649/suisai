@@ -35,6 +35,12 @@ export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
   const isUnfiled = collection.id === "-1";
   const isSelected = selectedCollection?.id === collection.id;
 
+  const contextActions = [
+    { key: "rename", label: "Rename", icon: "gravity-ui:pencil", iconClass: "text-muted group-hover:text-accent", disclosure: renameCollectionDisclosure },
+    { key: "move", label: "Move", icon: "gravity-ui:folder-arrow-right", iconClass: "text-muted group-hover:text-accent", disclosure: moveCollectionDisclosure },
+    { key: "delete", label: "Delete", icon: "gravity-ui:trash-bin", iconClass: "text-danger", variant: "danger" as const, disclosure: deleteCollectionDisclosure },
+  ];
+
   return (
     <RightClickButton
       btnProps={{
@@ -46,11 +52,7 @@ export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
         ),
         variant: isSelected ? "secondary" : "ghost",
         onPress: () => onCollectionSelect(collection),
-        onDoubleClick: () => {
-          if (hasChildren) {
-            onCollapseRecursively(collection);
-          }
-        },
+        onDoubleClick: () => { if (hasChildren) onCollapseRecursively(collection); },
         children: (
           <div className="flex items-center gap-1.5 w-full overflow-hidden">
             {hasChildren ? (
@@ -92,51 +94,21 @@ export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
           </div>
         ),
       }}
-      rightClickItems={[
-        {
-          key: "rename",
-          children: (
-            <>
-              <Icon icon="gravity-ui:pencil" className="w-4 h-4 text-muted group-hover:text-accent transition-colors shrink-0" />
-              <span className="flex-1">Rename</span>
-            </>
-          ),
-          isDisabled: isUnfiled,
-          onPress: () => {
-            setRightClickCollection(collection);
-            renameCollectionDisclosure.open();
-          },
+      rightClickItems={contextActions.map(({ key, label, icon, iconClass, variant, disclosure }) => ({
+        key,
+        variant,
+        isDisabled: isUnfiled,
+        onPress: () => {
+          setRightClickCollection(collection);
+          disclosure.open();
         },
-        {
-          key: "move",
-          children: (
-            <>
-              <Icon icon="gravity-ui:folder-arrow-right" className="w-4 h-4 text-muted group-hover:text-accent transition-colors shrink-0" />
-              <span className="flex-1">Move</span>
-            </>
-          ),
-          isDisabled: isUnfiled,
-          onPress: () => {
-            setRightClickCollection(collection);
-            moveCollectionDisclosure.open();
-          },
-        },
-        {
-          key: "delete",
-          variant: "danger",
-          children: (
-            <>
-              <Icon icon="gravity-ui:trash-bin" className="w-4 h-4 text-danger transition-colors shrink-0" />
-              <span className="flex-1">Delete</span>
-            </>
-          ),
-          isDisabled: isUnfiled,
-          onPress: () => {
-            setRightClickCollection(collection);
-            deleteCollectionDisclosure.open();
-          },
-        },
-      ]}
+        children: (
+          <>
+            <Icon icon={icon} className={cn("w-4 h-4 transition-colors shrink-0", iconClass)} />
+            <span className="flex-1">{label}</span>
+          </>
+        ),
+      }))}
     />
   );
 });

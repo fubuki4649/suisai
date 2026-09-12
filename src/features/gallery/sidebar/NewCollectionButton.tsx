@@ -3,7 +3,6 @@ import {Button, Input, Label, Popover, TextField, toast,} from "@heroui/react";
 import {Icon} from "@iconify/react";
 import {useCollections} from "../../../context/GalleryContext.tsx";
 import {createCollection, getCollections} from "../../../api/collections.ts";
-import {Collection} from "../../../types/models.ts";
 import BackdropPortal from "../../../components/BackdropPortal.tsx";
 
 function NewCollectionButton() {
@@ -12,21 +11,16 @@ function NewCollectionButton() {
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
 
   // Event handler for create button
-  const onCreateButtonPress = () => {
+  const onCreateButtonPress = async () => {
     setPopoverIsOpen(false);
-    createCollection(newCollectionName, null, (code) => {
-      toast.danger("Error", {
-        description: "Failed to create collection with code " + code,
-      });
-    }).then(() => {
-      toast.success("Success", {
-        description: `Successfully created collection "${newCollectionName}"!`,
-      });
+    try {
+      await createCollection(newCollectionName, null, (code) =>
+        toast.danger("Error", {description: "Failed to create collection with code " + code})
+      );
+      toast.success("Success", {description: `Successfully created collection "${newCollectionName}"!`});
       setNewCollectionName("");
-      getCollections().then((collections: Collection[]) => {
-        setCollections(collections);
-      });
-    });
+      setCollections(await getCollections());
+    } catch { /* HTTP errors reported above; network errors surfaced by ServerHealth */ }
   };
 
   return (

@@ -21,19 +21,14 @@ function RenameCollectionModal({disclosure, collection}: RenameCollectionModalPr
   const [, setCollections] = useCollections();
   const [newCollectionName, setNewCollectionName] = useState("");
 
-  const onRenameCollection = () => {
-    renameCollection(collection.id, newCollectionName, (code) => {
-      toast.danger("Error", {
-        description: "Failed to rename collection with code " + code,
-      });
-    }).then(() => {
-      toast.success("Success", {
-        description: `Collection "${collection.label}" successfully renamed to "${newCollectionName}"!`,
-      });
-      getCollections().then((collections: Collection[]) => {
-        setCollections(collections);
-      });
-    });
+  const onRenameCollection = async () => {
+    try {
+      await renameCollection(collection.id, newCollectionName, (code) =>
+        toast.danger("Error", {description: "Failed to rename collection with code " + code})
+      );
+      toast.success("Success", {description: `Collection "${collection.label}" successfully renamed to "${newCollectionName}"!`});
+      setCollections(await getCollections());
+    } catch { /* HTTP errors reported above; network errors surfaced by ServerHealth */ }
   };
 
   return (
