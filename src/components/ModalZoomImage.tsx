@@ -151,7 +151,7 @@ function ZoomViewerModal({
   }, [clampPosition, isOpen, resetZoom, scale, zoomIn, zoomOut]);
 
   // Wheel zoom centered on mouse cursor
-  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+  const onWheel = (e: React.WheelEvent<HTMLImageElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -160,7 +160,7 @@ function ZoomViewerModal({
   };
 
   // Double click toggles between fit (1x) and 2.5x
-  const onDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onDoubleClick = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
     if (scale > 1.05) {
       resetZoom();
@@ -170,7 +170,7 @@ function ZoomViewerModal({
   };
 
   // Pointer & touch handling for panning and pinch zoom
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerDown = (e: React.PointerEvent<HTMLImageElement>) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     activePointersRef.current.set(e.pointerId, {x: e.clientX, y: e.clientY});
 
@@ -204,7 +204,7 @@ function ZoomViewerModal({
     }
   };
 
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLImageElement>) => {
     if (!activePointersRef.current.has(e.pointerId)) return;
     activePointersRef.current.set(e.pointerId, {x: e.clientX, y: e.clientY});
 
@@ -228,7 +228,7 @@ function ZoomViewerModal({
     }
   };
 
-  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerUp = (e: React.PointerEvent<HTMLImageElement>) => {
     activePointersRef.current.delete(e.pointerId);
     try {
       if (e.currentTarget.hasPointerCapture(e.pointerId)) {
@@ -330,19 +330,14 @@ function ZoomViewerModal({
       {/* Interactive viewport area */}
       <div
         ref={containerRef}
-        className={`w-full h-full flex items-center justify-center touch-none overflow-hidden ${
-          scale > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"
-        }`}
-        onWheel={onWheel}
-        onDoubleClick={onDoubleClick}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        className="w-full h-full flex items-center justify-center touch-none overflow-hidden"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <img
           ref={imageRef}
-          className="max-h-[90vh] max-w-[90vw] object-contain select-none pointer-events-none will-change-transform"
+          className={`max-h-[90vh] max-w-[90vw] object-contain select-none will-change-transform ${
+            scale > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"
+          }`}
           style={{
             transform: `translate3d(${position.x}px, ${position.y}px, 0px) scale(${scale})`,
             transition: isDragging ? "none" : "transform 0.15s cubic-bezier(0.2, 0, 0, 1)",
@@ -350,6 +345,12 @@ function ZoomViewerModal({
           src={src}
           alt={alt}
           draggable={false}
+          onWheel={onWheel}
+          onDoubleClick={onDoubleClick}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
         />
       </div>
     </div>
