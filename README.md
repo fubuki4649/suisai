@@ -13,8 +13,17 @@ A great way to manage your photo library from anywhere
 
 Create a `.env` file from `example.env` and tell suisai where your backend server is.
 
+## Running for Production
 
-## Running
+After setting up the `.env` file, simply
+
+```shell
+make install
+```
+
+Then copy `nginx.conf` to the correct location depending on your distro
+
+## Running for Development
 
     bun install
     bun run dev
