@@ -17,14 +17,15 @@ export default function CollectionPicker({
 }: CollectionPickerProps) {
   return (
     <Select
-      placeholder="Select Destination Collection"
+      variant="secondary"
+      placeholder="Select Destination"
       value={value?.id ?? null}
       onChange={(key) => {
         const selected = collections.find((c) => c.id === key) ?? null;
         onChange(selected);
       }}
     >
-      <Label className="text-sm font-medium text-foreground">{label}</Label>
+      <Label>{label}</Label>
       <Select.Trigger className="w-full">
         <Select.Value />
         <Select.Indicator />

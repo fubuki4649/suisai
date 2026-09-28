@@ -44,10 +44,10 @@ function RenameCollectionModal({disclosure, collection}: RenameCollectionModalPr
                 </Modal.Header>
                 <Modal.Body className="space-y-3">
                   <p className="text-sm text-foreground">
-                    You are about to modify the following collection:
+                    Renaming collection <span className="font-semibold text-accent">{collection.label}</span>
                   </p>
 
-                  <div className="rounded-xl bg-default-100 p-3 text-xs space-y-1">
+                  <div className="rounded-xl bg-default-100 p-3 text-s space-y-1">
                     <p><span className="text-muted">Current Name:</span> <span className="font-medium">{collection.label}</span></p>
                     <p><span className="text-muted">Collection ID:</span> <span className="font-mono">{collection.id}</span></p>
                   </div>
@@ -57,8 +57,9 @@ function RenameCollectionModal({disclosure, collection}: RenameCollectionModalPr
                     value={newCollectionName}
                     onChange={setNewCollectionName}
                   >
-                    <Label className="text-xs font-medium text-foreground">Please choose a new name</Label>
+                    <Label className="text-xs font-medium text-foreground pl-1 pb-0.5">Please choose a new name</Label>
                     <Input
+                      variant="secondary"
                       placeholder="New Collection Name"
                       autoFocus
                       onKeyDown={(e) => {

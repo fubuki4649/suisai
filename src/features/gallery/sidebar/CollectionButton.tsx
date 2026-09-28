@@ -45,9 +45,9 @@ export const CollectionButton: React.FC<CollectionButtonProps> = React.memo(({
     <RightClickButton
       btnProps={{
         className: cn(
-          "w-full px-2.5 py-2 text-sm justify-start rounded-xl transition-all overflow-hidden group select-none",
+          "w-full px-2.5 py-2 justify-start font-medium rounded-xl transition-all overflow-hidden group select-none",
           isSelected
-            ? "bg-accent/15 text-accent font-semibold shadow-xs"
+            ? "bg-accent/15 dark:bg-accent/23 text-accent font-semibold shadow-xs"
             : "text-foreground/80 hover:text-foreground hover:bg-default-100/70"
         ),
         variant: isSelected ? "secondary" : "ghost",

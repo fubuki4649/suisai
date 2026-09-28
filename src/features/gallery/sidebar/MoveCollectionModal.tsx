@@ -56,7 +56,7 @@ function MoveCollectionModal({disclosure, collection}: MoveCollectionModalProps)
                 </Modal.Header>
                 <Modal.Body className="space-y-4">
                   <p className="text-sm text-foreground">
-                    Moving collection <span className="font-semibold text-accent">"{collection.label}"</span> to the following collection:
+                    Moving collection <span className="font-semibold text-accent">{collection.label}</span> to the following collection:
                   </p>
 
                   <CollectionPicker

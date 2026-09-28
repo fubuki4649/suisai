@@ -31,7 +31,7 @@ function AssetActionsCard({ vertical = false }: AssetActionsCardProps) {
       <MoveAssetModal {...moveAssetState} />
       <DeleteAssetModal {...deleteAssetState} />
 
-      <Card className={cn(vertical ? "h-fit min-w-fit m-3" : "h-fit w-68 m-5", "mt-auto select-none rounded-2xl bg-surface border border-separator shadow-lg p-3")}>
+      <Card className={cn(vertical ? "h-fit min-w-fit m-3" : "h-fit w-72 m-5", "mt-auto select-none rounded-2xl bg-surface border border-separator shadow-lg p-3")}>
         <Card.Header className="pb-2">
           <div className={cn(vertical ? "justify-around" : "justify-between", "flex flex-row items-center w-full")}>
             {!vertical && <span className="font-semibold text-foreground">Selected Assets</span>}

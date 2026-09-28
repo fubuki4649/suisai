@@ -144,7 +144,7 @@ function Sidebar() {
       style={{ width: `${width}px` }}
       className="relative flex flex-col shrink-0 bg-background/50 border-r border-separator h-full select-none"
     >
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-2 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-2 scrollbar-hide bg-background-secondary/30 dark:bg-background-tertiary">
         {rightClickCollection && (
           <>
             <RenameCollectionModal disclosure={renameCollectionDisclosure} collection={rightClickCollection} />

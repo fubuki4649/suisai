@@ -98,16 +98,16 @@ export default function Header() {
   const navigate = useNavigate();
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/80 backdrop-blur-md">
-      <header className="flex h-14 items-center justify-between px-6">
+    <nav className="sticky top-0 z-40 w-full border-b border-separator backdrop-blur-md">
+      <header className="flex h-14 items-center justify-between px-6 bg-background-secondary/30 dark:bg-background-tertiary">
         {/* Left Branding */}
         <div
           className="flex items-center cursor-pointer select-none"
           onClick={() => navigate("/gallery")}
         >
           <img src="/suisai.svg" className="h-8 w-8" alt="Suisai Logo" />
-          <span className="ml-2.5 text-2xl font-semibold tracking-tight text-foreground font-sans">
-            suisai
+          <span className="ml-2.5 text-2xl font-semibold tracking-tight text-foreground">
+            Suisai
           </span>
         </div>
 

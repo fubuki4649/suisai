@@ -13,7 +13,7 @@ function MetadataCardStack() {
   const visibleAssets = selectedAssets.slice(-4).reverse();
 
   return (
-    <div className="relative w-68 m-5">
+    <div className="relative w-72 m-5">
       {visibleAssets.map((asset, index) => {
         const offset = index * 20;
         const scale = 1 - index * 0.02;

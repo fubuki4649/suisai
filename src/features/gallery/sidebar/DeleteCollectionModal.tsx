@@ -1,12 +1,5 @@
-import React, {useState} from "react";
-import {
-  Button,
-  Input,
-  Label,
-  Modal,
-  TextField,
-  toast,
-} from "@heroui/react";
+import React from "react";
+import {Button, Modal, toast} from "@heroui/react";
 import {useCollections, useSelectedCollection} from "../../../context/GalleryContext.tsx";
 import {deleteCollection, getCollections, queryCollection} from "../../../api/collections.ts";
 import {Collection} from "../../../types/models.ts";
@@ -20,7 +13,6 @@ export interface DeleteCollectionModalProps {
 function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalProps) {
   const [, setCollections] = useCollections();
   const [selectedCollection, setSelectedCollection] = useSelectedCollection();
-  const [confirmText, setConfirmText] = useState("");
 
   const onDeleteCollection = async () => {
     try {
@@ -53,33 +45,22 @@ function DeleteCollectionModal({disclosure, collection}: DeleteCollectionModalPr
                 </Modal.Header>
                 <Modal.Body className="space-y-3">
                   <p className="text-sm text-foreground">
-                    You are about to <span className="font-semibold text-danger">DELETE</span> the following collection. This action cannot be undone!
+                    You are about to <span className="font-semibold text-danger">DELETE</span> the collection <span className="font-semibold text-accent">{collection.label}</span>. This action cannot be undone!
                   </p>
 
-                  <div className="rounded-xl bg-default-100 p-3 text-xs space-y-1">
+                  <div className="rounded-xl bg-default-100 p-3 text-s space-y-1">
                     <p><span className="text-muted">Current Name:</span> <span className="font-medium">{collection.label}</span></p>
                     <p><span className="text-muted">Collection ID:</span> <span className="font-mono">{collection.id}</span></p>
                   </div>
 
-                  <TextField
-                    name="confirm-id"
-                    value={confirmText}
-                    onChange={setConfirmText}
-                  >
-                    <Label className="text-xs font-medium text-foreground">
-                      Please enter the collection ID to confirm deletion
-                    </Label>
-                    <Input placeholder={collection.id} />
-                  </TextField>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button variant="tertiary" onPress={() => { setConfirmText(""); close(); }}>
+                  <Button variant="tertiary" onPress={() => { close(); }}>
                     Cancel
                   </Button>
                   <Button
                     variant="danger"
-                    onPress={() => { onDeleteCollection(); setConfirmText(""); close(); }}
-                    isDisabled={confirmText !== collection.id}
+                    onPress={() => { onDeleteCollection(); close(); }}
                   >
                     Delete Collection
                   </Button>

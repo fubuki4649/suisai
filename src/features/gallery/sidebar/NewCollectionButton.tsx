@@ -54,6 +54,7 @@ function NewCollectionButton() {
             </div>
             <TextField
               name="collection-name"
+              variant="secondary"
               value={newCollectionName}
               onChange={setNewCollectionName}
             >
